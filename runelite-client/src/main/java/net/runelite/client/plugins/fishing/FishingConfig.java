@@ -52,6 +52,16 @@ public interface FishingConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "showMinnowOverlay",
+			name = "Show Minnow Overlay",
+			description = "Configures whether to display the minnow overlay"
+	)
+	default boolean showMinnowOverlay()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "showShrimp",
 		name = "Show Shrimp/Anchovies",
 		description = "Configures whether shrimp/anchovies is displayed"

@@ -29,8 +29,12 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
+
+import net.runelite.api.AnimationID;
+import net.runelite.api.Client;
 import net.runelite.api.GraphicID;
 import net.runelite.api.NPC;
+import net.runelite.client.Notifier;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -41,6 +45,15 @@ class FishingSpotOverlay extends Overlay
 {
 	private final FishingPlugin plugin;
 	private final FishingConfig config;
+
+//	HashMap<Integer, Long> minnowTimes = new HashMap<>();
+//	HashMap<Integer, WorldPoint> minnowPoints = new HashMap<>();
+
+	@Inject
+	private Notifier notifier;
+
+	@Inject
+	private Client client;
 
 	@Inject
 	ItemManager itemManager;
@@ -72,7 +85,37 @@ class FishingSpotOverlay extends Overlay
 				continue;
 			}
 
-			Color color = npc.getGraphic() == GraphicID.FLYING_FISH ? Color.RED : Color.CYAN;
+			Color color;
+			if (npc.getGraphic() == GraphicID.FLYING_FISH)
+			{
+				color = Color.RED;
+				if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
+				{
+					notifier.notify("Flying Fish");
+				}
+			} else {
+				color = Color.CYAN;
+			}
+
+			if (config.showMinnowOverlay())
+			{
+				if (spot == spot.MINNOW)
+				{
+					int time = 15-(int)(System.currentTimeMillis()-plugin.getMinnowTimes().get(npc.getId()))/1000;
+					color = (time > 3) ? color : color.ORANGE;
+
+
+					if (time <= 1 && client.getLocalPlayer().getAnimation() == AnimationID.FISHING_NET &&
+							client.getLocalPlayer().getWorldLocation().distanceTo(npc.getWorldLocation()) == 1)
+					{
+						notifier.notify("Minnows about to change spot");
+					}
+
+					// overlays the timer
+					OverlayUtil.renderActorOverlay(graphics, npc, String.valueOf(time), color.darker());
+				}
+			}
+
 			if (config.showIcons())
 			{
 				BufferedImage fishImage = getFishImage(spot);
@@ -96,4 +139,5 @@ class FishingSpotOverlay extends Overlay
 		BufferedImage fishImage = itemManager.getImage(spot.getFishSpriteId());
 		return fishImage;
 	}
+
 }

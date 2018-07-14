@@ -28,10 +28,8 @@ package net.runelite.client.plugins.fishing;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import com.google.inject.Provides;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+
+import java.util.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AccessLevel;
@@ -40,6 +38,7 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigChanged;
 import net.runelite.api.events.GameTick;
@@ -62,6 +61,12 @@ import net.runelite.client.util.QueryRunner;
 public class FishingPlugin extends Plugin
 {
 	private final List<Integer> spotIds = new ArrayList<>();
+
+	@Getter(AccessLevel.PACKAGE)
+	private HashMap<Integer, Long> minnowTimes = new HashMap<>();
+
+	@Getter(AccessLevel.PACKAGE)
+	private HashMap<Integer, WorldPoint> minnowPoints = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
 	private NPC[] fishingSpots;
@@ -209,5 +214,45 @@ public class FishingPlugin extends Plugin
 		// -1 to make closer things draw last (on top of farther things)
 		Arrays.sort(spots, Comparator.comparing(npc -> -1 * npc.getLocalLocation().distanceTo(cameraPoint)));
 		fishingSpots = spots;
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick event)
+	{
+		for (NPC npc : fishingSpots)
+		{
+			FishingSpot spot = FishingSpot.getSpot(npc.getId());
+
+			if (spot == null)
+			{
+				continue;
+			}
+
+			if (spot == spot.MINNOW && config.showMinnowOverlay())
+			{
+				// check if minnows location or time is initialised
+				if (!minnowPoints.containsKey(npc.getId()))
+				{
+					minnowPoints.put(npc.getId(), npc.getWorldLocation());
+					minnowTimes.put(npc.getId(), System.currentTimeMillis());
+				}
+
+				// check if moved, reset time and new position
+				if (isMoving(minnowPoints.get(npc.getId()), npc.getWorldLocation()))
+				{
+					minnowPoints.put(npc.getId(), npc.getWorldLocation());
+					minnowTimes.put(npc.getId(), System.currentTimeMillis());
+				}
+			}
+		}
+	}
+
+	private boolean isMoving(WorldPoint p1, WorldPoint p2)
+	{
+		if (p1.getX() != p2.getX() || p1.getY() != p2.getY())
+		{
+			return true;
+		}
+		return false;
 	}
 }
