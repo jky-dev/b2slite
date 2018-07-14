@@ -29,7 +29,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
-import net.runelite.api.Client;
 import net.runelite.api.GraphicID;
 import net.runelite.api.NPC;
 import net.runelite.api.Point;
@@ -43,20 +42,16 @@ class FishingSpotOverlay extends Overlay
 {
 	private final FishingPlugin plugin;
 	private final FishingConfig config;
+	private final ItemManager itemManager;
 
 	@Inject
-	private Client client;
-
-	@Inject
-	ItemManager itemManager;
-
-	@Inject
-	public FishingSpotOverlay(FishingPlugin plugin, FishingConfig config)
+	private FishingSpotOverlay(FishingPlugin plugin, FishingConfig config, ItemManager itemManager)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.plugin = plugin;
 		this.config = config;
+		this.itemManager = itemManager;
 	}
 
 	@Override
@@ -79,13 +74,12 @@ class FishingSpotOverlay extends Overlay
 
 			Color color = npc.getGraphic() == GraphicID.FLYING_FISH ? Color.RED : Color.CYAN;
 
-			if (config.showMinnowOverlay())
+			if (config.showMinnowOverlay() && spot == FishingSpot.MINNOW)
 			{
-				if (spot == spot.MINNOW)
 				{
-					int time = 15 - (int)(System.currentTimeMillis() - plugin.getMinnowTimes().get(npc.getId())) / 1000;
+					final int time = 15 - (int)(System.currentTimeMillis() - plugin.getMinnowTimes().get(npc.getId())) / 1000;
 					color = (time > 3) ? color : color.ORANGE;
-					Point textLocation = npc.getCanvasTextLocation(graphics, String.valueOf(time), npc.getLogicalHeight() + 80);
+					final Point textLocation = npc.getCanvasTextLocation(graphics, String.valueOf(time), npc.getLogicalHeight() + 80);
 					if (textLocation != null)
 					{
 						OverlayUtil.renderTextLocation(graphics, textLocation, String.valueOf(time), color.darker());

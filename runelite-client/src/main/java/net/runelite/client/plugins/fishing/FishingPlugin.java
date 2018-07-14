@@ -28,6 +28,11 @@ package net.runelite.client.plugins.fishing;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import com.google.inject.Provides;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AccessLevel;
@@ -48,11 +53,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.QueryRunner;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+
 
 @PluginDescriptor(
 	name = "Fishing",
@@ -222,6 +223,8 @@ public class FishingPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
+		if (!config.showMinnowOverlay()) return;
+
 		for (NPC npc : fishingSpots)
 		{
 			FishingSpot spot = FishingSpot.getSpot(npc.getId());
@@ -231,7 +234,7 @@ public class FishingPlugin extends Plugin
 				continue;
 			}
 
-			if (spot == spot.MINNOW && config.showMinnowOverlay())
+			if (spot == FishingSpot.MINNOW && config.showMinnowOverlay())
 			{
 				// check if minnows location or time is initialised
 				if (!minnowPoints.containsKey(npc.getId()))
