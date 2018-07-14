@@ -83,9 +83,9 @@ class FishingSpotOverlay extends Overlay
 			{
 				if (spot == spot.MINNOW)
 				{
-					int time = 15-(int)(System.currentTimeMillis()-plugin.getMinnowTimes().get(npc.getId()))/1000;
+					int time = 15 - (int)(System.currentTimeMillis() - plugin.getMinnowTimes().get(npc.getId())) / 1000;
 					color = (time > 3) ? color : color.ORANGE;
-					Point textLocation = npc.getCanvasTextLocation(graphics, String.valueOf(time), npc.getLogicalHeight()+80);
+					Point textLocation = npc.getCanvasTextLocation(graphics, String.valueOf(time), npc.getLogicalHeight() + 80);
 					if (textLocation != null)
 					{
 						OverlayUtil.renderTextLocation(graphics, textLocation, String.valueOf(time), color.darker());
