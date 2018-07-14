@@ -29,10 +29,10 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
-
 import net.runelite.api.Client;
 import net.runelite.api.GraphicID;
 import net.runelite.api.NPC;
+import net.runelite.api.Point;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -85,7 +85,11 @@ class FishingSpotOverlay extends Overlay
 				{
 					int time = 15-(int)(System.currentTimeMillis()-plugin.getMinnowTimes().get(npc.getId()))/1000;
 					color = (time > 3) ? color : color.ORANGE;
-					OverlayUtil.renderActorOverlay(graphics, npc, String.valueOf(time), color.darker());
+					Point textLocation = npc.getCanvasTextLocation(graphics, String.valueOf(time), npc.getLogicalHeight()+80);
+					if (textLocation != null)
+					{
+						OverlayUtil.renderTextLocation(graphics, textLocation, String.valueOf(time), color.darker());
+					}
 				}
 			}
 

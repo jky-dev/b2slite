@@ -28,8 +28,6 @@ package net.runelite.client.plugins.fishing;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import com.google.inject.Provides;
-
-import java.util.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AccessLevel;
@@ -50,6 +48,11 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.QueryRunner;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 @PluginDescriptor(
 	name = "Fishing",
@@ -247,7 +250,7 @@ public class FishingPlugin extends Plugin
 		}
 	}
 
-	private boolean isMoving(WorldPoint p1, WorldPoint p2)
+	private static boolean isMoving(WorldPoint p1, WorldPoint p2)
 	{
 		if (p1.getX() != p2.getX() || p1.getY() != p2.getY())
 		{
