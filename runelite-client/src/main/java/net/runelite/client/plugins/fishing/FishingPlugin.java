@@ -255,10 +255,6 @@ public class FishingPlugin extends Plugin
 
 	private static boolean isMoving(WorldPoint p1, WorldPoint p2)
 	{
-		if (p1.getX() != p2.getX() || p1.getY() != p2.getY())
-		{
-			return true;
-		}
-		return false;
+		return (p1.getX() != p2.getX() || p1.getY() != p2.getY());
 	}
 }
