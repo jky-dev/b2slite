@@ -37,8 +37,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
+import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.GraphicID;
 import net.runelite.api.NPC;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -46,6 +48,7 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.queries.NPCQuery;
+import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
@@ -77,6 +80,9 @@ public class FishingPlugin extends Plugin
 
 	@Inject
 	private Client client;
+
+	@Inject
+	private Notifier notifier;
 
 	@Inject
 	private QueryRunner queryRunner;
@@ -220,9 +226,39 @@ public class FishingPlugin extends Plugin
 		fishingSpots = spots;
 	}
 
+	boolean notified = false;
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
+		if (config.toggleConstantIdleNotifier())
+		{
+			// notify if not fishing
+			if (client.getLocalPlayer().getInteracting() == null || !client.getLocalPlayer().getInteracting().getName().equals("Fishing spot"))
+			{
+				notifier.notify("idle");
+			}
+		} else {
+
+			// notify if not fishing only once
+			if (client.getLocalPlayer().getInteracting() == null || !client.getLocalPlayer().getInteracting().getName().equals("Fishing spot"))
+			{
+				if (!notified)
+				notifier.notify("idle");
+				notified = true;
+			}
+			else
+			{
+				notified = false;
+			}
+		}
+
+		// notifies if catching flying fish
+		if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
+		{
+			notifier.notify("Flying fish");
+		}
+
+
 		if (!config.showMinnowOverlay()) return;
 
 		for (NPC npc : fishingSpots)

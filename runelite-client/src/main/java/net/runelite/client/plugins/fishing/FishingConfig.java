@@ -62,6 +62,16 @@ public interface FishingConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "constantIdleNotifier",
+			name = "Constant Idle Notifier",
+			description = "Toggles constant idle notifier"
+	)
+	default boolean toggleConstantIdleNotifier()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "showShrimp",
 		name = "Show Shrimp/Anchovies",
 		description = "Configures whether shrimp/anchovies is displayed"

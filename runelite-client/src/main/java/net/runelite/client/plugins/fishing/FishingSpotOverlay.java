@@ -48,8 +48,8 @@ class FishingSpotOverlay extends Overlay
 	private final ItemManager itemManager;
 	private final Client client;
 
-	@Inject
-	private Notifier notifier;
+//	@Inject
+//	private Notifier notifier;
 
 	@Inject
 	private FishingSpotOverlay(FishingPlugin plugin, FishingConfig config, ItemManager itemManager, Client client)
@@ -82,19 +82,20 @@ class FishingSpotOverlay extends Overlay
 
 			Color color = npc.getGraphic() == GraphicID.FLYING_FISH ? Color.RED : Color.CYAN;
 
-			if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
-			{
-				notifier.notify("Flying fish");
-			}
+//			if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
+//			{
+//				notifier.notify("Flying fish");
+//			}
 
 			if (config.showMinnowOverlay() && spot == FishingSpot.MINNOW)
 			{
 				{
-					final int time = 15 - (int)(System.currentTimeMillis() - plugin.getMinnowTimes().get(npc.getId())) / 1000;
+					final int time = 15 - (int) (System.currentTimeMillis() - plugin.getMinnowTimes().get(npc.getId())) / 1000;
 					color = (time > 3) ? color : color.ORANGE;
 
-					if (time <= 1 && client.getLocalPlayer().getAnimation() == AnimationID.FISHING_NET
-							&& client.getLocalPlayer().getWorldLocation().distanceTo(npc.getWorldLocation()) == 1) notifier.notify("Time to move");
+//					if (time <= 1 && client.getLocalPlayer().getAnimation() == AnimationID.FISHING_NET
+//							&& client.getLocalPlayer().getWorldLocation().distanceTo(npc.getWorldLocation()) == 1)
+//						notifier.notify("wait");
 
 					final Point textLocation = npc.getCanvasTextLocation(graphics, String.valueOf(time), npc.getLogicalHeight() + 80);
 					if (textLocation != null)
@@ -111,8 +112,7 @@ class FishingSpotOverlay extends Overlay
 				{
 					OverlayUtil.renderActorOverlayImage(graphics, npc, fishImage, color.darker(), npc.getLogicalHeight());
 				}
-			}
-			else
+			} else
 			{
 				String text = spot.getName();
 				OverlayUtil.renderActorOverlay(graphics, npc, text, color.darker());
@@ -127,5 +127,4 @@ class FishingSpotOverlay extends Overlay
 		BufferedImage fishImage = itemManager.getImage(spot.getFishSpriteId());
 		return fishImage;
 	}
-
 }
