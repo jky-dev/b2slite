@@ -233,14 +233,14 @@ public class FishingPlugin extends Plugin
 		if (config.toggleConstantIdleNotifier())
 		{
 			// notify if not fishing
-			if (client.getLocalPlayer().getInteracting() == null || !client.getLocalPlayer().getInteracting().getName().equals("Fishing spot"))
+			if (client.getLocalPlayer().getInteracting() == null || !client.getLocalPlayer().getInteracting().getName().contains("Fishing spot"))
 			{
 				notifier.notify("idle");
 			}
 		} else {
 
 			// notify if not fishing only once
-			if (client.getLocalPlayer().getInteracting() == null || !client.getLocalPlayer().getInteracting().getName().equals("Fishing spot"))
+			if (client.getLocalPlayer().getInteracting() == null || !client.getLocalPlayer().getInteracting().getName().contains("Fishing spot"))
 			{
 				if (!notified)
 				notifier.notify("idle");
