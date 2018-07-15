@@ -82,25 +82,16 @@ class FishingSpotOverlay extends Overlay
 
 			Color color = npc.getGraphic() == GraphicID.FLYING_FISH ? Color.RED : Color.CYAN;
 
-//			if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
-//			{
-//				notifier.notify("Flying fish");
-//			}
-
 			if (config.showMinnowOverlay() && spot == FishingSpot.MINNOW)
 			{
 				{
 					final int time = 15 - (int) (System.currentTimeMillis() - plugin.getMinnowTimes().get(npc.getId())) / 1000;
 					color = (time > 3) ? color : color.ORANGE;
 
-//					if (time <= 1 && client.getLocalPlayer().getAnimation() == AnimationID.FISHING_NET
-//							&& client.getLocalPlayer().getWorldLocation().distanceTo(npc.getWorldLocation()) == 1)
-//						notifier.notify("wait");
-
 					final Point textLocation = npc.getCanvasTextLocation(graphics, String.valueOf(time), npc.getLogicalHeight() + 80);
 					if (textLocation != null)
 					{
-						OverlayUtil.renderTextLocation(graphics, textLocation, String.valueOf(time), color.darker());
+						OverlayUtil.renderTextLocation(graphics, textLocation, String.valueOf(time), color.WHITE);
 					}
 				}
 			}
