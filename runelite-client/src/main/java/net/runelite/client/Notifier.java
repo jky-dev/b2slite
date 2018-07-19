@@ -66,6 +66,7 @@ public class Notifier
 	private static final Color FLASH_COLOR = new Color(255, 0, 0, 70);
 	private static final int FLASH_DURATION = 2000;
 	private static final String MESSAGE_COLOR = "FF0000";
+	private boolean flashing = false;
 
 	private final Provider<Client> client;
 	private final String appName;
@@ -140,6 +141,7 @@ public class Notifier
 		if (runeLiteConfig.enableFlashNotification())
 		{
 			flashStart = Instant.now();
+			flashing = true;
 		}
 	}
 
@@ -152,6 +154,16 @@ public class Notifier
 
 		final Client client = this.client.get();
 
+		if (runeLiteConfig.enablePersistentFlash() && flashing)
+		{
+			if (client.getMouseCurrentButton() != 0)
+			{
+				flashing = false;
+				flashStart = null;
+				return;
+			}
+		}
+
 		if (client == null || client.getGameCycle() % 40 >= 20)
 		{
 			return;
@@ -162,7 +174,7 @@ public class Notifier
 		graphics.fill(new Rectangle(client.getCanvas().getSize()));
 		graphics.setColor(color);
 
-		if (Instant.now().minusMillis(FLASH_DURATION).isAfter(flashStart))
+		if (!runeLiteConfig.enablePersistentFlash() && Instant.now().minusMillis(FLASH_DURATION).isAfter(flashStart))
 		{
 			flashStart = null;
 		}

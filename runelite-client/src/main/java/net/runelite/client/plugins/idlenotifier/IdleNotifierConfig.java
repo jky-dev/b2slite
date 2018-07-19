@@ -32,6 +32,16 @@ import net.runelite.client.config.ConfigItem;
 public interface IdleNotifierConfig extends Config
 {
 	@ConfigItem(
+		keyName = "fishingidle",
+		name = "Idle Fishing Notifications",
+		description = "Configures if idle fishing notifications are enabled"
+	)
+	default boolean fishingIdle()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "animationidle",
 		name = "Idle Animation Notifications",
 		description = "Configures if idle animation notifications are enabled",

@@ -72,6 +72,7 @@ public class IdleNotifierPlugin extends Plugin
 	private boolean notifyPrayer = true;
 	private boolean notifyIdleLogout = true;
 	private boolean notify6HourLogout = true;
+	private boolean isFishing = false;
 
 	private Instant sixHourWarningTime;
 	private boolean ready;
@@ -238,6 +239,16 @@ public class IdleNotifierPlugin extends Plugin
 		if (check6hrLogout())
 		{
 			notifier.notify("[" + local.getName() + "] is about to log out from being online for 6 hours!");
+		}
+
+		if (local.getInteracting() != null && local.getInteracting().getName().contains("Fishing spot"))
+		{
+			isFishing = true;
+		}
+		else if (config.fishingIdle() && isFishing)
+		{
+			isFishing = false;
+			notifier.notify("[" + local.getName() + "] has stopped fishing!");
 		}
 
 		if (config.animationIdle() && checkAnimationIdle(waitDuration, local))

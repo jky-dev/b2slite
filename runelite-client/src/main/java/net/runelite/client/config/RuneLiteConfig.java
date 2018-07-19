@@ -175,6 +175,17 @@ public interface RuneLiteConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "notificationFlashPersistent",
+		name = "Enable persistent notification",
+		description = "Flashes the game frame until client is interacted with"
+//		position = 24
+	)
+	default boolean enablePersistentFlash()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "notificationFocused",
 		name = "Send notifications when focused",
 		description = "Toggles idle notifications for when the client is focused",

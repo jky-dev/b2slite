@@ -226,31 +226,9 @@ public class FishingPlugin extends Plugin
 		fishingSpots = spots;
 	}
 
-	boolean notified = false;
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
-		if (config.toggleConstantIdleNotifier())
-		{
-			// notify if not fishing
-			if (client.getLocalPlayer().getInteracting() == null || !client.getLocalPlayer().getInteracting().getName().contains("Fishing spot"))
-			{
-				notifier.notify("idle");
-			}
-		} else {
-
-			// notify if not fishing only once
-			if (client.getLocalPlayer().getInteracting() == null || !client.getLocalPlayer().getInteracting().getName().contains("Fishing spot"))
-			{
-				if (!notified)
-				notifier.notify("idle");
-				notified = true;
-			}
-			else
-			{
-				notified = false;
-			}
-		}
 
 		// notifies if catching flying fish
 		if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
@@ -258,8 +236,9 @@ public class FishingPlugin extends Plugin
 			notifier.notify("Flying fish");
 		}
 
-
 		if (!config.showMinnowOverlay()) return;
+
+		if (fishingSpots == null) return;
 
 		for (NPC npc : fishingSpots)
 		{

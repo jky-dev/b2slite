@@ -103,7 +103,8 @@ class FishingSpotOverlay extends Overlay
 				{
 					OverlayUtil.renderActorOverlayImage(graphics, npc, fishImage, color.darker(), npc.getLogicalHeight());
 				}
-			} else
+			}
+			else
 			{
 				String text = spot.getName();
 				OverlayUtil.renderActorOverlay(graphics, npc, text, color.darker());
