@@ -29,12 +29,10 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
-import net.runelite.api.AnimationID;
 import net.runelite.api.Client;
 import net.runelite.api.GraphicID;
 import net.runelite.api.NPC;
 import net.runelite.api.Point;
-import net.runelite.client.Notifier;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -47,9 +45,6 @@ class FishingSpotOverlay extends Overlay
 	private final FishingConfig config;
 	private final ItemManager itemManager;
 	private final Client client;
-
-//	@Inject
-//	private Notifier notifier;
 
 	@Inject
 	private FishingSpotOverlay(FishingPlugin plugin, FishingConfig config, ItemManager itemManager, Client client)
@@ -85,7 +80,7 @@ class FishingSpotOverlay extends Overlay
 			if (config.showMinnowOverlay() && spot == FishingSpot.MINNOW)
 			{
 				{
-					final int time = 15 - (int) (System.currentTimeMillis() - plugin.getMinnowTimes().get(npc.getId())) / 1000;
+					final int time = 15 - (int)(System.currentTimeMillis() - plugin.getMinnowSpots().get(npc.getId()).getTime()) / 1000;
 					color = (time > 3) ? color : color.ORANGE;
 
 					final Point textLocation = npc.getCanvasTextLocation(graphics, String.valueOf(time), npc.getLogicalHeight() + 80);

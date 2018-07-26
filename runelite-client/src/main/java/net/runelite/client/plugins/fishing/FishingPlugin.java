@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AccessLevel;
@@ -70,10 +71,7 @@ public class FishingPlugin extends Plugin
 	private final List<Integer> spotIds = new ArrayList<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	private HashMap<Integer, Long> minnowTimes = new HashMap<>();
-
-	@Getter(AccessLevel.PACKAGE)
-	private HashMap<Integer, WorldPoint> minnowPoints = new HashMap<>();
+	private Map<Integer, MinnowSpot> minnowSpots = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
 	private NPC[] fishingSpots;
@@ -252,17 +250,15 @@ public class FishingPlugin extends Plugin
 			if (spot == FishingSpot.MINNOW && config.showMinnowOverlay())
 			{
 				// check if minnows location or time is initialised
-				if (!minnowPoints.containsKey(npc.getId()))
+				if (!minnowSpots.containsKey(npc.getId()))
 				{
-					minnowPoints.put(npc.getId(), npc.getWorldLocation());
-					minnowTimes.put(npc.getId(), System.currentTimeMillis());
+					minnowSpots.put(npc.getId(), new MinnowSpot(npc.getWorldLocation(), System.currentTimeMillis()));
 				}
 
 				// check if moved, reset time and new position
-				if (isMoving(minnowPoints.get(npc.getId()), npc.getWorldLocation()))
+				if (isMoving(minnowSpots.get(npc.getId()).getLoc(), npc.getWorldLocation()))
 				{
-					minnowPoints.put(npc.getId(), npc.getWorldLocation());
-					minnowTimes.put(npc.getId(), System.currentTimeMillis());
+					minnowSpots.put(npc.getId(), new MinnowSpot(npc.getWorldLocation(), System.currentTimeMillis()));
 				}
 			}
 		}
