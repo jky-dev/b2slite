@@ -162,7 +162,16 @@ public class Notifier
 				flashStart = null;
 				return;
 			}
+
+			if (client.getGameState() != GameState.LOGGED_IN)
+			{
+				flashing = false;
+				flashStart = null;
+				return;
+			}
 		}
+
+
 
 		if (client == null || client.getGameCycle() % 40 >= 20)
 		{
