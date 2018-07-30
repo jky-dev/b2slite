@@ -45,7 +45,6 @@ import net.runelite.api.Client;
 import net.runelite.api.GraphicID;
 import net.runelite.api.NPC;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigChanged;
 import net.runelite.api.events.GameTick;
@@ -235,6 +234,11 @@ public class FishingPlugin extends Plugin
 			if (spot == null)
 			{
 				continue;
+			}
+
+			if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
+			{
+				notifier.notify("Flying fish");
 			}
 
 			if (spot == FishingSpot.MINNOW && config.showMinnowOverlay())
