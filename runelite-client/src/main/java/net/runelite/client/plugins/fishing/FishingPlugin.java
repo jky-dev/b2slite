@@ -28,6 +28,7 @@ package net.runelite.client.plugins.fishing;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import com.google.inject.Provides;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -38,7 +39,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.runelite.api.AnimationID;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GraphicID;
@@ -48,6 +49,7 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.queries.NPCQuery;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
@@ -66,6 +68,7 @@ import net.runelite.client.util.QueryRunner;
 )
 @PluginDependency(XpTrackerPlugin.class)
 @Singleton
+@Slf4j
 public class FishingPlugin extends Plugin
 {
 	private final List<Integer> spotIds = new ArrayList<>();
@@ -123,6 +126,7 @@ public class FishingPlugin extends Plugin
 		overlayManager.remove(overlay);
 		overlayManager.remove(spotOverlay);
 		overlayManager.remove(fishingSpotMinimapOverlay);
+		minnowSpots.clear();
 	}
 
 	public FishingSession getSession()
@@ -212,7 +216,7 @@ public class FishingPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void checkSpots(GameTick event)
+	public void onGameTick(GameTick event)
 	{
 		final LocalPoint cameraPoint = new LocalPoint(client.getCameraX(), client.getCameraY());
 
@@ -222,23 +226,9 @@ public class FishingPlugin extends Plugin
 		// -1 to make closer things draw last (on top of farther things)
 		Arrays.sort(spots, Comparator.comparing(npc -> -1 * npc.getLocalLocation().distanceTo(cameraPoint)));
 		fishingSpots = spots;
-	}
 
-	@Subscribe
-	public void onGameTick(GameTick event)
-	{
-
-		// notifies if catching flying fish
-		if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
-		{
-			notifier.notify("Flying fish");
-		}
-
-		if (!config.showMinnowOverlay()) return;
-
-		if (fishingSpots == null) return;
-
-		for (NPC npc : fishingSpots)
+		// process minnows
+		for (NPC npc : spots)
 		{
 			FishingSpot spot = FishingSpot.getSpot(npc.getId());
 
@@ -249,23 +239,30 @@ public class FishingPlugin extends Plugin
 
 			if (spot == FishingSpot.MINNOW && config.showMinnowOverlay())
 			{
-				// check if minnows location or time is initialised
-				if (!minnowSpots.containsKey(npc.getId()))
+				int id = npc.getIndex();
+				MinnowSpot minnowSpot = minnowSpots.get(id);
+				// create the minnow spot if it doesn't already exist
+				if (minnowSpot == null)
 				{
-					minnowSpots.put(npc.getId(), new MinnowSpot(npc.getWorldLocation(), System.currentTimeMillis()));
+					minnowSpots.put(id, new MinnowSpot(npc.getWorldLocation(), Instant.now()));
 				}
-
-				// check if moved, reset time and new position
-				if (isMoving(minnowSpots.get(npc.getId()).getLoc(), npc.getWorldLocation()))
+				// if moved, reset
+				else if (!minnowSpot.getLoc().equals(npc.getWorldLocation()))
 				{
-					minnowSpots.put(npc.getId(), new MinnowSpot(npc.getWorldLocation(), System.currentTimeMillis()));
+					minnowSpots.put(id, new MinnowSpot(npc.getWorldLocation(), Instant.now()));
 				}
 			}
 		}
 	}
 
-	private static boolean isMoving(WorldPoint p1, WorldPoint p2)
+	@Subscribe
+	public void onNpcDespawned(NpcDespawned npcDespawned)
 	{
-		return (p1.getX() != p2.getX() || p1.getY() != p2.getY());
+		NPC npc = npcDespawned.getNpc();
+		MinnowSpot minnowSpot = minnowSpots.remove(npc.getIndex());
+		if (minnowSpot != null)
+		{
+			log.debug("Minnow spot {} despawned", npc);
+		}
 	}
 }

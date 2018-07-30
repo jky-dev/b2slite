@@ -28,33 +28,41 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
+import java.time.Instant;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GraphicID;
 import net.runelite.api.NPC;
+import net.runelite.api.Perspective;
 import net.runelite.api.Point;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
+import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 
 class FishingSpotOverlay extends Overlay
 {
+	private static final Duration MINNOW_MOVE = Duration.ofSeconds(15);
+	private static final Duration MINNOW_WARN = Duration.ofSeconds(3);
+
 	private final FishingPlugin plugin;
 	private final FishingConfig config;
-	private final ItemManager itemManager;
 	private final Client client;
+	private final ItemManager itemManager;
 
 	@Inject
-	private FishingSpotOverlay(FishingPlugin plugin, FishingConfig config, ItemManager itemManager, Client client)
+	private FishingSpotOverlay(FishingPlugin plugin, FishingConfig config, Client client, ItemManager itemManager)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.plugin = plugin;
 		this.config = config;
-		this.itemManager = itemManager;
 		this.client = client;
+		this.itemManager = itemManager;
 	}
 
 	@Override
@@ -77,16 +85,28 @@ class FishingSpotOverlay extends Overlay
 
 			Color color = npc.getGraphic() == GraphicID.FLYING_FISH ? Color.RED : Color.CYAN;
 
-			if (config.showMinnowOverlay() && spot == FishingSpot.MINNOW)
+			if (spot == FishingSpot.MINNOW && config.showMinnowOverlay())
 			{
+				MinnowSpot minnowSpot = plugin.getMinnowSpots().get(npc.getIndex());
+				if (minnowSpot != null)
 				{
-					final int time = 15 - (int)(System.currentTimeMillis() - plugin.getMinnowSpots().get(npc.getId()).getTime()) / 1000;
-					color = (time > 3) ? color : color.ORANGE;
-
-					final Point textLocation = npc.getCanvasTextLocation(graphics, String.valueOf(time), npc.getLogicalHeight() + 80);
-					if (textLocation != null)
+					long millisLeft = MINNOW_MOVE.toMillis() - Duration.between(minnowSpot.getTime(), Instant.now()).toMillis();
+					if (millisLeft < MINNOW_WARN.toMillis())
 					{
-						OverlayUtil.renderTextLocation(graphics, textLocation, String.valueOf(time), color.WHITE);
+						color = Color.ORANGE;
+					}
+
+					LocalPoint localPoint = npc.getLocalLocation();
+					Point location = Perspective.worldToCanvas(client, localPoint.getX(), localPoint.getY(), client.getPlane());
+
+					if (location != null)
+					{
+						ProgressPieComponent pie = new ProgressPieComponent();
+						pie.setFill(color);
+						pie.setBorderColor(color);
+						pie.setPosition(location);
+						pie.setProgress((float) millisLeft / MINNOW_MOVE.toMillis());
+						pie.render(graphics);
 					}
 				}
 			}
