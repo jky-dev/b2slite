@@ -328,6 +328,11 @@ public class Perspective
 		final int sceneX = localLocation.getSceneX();
 		final int sceneY = localLocation.getSceneY();
 
+		if (sceneX < 0 || sceneY < 0 || sceneX >= SCENE_SIZE || sceneY >= SCENE_SIZE)
+		{
+			return null;
+		}
+
 		int tilePlane = plane;
 		if (plane < Constants.MAX_Z - 1 && (tileSettings[1][sceneX][sceneY] & TILE_FLAG_BRIDGE) == TILE_FLAG_BRIDGE)
 		{
@@ -373,10 +378,14 @@ public class Perspective
 		@Nonnull Client client,
 		@Nonnull Graphics2D graphics,
 		@Nonnull LocalPoint localLocation,
-		@Nonnull String text,
-		int zOffset
-	)
+		@Nullable String text,
+		int zOffset)
 	{
+		if (text == null || "".equals(text))
+		{
+			return null;
+		}
+
 		int plane = client.getPlane();
 
 		Point p = worldToCanvas(client, localLocation.getX(), localLocation.getY(), plane, zOffset);
