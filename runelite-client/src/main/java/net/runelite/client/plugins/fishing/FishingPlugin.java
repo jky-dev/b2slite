@@ -28,6 +28,7 @@ package net.runelite.client.plugins.fishing;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import com.google.inject.Provides;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,13 +43,17 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
+import net.runelite.api.Query;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.NpcDespawned;
+import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.queries.NPCQuery;
+import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
@@ -98,6 +103,12 @@ public class FishingPlugin extends Plugin
 
 	private final FishingSession session = new FishingSession();
 
+	public int minnowCount = -1;
+
+	public int minnowsCaught = 0;
+
+	public long startTime;
+
 	@Provides
 	FishingConfig provideConfig(ConfigManager configManager)
 	{
@@ -120,6 +131,7 @@ public class FishingPlugin extends Plugin
 		overlayManager.remove(spotOverlay);
 		overlayManager.remove(fishingSpotMinimapOverlay);
 		minnowSpots.clear();
+		minnowCount = -1;
 	}
 
 	public FishingSession getSession()
@@ -245,6 +257,21 @@ public class FishingPlugin extends Plugin
 					minnowSpots.put(id, new MinnowSpot(npc.getWorldLocation(), Instant.now()));
 				}
 			}
+		}
+
+		Query inventoryQuery = new InventoryWidgetItemQuery().idEquals(ItemID.MINNOW);
+		WidgetItem[] inventoryWidgetItems = queryRunner.runQuery(inventoryQuery);
+
+		if (inventoryWidgetItems.length == 1 && minnowCount == -1)
+		{
+			minnowCount = inventoryWidgetItems[0].getQuantity();
+			startTime = System.currentTimeMillis();
+		}
+		else if (inventoryWidgetItems.length == 1)
+		{
+			minnowsCaught = inventoryWidgetItems[0].getQuantity() - minnowCount;
+			int sharks = minnowsCaught / 40;
+			System.out.println(minnowsCaught + " " + sharks);
 		}
 	}
 
