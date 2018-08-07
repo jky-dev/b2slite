@@ -120,8 +120,8 @@ class FishingOverlay extends Overlay
 			if (plugin.minnowsCaught > 0)
 			{
 				panelComponent.getChildren().add(LineComponent.builder()
-					.left("Caught minnows")
-					.right(Integer.toString(plugin.minnowsCaught))
+					.left("Caught sharks")
+					.right(Integer.toString(plugin.minnowsCaught / 40))
 					.build());
 
 				panelComponent.getChildren().add(LineComponent.builder()
