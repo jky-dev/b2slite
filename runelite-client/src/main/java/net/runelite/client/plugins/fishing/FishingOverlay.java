@@ -31,6 +31,7 @@ import java.time.Duration;
 import java.time.Instant;
 import javax.inject.Inject;
 import net.runelite.api.Client;
+import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.xptracker.XpTrackerService;
 import net.runelite.client.ui.overlay.Overlay;
@@ -113,6 +114,19 @@ class FishingOverlay extends Overlay
 				panelComponent.getChildren().add(LineComponent.builder()
 					.left("Fish/hr:")
 					.right(Integer.toString(xpTrackerService.getActionsHr(Skill.FISHING)))
+					.build());
+			}
+
+			if (plugin.minnowsCaught > 0)
+			{
+				panelComponent.getChildren().add(LineComponent.builder()
+					.left("Caught minnows")
+					.right(Integer.toString(plugin.minnowsCaught))
+					.build());
+
+				panelComponent.getChildren().add(LineComponent.builder()
+					.left("Sharks/hr:")
+					.right(Integer.toString((int) ((1.0 / (Math.max(60, ((System.currentTimeMillis() - plugin.startTime) / 1000)) / 3600.0)) * (plugin.minnowsCaught / 40))))
 					.build());
 			}
 		}
