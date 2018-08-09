@@ -46,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.client.config.FlashingType;
 import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.ui.ClientUI;
 import net.runelite.client.util.ColorUtil;
@@ -66,8 +67,6 @@ public class Notifier
 	private static final Color FLASH_COLOR = new Color(255, 0, 0, 70);
 	private static final int FLASH_DURATION = 2000;
 	private static final Color MESSAGE_COLOR = Color.RED;
-
-	private boolean flashing = false;
 
 	private final Client client;
 	private final String appName;
@@ -130,10 +129,9 @@ public class Notifier
 			}
 		}
 
-		if (runeLiteConfig.enableFlashNotification())
+		if (runeLiteConfig.enableFlashNotification() != FlashingType.OFF)
 		{
 			flashStart = Instant.now();
-			flashing = true;
 		}
 	}
 
@@ -144,20 +142,10 @@ public class Notifier
 			return;
 		}
 
-		final Client client = this.client;
-
-		if (runeLiteConfig.enablePersistentFlash() && flashing)
+		if (runeLiteConfig.enableFlashNotification() == FlashingType.PERSISTANT)
 		{
-			if (client.getMouseCurrentButton() != 0)
+			if (client.getMouseCurrentButton() == 1 || client.getGameState() != GameState.LOGGED_IN)
 			{
-				flashing = false;
-				flashStart = null;
-				return;
-			}
-
-			if (client.getGameState() != GameState.LOGGED_IN)
-			{
-				flashing = false;
 				flashStart = null;
 				return;
 			}
@@ -174,7 +162,7 @@ public class Notifier
 		graphics.fill(new Rectangle(client.getCanvas().getSize()));
 		graphics.setColor(color);
 
-		if (!runeLiteConfig.enablePersistentFlash() && Instant.now().minusMillis(FLASH_DURATION).isAfter(flashStart))
+		if (runeLiteConfig.enableFlashNotification() == FlashingType.DEFAULT && Instant.now().minusMillis(FLASH_DURATION).isAfter(flashStart))
 		{
 			flashStart = null;
 		}
