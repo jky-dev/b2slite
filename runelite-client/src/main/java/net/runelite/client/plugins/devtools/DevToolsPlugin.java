@@ -157,16 +157,6 @@ public class DevToolsPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameStateChanged(GameStateChanged gameStateChanged)
-	{
-		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
-		{
-			client.setOculusOrbState(1);
-			client.setOculusOrbNormalSpeed(36);
-		}
-	}
-
-	@Subscribe
 	public void onCommand(CommandExecuted commandExecuted)
 	{
 		String[] args = commandExecuted.getArguments();
