@@ -22,75 +22,64 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.minnows;
+package net.runelite.client.plugins.timetracking;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import net.runelite.api.Client;
-import net.runelite.api.ItemID;
-import net.runelite.client.game.ItemManager;
+import net.runelite.client.plugins.timetracking.farming.FarmingTracker;
+import net.runelite.client.plugins.timetracking.farming.PatchImplementation;
+import net.runelite.client.plugins.timetracking.hunter.BirdHouseTracker;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
-class MinnowsOverlay extends Overlay
+class TimeTrackingOverlay extends Overlay
 {
-	private final Client client;
-	private final MinnowsConfig config;
-	private final MinnowsPlugin plugin;
 	private final PanelComponent panelComponent = new PanelComponent();
-	private final ItemManager itemManager;
+
+	private final FarmingTracker farmingTracker;
+	private final BirdHouseTracker birdHouseTracker;
 
 	@Inject
-	public MinnowsOverlay(Client client, ItemManager itemManager, MinnowsConfig config, MinnowsPlugin plugin)
+	public TimeTrackingOverlay(BirdHouseTracker birdHouseTracker, FarmingTracker farmingTracker)
 	{
 		setPosition(OverlayPosition.TOP_LEFT);
-		this.client = client;
-		this.config = config;
-		this.itemManager = itemManager;
-		this.plugin = plugin;
+		this.birdHouseTracker = birdHouseTracker;
+		this.farmingTracker = farmingTracker;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
 		panelComponent.getChildren().clear();
-		if (plugin.getMinnowsCaught() > 0)
 		{
-			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("Minnow Stats")
-				.color(Color.GREEN)
-				.build());
+			if (birdHouseTracker.getCompletionTime() == 0 || farmingTracker.getCompletionTime(PatchImplementation.HERB) == 0)
+			{
+				panelComponent.getChildren().add(TitleComponent.builder()
+					.text("Time Tracking Overlay")
+					.color(Color.GREEN)
+					.build());
 
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Caught sharks:")
-				.right(Integer.toString(plugin.getMinnowsCaught() / 40))
-				.build());
-
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Total GP:")
-				.right(Integer.toString(((plugin.getMinnowsCaught() / 40) * itemManager.getItemPrice(ItemID.RAW_SHARK)) / 1000) + "K")
-				.build());
-
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Sharks/hr:")
-				.right(Integer.toString(toPerHour(plugin.getMinnowsCaught())))
-				.build());
-
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("GP/hr:")
-				.right(Integer.toString((toPerHour(plugin.getMinnowsCaught()) * itemManager.getItemPrice(ItemID.RAW_SHARK)) / 1000) + "K")
-				.build());
+				if (birdHouseTracker.getCompletionTime() == 0)
+				{
+					panelComponent.getChildren().add(LineComponent.builder()
+						.left("Birdhouses:")
+						.right("Ready")
+						.build());
+				}
+				if (farmingTracker.getCompletionTime(PatchImplementation.HERB) == 0)
+				{
+					panelComponent.getChildren().add(LineComponent.builder()
+						.left("Herbs:")
+						.right("Ready")
+						.build());
+				}
+			}
 		}
 		return panelComponent.render(graphics);
-	}
-
-	private int toPerHour(int value)
-	{
-		return (int) ((1.0 / (Math.max(60, ((System.currentTimeMillis() - plugin.getStartTime()) / 1000)) / 3600.0)) * (value / 40));
 	}
 }

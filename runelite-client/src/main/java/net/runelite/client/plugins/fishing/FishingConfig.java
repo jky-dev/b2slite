@@ -133,7 +133,7 @@ public interface FishingConfig extends Config
 	@ConfigItem(
 		keyName = "showMinnow",
 		name = "Show Minnow fish",
-		description = "Configures whether minnow fish is displayed",
+		description = "Configures whether minnows fish is displayed",
 		position = 10
 	)
 	default boolean showMinnow()
@@ -221,7 +221,7 @@ public interface FishingConfig extends Config
 	@ConfigItem(
 		keyName = "showMinnowOverlay",
 		name = "Show Minnow Movement overlay",
-		description = "Configures whether to display the minnow progress pie overlay",
+		description = "Configures whether to display the minnows progress pie overlay",
 		position = 18
 	)
 	default boolean showMinnowOverlay()

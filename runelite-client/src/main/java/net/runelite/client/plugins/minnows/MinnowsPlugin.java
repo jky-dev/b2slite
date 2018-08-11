@@ -25,6 +25,7 @@
 package net.runelite.client.plugins.minnows;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,24 +33,29 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
 import net.runelite.api.Query;
+import net.runelite.api.events.ConfigChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.QueryRunner;
 
 @PluginDescriptor(
-	name = "Minnows",
-	description = "Shows how many minnows you've caught in the session",
-	tags = {"skilling", "fishing", "minnows", "overlay"}
+	name = "Minnows Stats",
+	description = "Show minnows stats",
+	tags = {"fishing"}
 )
 public class MinnowsPlugin extends Plugin
 {
 	@Inject
 	private Client client;
+
+	@Inject
+	private MinnowsConfig config;
 
 	@Inject
 	private MinnowsOverlay minnowsOverlay;
@@ -68,6 +74,27 @@ public class MinnowsPlugin extends Plugin
 
 	@Getter(AccessLevel.PACKAGE)
 	private long startTime;
+
+	@Provides
+	private MinnowsConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(MinnowsConfig.class);
+	}
+
+	@Subscribe
+	public void configChanged(ConfigChanged event)
+	{
+		if (!event.getGroup().equals("minnows"))
+		{
+			return;
+		}
+
+		if (event.getKey().equals("camera"))
+		{
+			client.setOculusOrbState(config.detachedCamera() ? 1 : 0);
+			client.setOculusOrbNormalSpeed(config.detachedCamera() ? 36 : 12);
+		}
+	}
 
 	@Override
 	protected void startUp() throws Exception

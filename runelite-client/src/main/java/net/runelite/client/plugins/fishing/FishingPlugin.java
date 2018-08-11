@@ -245,7 +245,7 @@ public class FishingPlugin extends Plugin
 			{
 				int id = npc.getIndex();
 				MinnowSpot minnowSpot = minnowSpots.get(id);
-				// create the minnow spot if it doesn't already exist
+				// create the minnows spot if it doesn't already exist
 				if (minnowSpot == null)
 				{
 					minnowSpots.put(id, new MinnowSpot(npc.getWorldLocation(), Instant.now()));

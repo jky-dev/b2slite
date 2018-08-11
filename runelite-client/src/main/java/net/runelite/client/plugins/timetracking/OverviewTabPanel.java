@@ -116,6 +116,9 @@ class OverviewTabPanel extends TabContentPanel
 
 		farmingOverviews.forEach((patchType, panel) -> updateItemPanel(panel, farmingTracker.getCompletionTime(patchType)));
 		updateItemPanel(birdHouseOverview, birdHouseTracker.getCompletionTime());
+
+		System.out.println("h:" + farmingTracker.getCompletionTime(PatchImplementation.HERB));
+		System.out.println("b:" + birdHouseTracker.getCompletionTime());
 	}
 
 	private void updateItemPanel(OverviewItemPanel panel, long completionTime)
