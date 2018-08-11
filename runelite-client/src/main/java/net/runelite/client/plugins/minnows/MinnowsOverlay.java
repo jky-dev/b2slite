@@ -22,101 +22,75 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.fishing;
+package net.runelite.client.plugins.minnows;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.time.Duration;
-import java.time.Instant;
 import javax.inject.Inject;
 import net.runelite.api.Client;
-import net.runelite.api.Skill;
-import net.runelite.client.plugins.xptracker.XpTrackerService;
+import net.runelite.api.ItemComposition;
+import net.runelite.api.ItemID;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
-class FishingOverlay extends Overlay
+class MinnowsOverlay extends Overlay
 {
-	private static final String FISHING_SPOT = "Fishing spot";
-
 	private final Client client;
-	private final FishingPlugin plugin;
-	private final FishingConfig config;
-	private final XpTrackerService xpTrackerService;
-
+	private final MinnowsPlugin plugin;
 	private final PanelComponent panelComponent = new PanelComponent();
+	private final ItemComposition rawShark;
+	private final ItemManager itemManager;
 
 	@Inject
-	public FishingOverlay(Client client, FishingPlugin plugin, FishingConfig config, XpTrackerService xpTrackerService)
+	public MinnowsOverlay(Client client, ItemManager itemManager, MinnowsPlugin plugin)
 	{
 		setPosition(OverlayPosition.TOP_LEFT);
 		this.client = client;
+		this.itemManager = itemManager;
 		this.plugin = plugin;
-		this.config = config;
-		this.xpTrackerService = xpTrackerService;
+		this.rawShark = itemManager.getItemComposition(ItemID.RAW_SHARK);
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!config.showFishingStats())
 		{
-			return null;
-		}
-
-		FishingSession session = plugin.getSession();
-
-		if (session.getLastFishCaught() == null)
-		{
-			return null;
-		}
-
-		Duration statTimeout = Duration.ofMinutes(config.statTimeout());
-		Duration sinceCaught = Duration.between(session.getLastFishCaught(), Instant.now());
-
-		if (sinceCaught.compareTo(statTimeout) >= 0)
-		{
-			return null;
-		}
-
 		panelComponent.getChildren().clear();
-		if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getName()
-			.contains(FISHING_SPOT))
-		{
-			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("Fishing")
-				.color(Color.GREEN)
-				.build());
-		}
-		else
-		{
-			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("NOT fishing")
-				.color(Color.RED)
-				.build());
-		}
-
-		int actions = xpTrackerService.getActions(Skill.FISHING);
-		if (actions > 0)
-		{
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Caught fish:")
-				.right(Integer.toString(actions))
-				.build());
-
-			if (actions > 2)
+			if (plugin.getMinnowsCaught() > 0)
 			{
+
+				panelComponent.getChildren().add(TitleComponent.builder()
+					.text("Minnow Stats")
+					.color(Color.GREEN)
+					.build());
+
 				panelComponent.getChildren().add(LineComponent.builder()
-					.left("Fish/hr:")
-					.right(Integer.toString(xpTrackerService.getActionsHr(Skill.FISHING)))
+					.left("Caught sharks")
+					.right(Integer.toString(plugin.getMinnowsCaught() / 40))
+					.build());
+
+				panelComponent.getChildren().add(LineComponent.builder()
+					.left("Sharks/hr:")
+					.right(Integer.toString(toPerHour(plugin.getMinnowsCaught())))
+					.build());
+
+				panelComponent.getChildren().add(LineComponent.builder()
+					.left("GP/hr:")
+					.right(Integer.toString(toPerHour(plugin.getMinnowsCaught() * rawShark.getPrice()) / 1000) + "K")
 					.build());
 			}
 		}
 
 		return panelComponent.render(graphics);
+	}
+
+	private int toPerHour(int value)
+	{
+		return (int) ((1.0 / (Math.max(60, ((System.currentTimeMillis() - plugin.getStartTime()) / 1000)) / 3600.0)) * (value / 40));
 	}
 }
