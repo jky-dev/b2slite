@@ -27,6 +27,7 @@ package net.runelite.client.plugins.timetracking;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.time.Instant;
 import javax.inject.Inject;
 import net.runelite.client.plugins.timetracking.farming.FarmingTracker;
 import net.runelite.client.plugins.timetracking.farming.PatchImplementation;
@@ -40,38 +41,41 @@ import net.runelite.client.ui.overlay.components.TitleComponent;
 class TimeTrackingOverlay extends Overlay
 {
 	private final PanelComponent panelComponent = new PanelComponent();
-
+	private final TimeTrackingConfig config;
 	private final FarmingTracker farmingTracker;
 	private final BirdHouseTracker birdHouseTracker;
 
 	@Inject
-	public TimeTrackingOverlay(BirdHouseTracker birdHouseTracker, FarmingTracker farmingTracker)
+	public TimeTrackingOverlay(BirdHouseTracker birdHouseTracker, FarmingTracker farmingTracker, TimeTrackingConfig config)
 	{
 		setPosition(OverlayPosition.TOP_LEFT);
 		this.birdHouseTracker = birdHouseTracker;
 		this.farmingTracker = farmingTracker;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
 		panelComponent.getChildren().clear();
+		if (!config.showOverlay()) return panelComponent.render(graphics);
 		{
-			if (birdHouseTracker.getCompletionTime() == 0 || farmingTracker.getCompletionTime(PatchImplementation.HERB) == 0)
+			if (birdHouseTracker.getCompletionTime() == 0 || farmingTracker.getCompletionTime(PatchImplementation.HERB) - Instant.now().getEpochSecond() <= 0)
 			{
 				panelComponent.getChildren().add(TitleComponent.builder()
 					.text("Time Tracking Overlay")
 					.color(Color.GREEN)
 					.build());
 
-				if (birdHouseTracker.getCompletionTime() == 0)
+				if (birdHouseTracker.getCompletionTime() <= 0)
 				{
 					panelComponent.getChildren().add(LineComponent.builder()
 						.left("Birdhouses:")
 						.right("Ready")
 						.build());
 				}
-				if (farmingTracker.getCompletionTime(PatchImplementation.HERB) == 0)
+
+				if (farmingTracker.getCompletionTime(PatchImplementation.HERB) - Instant.now().getEpochSecond() <= 0)
 				{
 					panelComponent.getChildren().add(LineComponent.builder()
 						.left("Herbs:")

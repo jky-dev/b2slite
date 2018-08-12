@@ -71,6 +71,17 @@ public interface TimeTrackingConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showOverlay",
+		name = "Show overlay",
+		description = "Shows overlay for herbs and birdhouses",
+		position = 4
+	)
+	default boolean showOverlay()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "activeTab",
 		name = "Active Tab",
 		description = "The currently selected tab",

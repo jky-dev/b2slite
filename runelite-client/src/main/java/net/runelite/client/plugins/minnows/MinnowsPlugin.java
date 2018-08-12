@@ -101,6 +101,8 @@ public class MinnowsPlugin extends Plugin
 	{
 		overlayManager.add(minnowsOverlay);
 		minnowsCount = -1;
+		client.setOculusOrbState(config.detachedCamera() ? 1 : 0);
+		client.setOculusOrbNormalSpeed(config.detachedCamera() ? 36 : 12);
 	}
 
 	@Override
@@ -108,6 +110,8 @@ public class MinnowsPlugin extends Plugin
 	{
 		overlayManager.remove(minnowsOverlay);
 		minnowsCount = -1;
+		client.setOculusOrbState(0);
+		client.setOculusOrbNormalSpeed(12);
 	}
 
 	@Subscribe
@@ -116,6 +120,13 @@ public class MinnowsPlugin extends Plugin
 		if (gameStateChanged.getGameState() != GameState.LOGGED_IN)
 		{
 			minnowsCount = -1;
+		}
+
+		if (gameStateChanged.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer().getWorldLocation().getRegionID() == 10293
+		&& config.detachedCamera())
+		{
+			client.setOculusOrbState(config.detachedCamera() ? 1 : 0);
+			client.setOculusOrbNormalSpeed(config.detachedCamera() ? 36 : 12);
 		}
 	}
 
