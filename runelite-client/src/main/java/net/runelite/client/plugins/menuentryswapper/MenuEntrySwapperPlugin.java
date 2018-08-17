@@ -489,6 +489,10 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			swap("empty", option, target, true);
 		}
+		else if (config.swapBank() && option.equals("withdraw-1"))
+		{
+			swap("withdraw-14", option, target, true);
+		}
 	}
 
 	@Subscribe

@@ -239,4 +239,15 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		position = 18,
+		keyName = "swapWithdraw",
+		name = "WithdrawX",
+		description = "Swap WithdrawX in bank"
+	)
+	default boolean swapWithdraw()
+	{
+		return false;
+	}
 }
