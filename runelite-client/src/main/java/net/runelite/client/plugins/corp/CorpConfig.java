@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,23 +22,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.pestcontrol;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
-import net.runelite.api.widgets.WidgetInfo;
+package net.runelite.client.plugins.corp;
 
-@AllArgsConstructor
-@Getter
-@ToString
-enum Portal
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+
+@ConfigGroup("corp")
+public interface CorpConfig extends Config
 {
-	PURPLE(WidgetInfo.PEST_CONTROL_PURPLE_SHIELD, WidgetInfo.PEST_CONTROL_PURPLE_HEALTH, WidgetInfo.PEST_CONTROL_PURPLE_ICON),
-	BLUE(WidgetInfo.PEST_CONTROL_BLUE_SHIELD, WidgetInfo.PEST_CONTROL_BLUE_HEALTH, WidgetInfo.PEST_CONTROL_BLUE_ICON),
-	YELLOW(WidgetInfo.PEST_CONTROL_YELLOW_SHIELD, WidgetInfo.PEST_CONTROL_YELLOW_HEALTH, WidgetInfo.PEST_CONTROL_YELLOW_ICON),
-	RED(WidgetInfo.PEST_CONTROL_RED_SHIELD, WidgetInfo.PEST_CONTROL_RED_HEALTH, WidgetInfo.PEST_CONTROL_RED_ICON);
-
-	private final WidgetInfo shield;
-	private final WidgetInfo hitpoints;
-	private final WidgetInfo icon;
+	@ConfigItem(
+		keyName = "leftClickCore",
+		name = "Left click walk on core",
+		description = "Prioritizes Walk here over Attack on the Dark energey core",
+		position = 1
+	)
+	default boolean leftClickCore()
+	{
+		return true;
+	}
 }
