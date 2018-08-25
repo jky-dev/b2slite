@@ -513,7 +513,7 @@ public class ClientUI
 			OSXUtil.requestFocus();
 		}
 
-		if (System.getProperty("os.name").contains("10"))
+		if (OSType.getOSType() == OSType.Windows && System.getProperty("os.name").contains("10"))
 		{
 			frame.setAlwaysOnTop(true);
 			frame.requestFocus();
