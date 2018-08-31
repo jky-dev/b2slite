@@ -517,9 +517,9 @@ public class ClientUI
 		else if (OSType.getOSType() == OSType.Windows && System.getProperty("os.name").contains("10"))
 		{
 			frame.setAlwaysOnTop(true);
+			frame.setAlwaysOnTop(config.gameAlwaysOnTop());
 			frame.requestFocus();
 			giveClientFocus();
-			frame.setAlwaysOnTop(config.gameAlwaysOnTop());
 		}
 		else
 		{
