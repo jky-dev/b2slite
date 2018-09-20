@@ -42,8 +42,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.GraphicID;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.coords.LocalPoint;
@@ -53,6 +55,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.queries.NPCQuery;
+import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
@@ -60,6 +63,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.QueryRunner;
+
 
 @PluginDescriptor(
 	name = "Fishing",
@@ -84,6 +88,9 @@ public class FishingPlugin extends Plugin
 
 	@Inject
 	private Client client;
+
+	@Inject
+	private Notifier notifier;
 
 	@Inject
 	private QueryRunner queryRunner;
@@ -113,12 +120,16 @@ public class FishingPlugin extends Plugin
 	protected void startUp() throws Exception
 	{
 		overlayManager.add(overlay);
+		overlayManager.add(spotOverlay);
+		overlayManager.add(fishingSpotMinimapOverlay);
 		updateConfig();
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
+		spotOverlay.setHidden(true);
+		fishingSpotMinimapOverlay.setHidden(true);
 		overlayManager.remove(overlay);
 		overlayManager.remove(spotOverlay);
 		overlayManager.remove(fishingSpotMinimapOverlay);
@@ -128,73 +139,18 @@ public class FishingPlugin extends Plugin
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event)
 	{
-		boolean showOverlays = false;
-
-		if (session.getLastFishCaught() != null)
+		if (event.getItemContainer() != client.getItemContainer(InventoryID.INVENTORY)
+			&& event.getItemContainer() != client.getItemContainer(InventoryID.EQUIPMENT))
 		{
-			showOverlays = true;
-		}
-		else if (event.getItemContainer() == client.getItemContainer(InventoryID.INVENTORY))
-		{
-			for (Item item : event.getItemContainer().getItems())
-			{
-				if (item == null)
-				{
-					continue;
-				}
-
-				switch (item.getId())
-				{
-					case ItemID.DRAGON_HARPOON:
-					case ItemID.INFERNAL_HARPOON:
-					case ItemID.INFERNAL_HARPOON_UNCHARGED:
-					case ItemID.HARPOON:
-					case ItemID.BARBTAIL_HARPOON:
-					case ItemID.BIG_FISHING_NET:
-					case ItemID.SMALL_FISHING_NET:
-					case ItemID.SMALL_FISHING_NET_6209:
-					case ItemID.FISHING_ROD:
-					case ItemID.FLY_FISHING_ROD:
-					case ItemID.BARBARIAN_ROD:
-					case ItemID.OILY_FISHING_ROD:
-					case ItemID.LOBSTER_POT:
-					case ItemID.KARAMBWAN_VESSEL:
-					case ItemID.KARAMBWAN_VESSEL_3159:
-						showOverlays = true;
-						break;
-				}
-			}
-		}
-		else if (event.getItemContainer() == client.getItemContainer(InventoryID.EQUIPMENT))
-		{
-			for (Item item : event.getItemContainer().getItems())
-			{
-				if (item == null)
-				{
-					continue;
-				}
-
-				switch (item.getId())
-				{
-					case ItemID.DRAGON_HARPOON:
-					case ItemID.INFERNAL_HARPOON:
-					case ItemID.INFERNAL_HARPOON_UNCHARGED:
-						showOverlays = true;
-						break;
-				}
-			}
+			return;
 		}
 
-		if (showOverlays)
-		{
-			overlayManager.add(spotOverlay);
-			overlayManager.add(fishingSpotMinimapOverlay);
-		}
-		else
-		{
-			overlayManager.remove(spotOverlay);
-			overlayManager.remove(fishingSpotMinimapOverlay);
-		}
+		final boolean showOverlays = session.getLastFishCaught() != null
+			|| canPlayerFish(client.getItemContainer(InventoryID.INVENTORY))
+			|| canPlayerFish(client.getItemContainer(InventoryID.EQUIPMENT));
+
+		spotOverlay.setHidden(!showOverlays);
+		fishingSpotMinimapOverlay.setHidden(!showOverlays);
 	}
 
 	@Subscribe
@@ -208,8 +164,8 @@ public class FishingPlugin extends Plugin
 		if (event.getMessage().contains("You catch a") || event.getMessage().contains("You catch some"))
 		{
 			session.setLastFishCaught(Instant.now());
-			overlayManager.add(spotOverlay);
-			overlayManager.add(fishingSpotMinimapOverlay);
+			spotOverlay.setHidden(false);
+			fishingSpotMinimapOverlay.setHidden(false);
 		}
 	}
 
@@ -217,6 +173,43 @@ public class FishingPlugin extends Plugin
 	public void updateConfig(ConfigChanged event)
 	{
 		updateConfig();
+	}
+
+	private boolean canPlayerFish(final ItemContainer itemContainer)
+	{
+		if (itemContainer == null)
+		{
+			return false;
+		}
+
+		for (Item item : itemContainer.getItems())
+		{
+			if (item == null)
+			{
+				continue;
+			}
+			switch (item.getId())
+			{
+				case ItemID.DRAGON_HARPOON:
+				case ItemID.INFERNAL_HARPOON:
+				case ItemID.INFERNAL_HARPOON_UNCHARGED:
+				case ItemID.HARPOON:
+				case ItemID.BARBTAIL_HARPOON:
+				case ItemID.BIG_FISHING_NET:
+				case ItemID.SMALL_FISHING_NET:
+				case ItemID.SMALL_FISHING_NET_6209:
+				case ItemID.FISHING_ROD:
+				case ItemID.FLY_FISHING_ROD:
+				case ItemID.BARBARIAN_ROD:
+				case ItemID.OILY_FISHING_ROD:
+				case ItemID.LOBSTER_POT:
+				case ItemID.KARAMBWAN_VESSEL:
+				case ItemID.KARAMBWAN_VESSEL_3159:
+					return true;
+			}
+		}
+
+		return false;
 	}
 
 	private void updateConfig()
@@ -302,11 +295,16 @@ public class FishingPlugin extends Plugin
 				continue;
 			}
 
+			if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
+			{
+				notifier.notify("Flying fish");
+			}
+
 			if (spot == FishingSpot.MINNOW && config.showMinnowOverlay())
 			{
 				int id = npc.getIndex();
 				MinnowSpot minnowSpot = minnowSpots.get(id);
-				// create the minnow spot if it doesn't already exist
+				// create the minnows spot if it doesn't already exist
 				if (minnowSpot == null)
 				{
 					minnowSpots.put(id, new MinnowSpot(npc.getWorldLocation(), Instant.now()));

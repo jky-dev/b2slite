@@ -443,23 +443,28 @@ public class OverlayRenderer extends MouseListener implements KeyListener
 			viewportOffset + BORDER,
 			viewportOffset + BORDER_TOP);
 
+		final Point topCenterPoint = new Point(
+			viewportOffset + viewportBounds.width / 2,
+			viewportOffset + BORDER
+		);
+
 		final Point topRightPoint = new Point(
 			viewportOffset + viewportBounds.width - BORDER,
-			viewportOffset + BORDER);
+			topCenterPoint.y);
 
 		final Point bottomLeftPoint = new Point(
 			topLeftPoint.x,
 			viewportOffset + viewportBounds.height - BORDER);
+
+		final Point bottomRightPoint = new Point(
+			topRightPoint.x,
+			bottomLeftPoint.y);
 
 		// Check to see if chat box is minimized
 		if (isResizeable && chatboxHidden)
 		{
 			bottomLeftPoint.y += chatboxBounds.height;
 		}
-
-		final Point bottomRightPoint = new Point(
-			topRightPoint.x,
-			bottomLeftPoint.y);
 
 		final Point rightChatboxPoint = isResizeable ? new Point(
 			viewportOffset + chatboxBounds.width - BORDER,
@@ -471,6 +476,7 @@ public class OverlayRenderer extends MouseListener implements KeyListener
 
 		return new OverlayBounds(
 			new Rectangle(topLeftPoint, SNAP_CORNER_SIZE),
+			new Rectangle(topCenterPoint, SNAP_CORNER_SIZE),
 			new Rectangle(topRightPoint, SNAP_CORNER_SIZE),
 			new Rectangle(bottomLeftPoint, SNAP_CORNER_SIZE),
 			new Rectangle(bottomRightPoint, SNAP_CORNER_SIZE),

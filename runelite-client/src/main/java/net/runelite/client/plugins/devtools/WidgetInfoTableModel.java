@@ -124,6 +124,7 @@ public class WidgetInfoTableModel extends AbstractTableModel
 			String.class
 		));
 		out.add(new WidgetField<>("FontId", Widget::getFontId, Widget::setFontId, Integer.class));
+		out.add(new WidgetField<>("TextShadowed", Widget::getTextShadowed, Widget::setTextShadowed, Boolean.class));
 		out.add(new WidgetField<>("Name", w -> w.getName().trim(), Widget::setName, String.class));
 		out.add(new WidgetField<>("ItemId", Widget::getItemId, Widget::setItemId, Integer.class));
 		out.add(new WidgetField<>("ItemQuantity", Widget::getItemQuantity, Widget::setItemQuantity, Integer.class));
@@ -143,6 +144,7 @@ public class WidgetInfoTableModel extends AbstractTableModel
 		out.add(new WidgetField<>("OriginalY", Widget::getOriginalY));
 		out.add(new WidgetField<>("PaddingX", Widget::getPaddingX));
 		out.add(new WidgetField<>("PaddingY", Widget::getPaddingY));
+		out.add(new WidgetField<>("BorderThickness", Widget::getBorderThickness, Widget::setBorderThickness, Integer.class));
 		out.add(new WidgetField<>("IsIf3", Widget::isIf3));
 		out.add(new WidgetField<>("HasListener", Widget::hasListener, Widget::setHasListener, Boolean.class));
 

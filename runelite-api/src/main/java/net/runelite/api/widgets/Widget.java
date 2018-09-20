@@ -564,4 +564,24 @@ public interface Widget
 	 * Sets the archive id of the font
 	 */
 	void setFontId(int id);
+
+	/**
+	 * Returns the border thickness of the widget
+	 */
+	int getBorderThickness();
+
+	/**
+	 * Sets the border thickness of the widget
+	 */
+	void setBorderThickness(int thickness);
+
+	/**
+	 * Returns if text is shadowed
+	 */
+	boolean getTextShadowed();
+
+	/**
+	 * Sets if text should be shadowed
+	 */
+	void setTextShadowed(boolean shadowed);
 }
