@@ -43,7 +43,6 @@ import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.GraphicID;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -96,9 +95,6 @@ public class FishingPlugin extends Plugin
 
 	@Inject
 	private Client client;
-
-	@Inject
-	private Notifier notifier;
 
 	@Inject
 	private QueryRunner queryRunner;
@@ -286,16 +282,11 @@ public class FishingPlugin extends Plugin
 				continue;
 			}
 
-			if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
-			{
-				notifier.notify("Flying fish");
-			}
-
 			if (spot == FishingSpot.MINNOW && config.showMinnowOverlay())
 			{
 				int id = npc.getIndex();
 				MinnowSpot minnowSpot = minnowSpots.get(id);
-				// create the minnows spot if it doesn't already exist
+				// create the minnow spot if it doesn't already exist
 				if (minnowSpot == null)
 				{
 					minnowSpots.put(id, new MinnowSpot(npc.getWorldLocation(), Instant.now()));
