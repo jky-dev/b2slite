@@ -31,6 +31,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.GraphicID;
 import net.runelite.api.ItemID;
 import net.runelite.api.Query;
 import net.runelite.api.events.ConfigChanged;
@@ -38,6 +39,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -56,6 +58,9 @@ public class MinnowsPlugin extends Plugin
 
 	@Inject
 	private MinnowsConfig config;
+
+	@Inject
+	private Notifier notifier;
 
 	@Inject
 	private MinnowsOverlay minnowsOverlay;
@@ -144,6 +149,11 @@ public class MinnowsPlugin extends Plugin
 		else if (inventoryWidgetItems.length == 1)
 		{
 			minnowsCaught = inventoryWidgetItems[0].getQuantity() - minnowsCount;
+		}
+
+		if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
+		{
+			notifier.notify("Flying fish");
 		}
 	}
 }
