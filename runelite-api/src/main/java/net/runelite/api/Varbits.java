@@ -212,6 +212,12 @@ public enum Varbits
 	IN_GAME_BA(3923),
 
 	/**
+	 * 0 = Outside wilderness
+	 * 1 = In wilderness
+	 */
+	IN_WILDERNESS(5963),
+
+	/**
 	 * Fishing Trawler
 	 * FISHING_TRAWLER_ACTIVITY Expected values: 0-255
 	 */
@@ -402,6 +408,11 @@ public enum Varbits
 	 */
 	ACCOUNT_TYPE(1777),
 
+	/**
+	 * The varbit that stores the oxygen percentage for player
+	 */
+	OXYGEN_LEVEL(5811),
+	
 	/**
 	 * Corp beast damage
 	 */

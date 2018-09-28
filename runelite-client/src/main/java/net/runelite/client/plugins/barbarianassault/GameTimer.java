@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Robbie McLeod <https://github.com/rbbi>
+ * Copyright (c) 2018, Jacob M <https://github.com/jacoblairm>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,17 +22,53 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.barbarianassault;
 
-package net.runelite.client.plugins.skillcalculator;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
-import javax.swing.JCheckBox;
-import lombok.Getter;
-import lombok.Setter;
-import net.runelite.client.plugins.skillcalculator.beans.SkillDataBonus;
-
-class BonusCheckBox extends JCheckBox
+class GameTimer
 {
-	@Getter
-	@Setter
-	private SkillDataBonus bonus;
+	final private Instant startTime = Instant.now();
+	private Instant prevWave = startTime;
+
+	String getTime(boolean waveTime)
+	{
+		final Instant now = Instant.now();
+		final Duration elapsed;
+
+		if (waveTime)
+		{
+			elapsed = Duration.between(prevWave, now);
+		}
+		else
+		{
+			elapsed = Duration.between(startTime, now).minusMillis(600);
+		}
+
+		return formatTime(LocalTime.ofSecondOfDay(elapsed.getSeconds()));
+	}
+
+	void setWaveStartTime()
+	{
+		prevWave = Instant.now();
+	}
+
+	private static String formatTime(LocalTime time)
+	{
+		if (time.getHour() > 0)
+		{
+			return time.format(DateTimeFormatter.ofPattern("HH:mm"));
+		}
+		else if (time.getMinute() > 9)
+		{
+			return time.format(DateTimeFormatter.ofPattern("mm:ss"));
+		}
+		else
+		{
+			return time.format(DateTimeFormatter.ofPattern("m:ss"));
+		}
+	}
 }
