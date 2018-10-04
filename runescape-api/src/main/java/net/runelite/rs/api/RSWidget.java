@@ -306,6 +306,10 @@ public interface RSWidget extends Widget
 	@Override
 	Object[] getOnKeyListener();
 
+	@Import("onLoadListener")
+	@Override
+	Object[] getOnLoadListener();
+
 	@Import("fontId")
 	@Override
 	int getFontId();
@@ -321,4 +325,20 @@ public interface RSWidget extends Widget
 	@Import("textShadowed")
 	@Override
 	void setTextShadowed(boolean shadowed);
+
+	@Import("dragDeadZone")
+	@Override
+	int getDragDeadZone();
+
+	@Import("dragDeadZone")
+	@Override
+	void setDragDeadZone(int deadZone);
+
+	@Import("dragDeadTime")
+	@Override
+	int getDragDeadTime();
+
+	@Import("dragDeadTime")
+	@Override
+	void setDragDeadTime(int deadTime);
 }

@@ -525,7 +525,15 @@ public interface Widget
 	 */
 	void revalidateScroll();
 
+	/**
+	 * Array of widget key listeners
+	 */
 	Object[] getOnKeyListener();
+
+	/**
+	 * Array of widget load listeners
+	 */
+	Object[] getOnLoadListener();
 
 	/**
 	 * Returns the archive id of the font used
@@ -559,4 +567,24 @@ public interface Widget
 	 * Sets if text should be shadowed
 	 */
 	void setTextShadowed(boolean shadowed);
+
+	/**
+	 * Returns the widget drag dead zone
+	 */
+	int getDragDeadZone();
+
+	/**
+	 * Sets the widget drag dead zone
+	 */
+	void setDragDeadZone(int deadZone);
+
+	/**
+	 * Returns the widget drag dead time
+	 */
+	int getDragDeadTime();
+
+	/**
+	 * Sets the widget drag dead time
+	 */
+	void setDragDeadTime(int deadTime);
 }
