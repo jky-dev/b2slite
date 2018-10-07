@@ -242,11 +242,11 @@ public interface MenuEntrySwapperConfig extends Config
 
 	@ConfigItem(
 		position = 18,
-		keyName = "swapWithdraw",
-		name = "Withdraw-14",
-		description = "Swap Withdraw-14 in bank"
+		keyName = "swapDuelArena",
+		name = "Swap Duel Arena",
+		description = "One click duel arena"
 	)
-	default boolean swapWithdraw()
+	default boolean swapDA()
 	{
 		return false;
 	}

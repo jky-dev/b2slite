@@ -470,12 +470,19 @@ public class MenuEntrySwapperPlugin extends Plugin
 			}
 		}
 		// Put all item-related swapping after shift-click
-		else if (config.swapTeleportItem() && option.equals("wear") || option.equals("remove"))
+		else if (config.swapTeleportItem() && (option.equals("wear") || option.equals("remove")))
 		{
-			swap("rub", option, target, true);
 			swap("teleport", option, target, true);
 			swap("xeric's glade", option, target, true);
 			swap("farm teleport", option, target, true);
+			if (config.swapDA())
+			{
+				swap("duel arena", option, target, true);
+			}
+			else
+			{
+				swap("rub", option, target, true);
+			}
 		}
 		else if (option.equals("wield"))
 		{
@@ -491,10 +498,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		else if (config.swapBirdhouseEmpty() && option.equals("interact") && target.contains("birdhouse"))
 		{
 			swap("empty", option, target, true);
-		}
-		else if (config.swapWithdraw() && option.equals("withdraw-1"))
-		{
-			swap("withdraw-14", option, target, true);
 		}
 	}
 
