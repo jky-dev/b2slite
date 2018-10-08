@@ -60,7 +60,7 @@ class TimeTrackingOverlay extends Overlay
 		panelComponent.getChildren().clear();
 		if (!config.showOverlay()) return panelComponent.render(graphics);
 		{
-			if (birdHouseTracker.getCompletionTime() == 0 || farmingTracker.getCompletionTime(PatchImplementation.HERB) - Instant.now().getEpochSecond() <= 0)
+			if (birdHouseTracker.getCompletionTime() == 0 || farmingTracker.getCompletionTime(Tab.HERB) - Instant.now().getEpochSecond() <= 0)
 			{
 				panelComponent.getChildren().add(TitleComponent.builder()
 					.text("Time Tracking Overlay")
@@ -75,7 +75,7 @@ class TimeTrackingOverlay extends Overlay
 						.build());
 				}
 
-				if (farmingTracker.getCompletionTime(PatchImplementation.HERB) - Instant.now().getEpochSecond() <= 0)
+				if (farmingTracker.getCompletionTime(Tab.HERB) - Instant.now().getEpochSecond() <= 0)
 				{
 					panelComponent.getChildren().add(LineComponent.builder()
 						.left("Herbs:")
