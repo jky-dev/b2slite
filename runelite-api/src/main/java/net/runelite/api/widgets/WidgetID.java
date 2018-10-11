@@ -196,10 +196,14 @@ public class WidgetID
 
 	static class Bank
 	{
-		static final int ITEM_CONTAINER = 12;
+		static final int BANK_CONTAINER = 1;
 		static final int INVENTORY_ITEM_CONTAINER = 3;
 		static final int BANK_TITLE_BAR = 4;
-		static final int BANK_ITEM_COUNT = 5;
+		static final int CONTENT_CONTAINER = 9;
+		static final int ITEM_CONTAINER = 12;
+		static final int SEARCH_BUTTON_BACKGROUND = 39;
+		static final int INCINERATOR = 45;
+		static final int INCINERATOR_CONFIRM = 46;
 	}
 
 	static class GrandExchange
@@ -397,6 +401,7 @@ public class WidgetID
 		static final int EMOTE_ICON = 45;
 		static final int MUSIC_TAB = 40;
 		static final int MUSIC_ICON = 46;
+		static final int MAGIC_ICON = 63;
 	}
 
 	static class Chatbox
@@ -487,12 +492,12 @@ public class WidgetID
 		static final int STYLE_FOUR = 15;
 		static final int SPELLS = 19;
 		static final int DEFENSIVE_SPELL_BOX = 20;
-		static final int DEFENSIVE_SPELL_ICON = 21;
-		static final int DEFENSIVE_SPELL_SHIELD = 22;
-		static final int DEFENSIVE_SPELL_TEXT = 23;
-		static final int SPELL_BOX = 24;
-		static final int SPELL_ICON = 25;
-		static final int SPELL_TEXT = 26;
+		static final int DEFENSIVE_SPELL_ICON = 22;
+		static final int DEFENSIVE_SPELL_SHIELD = 23;
+		static final int DEFENSIVE_SPELL_TEXT = 24;
+		static final int SPELL_BOX = 25;
+		static final int SPELL_ICON = 27;
+		static final int SPELL_TEXT = 28;
 	}
 
 	static class VolcanicMine
@@ -665,7 +670,7 @@ public class WidgetID
 
 	static class Minigames
 	{
-		static final int TELEPORT_BUTTON = 29;
+		static final int TELEPORT_BUTTON = 31;
 	}
 
 	static class StandardSpellBook

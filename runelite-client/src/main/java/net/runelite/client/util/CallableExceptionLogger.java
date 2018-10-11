@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,31 +22,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package net.runelite.client.util;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.util.concurrent.Callable;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- * An enumeration of integer local variables.
- */
-@AllArgsConstructor
-@Getter
-public enum VarClientInt
+@Slf4j
+@RequiredArgsConstructor
+public class CallableExceptionLogger<V> implements Callable<V>
 {
-	TOOLTIP_TIMEOUT(1),
+	private final Callable<V> callable;
 
-	/**
-	 * 0 = no tooltip displayed
-	 * 1 = tooltip displaying
-	 */
-	TOOLTIP_VISIBLE(2),
+	@Override
+	public V call() throws Exception
+	{
+		try
+		{
+			return callable.call();
+		}
+		catch (Throwable ex)
+		{
+			log.warn("Uncaught exception in callable {}", callable, ex);
+			throw ex;
+		}
+	}
 
-	INPUT_TYPE(5),
-
-	MEMBERSHIP_STATUS(103),
-
-	WORLD_MAP_SEARCH_FOCUSED(190);
-
-	private final int index;
+	public static <V> CallableExceptionLogger<V> wrap(Callable<V> callable)
+	{
+		return new CallableExceptionLogger<>(callable);
+	}
 }
