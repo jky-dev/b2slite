@@ -118,4 +118,15 @@ public interface IdleNotifierConfig extends Config
 		return 0;
 	}
 
+	@ConfigItem(
+		keyName = "moving",
+		name = "Idle Moving",
+		position = 7,
+		description = "If no animation and not moving"
+	)
+	default boolean idlemoving()
+	{
+		return false;
+	}
+
 }

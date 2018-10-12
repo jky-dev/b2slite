@@ -44,6 +44,7 @@ import net.runelite.api.NPCComposition;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.Varbits;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
@@ -88,6 +89,8 @@ public class IdleNotifierPlugin extends Plugin
 	private boolean notifyIdleLogout = true;
 	private boolean notify6HourLogout = true;
 	private boolean isFishing = false;
+	private WorldPoint worldPoint;
+	private Instant idleMovingTime;
 
 	private int lastCombatCountdown = 0;
 	private Instant sixHourWarningTime;
@@ -290,6 +293,8 @@ public class IdleNotifierPlugin extends Plugin
 					sixHourWarningTime = Instant.now().plus(SIX_HOUR_LOGOUT_WARNING_AFTER_DURATION);
 					ready = false;
 					resetTimers();
+					worldPoint = client.getLocalPlayer().getWorldLocation();
+					idleMovingTime = Instant.now();
 				}
 
 				break;
@@ -373,6 +378,34 @@ public class IdleNotifierPlugin extends Plugin
 		{
 			notifier.notify("[" + local.getName() + "] has low oxygen!");
 		}
+
+		if (checkMoving(waitDuration))
+		{
+			notifier.notify("Move freak");
+		}
+	}
+
+	private boolean checkMoving(Duration waitDuration)
+	{
+		if (!config.idlemoving())
+		{
+			return false;
+		}
+
+		if (client.getLocalPlayer().getAnimation() != AnimationID.IDLE)
+		{
+			return false;
+		}
+
+		if (!(client.getLocalPlayer().getWorldLocation().getX() == worldPoint.getX() && client.getLocalPlayer().getWorldLocation().getY() == worldPoint.getY()))
+		{
+			worldPoint = client.getLocalPlayer().getWorldLocation();
+			idleMovingTime = Instant.now();
+			return false;
+		}
+
+		return (Instant.now().compareTo(idleMovingTime.plus(waitDuration)) >= 0);
+
 	}
 
 	private boolean checkLowOxygen()
