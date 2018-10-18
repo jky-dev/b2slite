@@ -238,7 +238,18 @@ public class ClueScrollPlugin extends Plugin
 		// if three step clue check for clue scroll pieces
 		if (clue instanceof ThreeStepCrypticClue)
 		{
-			((ThreeStepCrypticClue) clue).checkForParts(client, event, itemManager);
+			if (((ThreeStepCrypticClue) clue).update(client, event, itemManager))
+			{
+				worldMapPointsSet = false;
+				npcsToMark.clear();
+
+				if (config.displayHintArrows())
+				{
+					client.clearHintArrow();
+				}
+
+				checkClueNPCs(clue, client.getCachedNPCs());
+			}
 		}
 	}
 
@@ -290,8 +301,6 @@ public class ClueScrollPlugin extends Plugin
 	public void onGameTick(final GameTick event)
 	{
 		objectsToMark = null;
-		equippedItems = null;
-		inventoryItems = null;
 
 		if (clue instanceof LocationsClueScroll)
 		{
@@ -310,7 +319,10 @@ public class ClueScrollPlugin extends Plugin
 				{
 					for (WorldPoint location : locations)
 					{
-						highlightObjectsForLocation(location, objectIds);
+						if (location != null)
+						{
+							highlightObjectsForLocation(location, objectIds);
+						}
 					}
 				}
 			}
@@ -416,11 +428,7 @@ public class ClueScrollPlugin extends Plugin
 		}
 
 		// Remove line breaks and also the rare occasion where there are double line breaks
-		final String text = Text.removeTags(clueScrollText.getText()
-			.replaceAll("-<br>", "-")
-			.replaceAll("<br>", " ")
-			.replaceAll("[ ]+", " ")
-			.toLowerCase());
+		final String text = Text.sanitizeMultilineText(clueScrollText.getText()).toLowerCase();
 
 		// Early return if this is same clue as already existing one
 		if (clue instanceof TextClueScroll)
@@ -483,6 +491,7 @@ public class ClueScrollPlugin extends Plugin
 		}
 
 		// We have unknown clue, reset
+		log.warn("Encountered unhandled clue text: {}", clueScrollText.getText());
 		resetClue(true);
 		return null;
 	}

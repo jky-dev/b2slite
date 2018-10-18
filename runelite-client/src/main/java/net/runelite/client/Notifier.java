@@ -24,6 +24,7 @@
  */
 package net.runelite.client;
 
+import com.google.common.base.Strings;
 import com.google.common.escape.Escaper;
 import com.google.common.escape.Escapers;
 import com.google.inject.Inject;
@@ -74,6 +75,7 @@ public class Notifier
 	private final ClientUI clientUI;
 	private final ScheduledExecutorService executorService;
 	private final Path notifyIconPath;
+	private final boolean terminalNotifierAvailable;
 	private Instant flashStart;
 
 	@Inject
@@ -90,6 +92,12 @@ public class Notifier
 		this.runeLiteConfig = runeliteConfig;
 		this.executorService = executorService;
 		this.notifyIconPath = RuneLite.RUNELITE_DIR.toPath().resolve("icon.png");
+
+		// First check if we are running in launcher
+		this.terminalNotifierAvailable =
+			!Strings.isNullOrEmpty(RuneLiteProperties.getLauncherVersion())
+			&& isTerminalNotifierAvailable();
+
 		storeIcon();
 	}
 
@@ -175,7 +183,6 @@ public class Notifier
 	{
 		final String escapedTitle = SHELL_ESCAPE.escape(title);
 		final String escapedMessage = SHELL_ESCAPE.escape(message);
-		final String escapedSubtitle = null;
 
 		switch (OSType.getOSType())
 		{
@@ -183,7 +190,7 @@ public class Notifier
 				sendLinuxNotification(escapedTitle, escapedMessage, type);
 				break;
 			case MacOS:
-				sendMacNotification(escapedTitle, escapedMessage, escapedSubtitle);
+				sendMacNotification(escapedTitle, escapedMessage);
 				break;
 			default:
 				sendTrayNotification(title, message, type);
@@ -230,40 +237,45 @@ public class Notifier
 		});
 	}
 
-	private void sendMacNotification(
-		final String title,
-		final String message,
-		final String subtitle)
+	private void sendMacNotification(final String title, final String message)
 	{
 		final List<String> commands = new ArrayList<>();
-		commands.add("osascript");
-		commands.add("-e");
 
-		final StringBuilder script = new StringBuilder("display notification ");
-
-		script.append(DOUBLE_QUOTE)
-			.append(message)
-			.append(DOUBLE_QUOTE);
-
-		script.append(" with title ")
-			.append(DOUBLE_QUOTE)
-			.append(title)
-			.append(DOUBLE_QUOTE);
-
-		if (subtitle != null)
+		if (terminalNotifierAvailable)
 		{
-			script.append(" subtitle ")
-				.append(DOUBLE_QUOTE)
-				.append(subtitle)
-				.append(DOUBLE_QUOTE);
+			commands.add("terminal-notifier");
+			commands.add("-group");
+			commands.add("net.runelite.launcher");
+			commands.add("-sender");
+			commands.add("net.runelite.launcher");
+			commands.add("-message");
+			commands.add(DOUBLE_QUOTE + message + DOUBLE_QUOTE);
+			commands.add("-title");
+			commands.add(DOUBLE_QUOTE + title + DOUBLE_QUOTE);
+		}
+		else
+		{
+			commands.add("osascript");
+			commands.add("-e");
+
+			final String script = "display notification " + DOUBLE_QUOTE +
+				message +
+				DOUBLE_QUOTE +
+				" with title " +
+				DOUBLE_QUOTE +
+				title +
+				DOUBLE_QUOTE;
+
+			commands.add(script);
 		}
 
-		commands.add(script.toString());
 		sendCommand(commands);
 	}
 
 	private Optional<Process> sendCommand(final List<String> commands)
 	{
+		log.debug("Sending command {}", commands);
+
 		try
 		{
 			return Optional.of(new ProcessBuilder(commands.toArray(new String[commands.size()]))
@@ -291,6 +303,25 @@ public class Notifier
 				log.warn(null, ex);
 			}
 		}
+	}
+
+	private boolean isTerminalNotifierAvailable()
+	{
+		if (OSType.getOSType() == OSType.MacOS)
+		{
+			try
+			{
+				final Process exec = Runtime.getRuntime().exec(new String[]{"terminal-notifier", "-help"});
+				exec.waitFor();
+				return exec.exitValue() == 0;
+			}
+			catch (IOException | InterruptedException e)
+			{
+				return false;
+			}
+		}
+
+		return false;
 	}
 
 	private static String toUrgency(TrayIcon.MessageType type)
