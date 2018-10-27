@@ -38,6 +38,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -318,7 +319,8 @@ public class TabInterface
 
 		if (canvasBounds.contains(event.getPoint()))
 		{
-			scrollTab(event.getWheelRotation());
+			event.consume();
+			clientThread.invoke(() -> scrollTab(event.getWheelRotation()));
 		}
 	}
 
@@ -436,16 +438,20 @@ public class TabInterface
 			List<Integer> items = Arrays.stream(container.getItems())
 				.filter(Objects::nonNull)
 				.map(Item::getId)
+				.filter(id -> id != -1)
 				.collect(Collectors.toList());
 
-			if (activeTab != null && event.getMenuTarget() != null && Text.removeTags(event.getMenuTarget()).equals(activeTab.getTag()))
+			if (!Strings.isNullOrEmpty(event.getMenuTarget()))
 			{
-				for (Integer item : items)
+				if (activeTab != null && Text.removeTags(event.getMenuTarget()).equals(activeTab.getTag()))
 				{
-					tagManager.addTag(item, activeTab.getTag());
-				}
+					for (Integer item : items)
+					{
+						tagManager.addTag(item, activeTab.getTag());
+					}
 
-				openTag(TAG_SEARCH + activeTab.getTag());
+					openTag(TAG_SEARCH + activeTab.getTag());
+				}
 			}
 			else
 			{
@@ -456,12 +462,14 @@ public class TabInterface
 						return;
 					}
 
-					final List<String> tags = SPLITTER.splitToList(newTags);
+					final List<String> tags = SPLITTER.splitToList(newTags.toLowerCase());
 
 					for (Integer item : items)
 					{
 						tagManager.addTags(item, tags);
 					}
+
+					updateTabIfActive(tags);
 				});
 			}
 		}
@@ -493,7 +501,7 @@ public class TabInterface
 					{
 						resetSearch();
 
-						clientThread.invokeLater(() -> client.runScript(ScriptID.CLOSE_CHATBOX_INPUT));
+						clientThread.invokeLater(() -> client.runScript(ScriptID.RESET_CHATBOX_INPUT));
 					}
 					else
 					{
@@ -598,6 +606,14 @@ public class TabInterface
 		}
 	}
 
+	public void updateTabIfActive(final Collection<String> tags)
+	{
+		if (activeTab != null && tags.contains(activeTab.getTag()))
+		{
+			openTag(TAG_SEARCH + activeTab.getTag());
+		}
+	}
+
 	public void handleDrag(boolean isDragging)
 	{
 		if (isHidden())
@@ -671,7 +687,7 @@ public class TabInterface
 	private boolean isHidden()
 	{
 		Widget widget = client.getWidget(WidgetInfo.BANK_CONTAINER);
-		return !config.tabs() || widget == null || widget.isHidden();
+		return !config.tabs() || widget == null;
 	}
 
 	private void loadTab(String tag)
@@ -918,7 +934,7 @@ public class TabInterface
 		{
 			// This ensures that any chatbox input (e.g from search) will not remain visible when
 			// selecting/changing tab
-			client.runScript(ScriptID.CLOSE_CHATBOX_INPUT);
+			client.runScript(ScriptID.RESET_CHATBOX_INPUT);
 
 			client.setVar(VarClientInt.INPUT_TYPE, inputType.getType());
 			client.setVar(VarClientStr.INPUT_TEXT, search);
