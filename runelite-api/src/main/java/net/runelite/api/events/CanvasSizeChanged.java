@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Lotto <https://github.com/devLotto>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,18 +22,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.modelviewer;
+package net.runelite.api.events;
 
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
-public class SceneTilePaint
+/**
+ * An event posted when the canvas size might have changed.
+ */
+public class CanvasSizeChanged
 {
-	final int swColor;
-	final int seColor;
-	final int neColor;
-	final int nwColor;
-	final int texture;
-	final int rgb;
-	final boolean flatShade;
 }

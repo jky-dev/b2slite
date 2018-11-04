@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Lotto <https://github.com/devLotto>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,40 +22,37 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.modelviewer;
+package net.runelite.mixins;
 
-public class Texture
+import java.awt.Dimension;
+import net.runelite.api.mixins.Copy;
+import net.runelite.api.mixins.Mixin;
+import net.runelite.api.mixins.Replace;
+import net.runelite.api.mixins.Shadow;
+import net.runelite.rs.api.RSClient;
+import net.runelite.rs.api.RSGameEngine;
+
+@Mixin(RSGameEngine.class)
+public abstract class StretchedModeMaxSizeMixin implements RSGameEngine
 {
-	private final int[] rgb;
-	private final int width;
-	private final int height;
-	private final int openglId;
+	@Shadow("clientInstance")
+	private static RSClient client;
 
-	public Texture(int[] rgb, int width, int height, int openglId)
-	{
-		this.rgb = rgb;
-		this.width = width;
-		this.height = height;
-		this.openglId = openglId;
-	}
+	@Copy("setMaxCanvasSize")
+	abstract void rs$setMaxCanvasSize(int width, int height);
 
-	public int[] getRgb()
+	@Replace("setMaxCanvasSize")
+	public void setMaxCanvasSize(int width, int height)
 	{
-		return rgb;
-	}
+		if (client.isStretchedEnabled() && client.isResized())
+		{
+			Dimension realDimensions = client.getRealDimensions();
 
-	public int getWidth()
-	{
-		return width;
-	}
-
-	public int getHeight()
-	{
-		return height;
-	}
-
-	public int getOpenglId()
-	{
-		return openglId;
+			rs$setMaxCanvasSize(realDimensions.width, realDimensions.height);
+		}
+		else
+		{
+			rs$setMaxCanvasSize(width, height);
+		}
 	}
 }

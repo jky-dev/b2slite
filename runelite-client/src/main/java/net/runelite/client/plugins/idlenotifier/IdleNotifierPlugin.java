@@ -89,6 +89,7 @@ public class IdleNotifierPlugin extends Plugin
 	private boolean notifyIdleLogout = true;
 	private boolean notify6HourLogout = true;
 	private boolean isFishing = false;
+	private boolean isMoving = false;
 	private WorldPoint worldPoint;
 	private Instant idleMovingTime;
 
@@ -396,13 +397,20 @@ public class IdleNotifierPlugin extends Plugin
 
 		if (client.getLocalPlayer().getAnimation() != AnimationID.IDLE)
 		{
+			isMoving = true;
 			return false;
+		}
+		else if (isMoving)
+		{
+			idleMovingTime = Instant.now();
+			isMoving = false;
 		}
 
 		if (!(client.getLocalPlayer().getWorldLocation().getX() == worldPoint.getX() && client.getLocalPlayer().getWorldLocation().getY() == worldPoint.getY()))
 		{
 			worldPoint = client.getLocalPlayer().getWorldLocation();
 			idleMovingTime = Instant.now();
+			isMoving = true;
 			return false;
 		}
 

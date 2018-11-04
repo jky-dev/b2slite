@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,43 +22,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.modelviewer;
+package net.runelite.http.service;
 
-import com.google.gson.Gson;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
-import net.runelite.cache.definitions.KitDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-public class KitManager
+/**
+ * Configure .js as application/json to trick Cloudflare into caching json responses
+ */
+@Configuration
+@EnableWebMvc
+public class SpringContentNegotiationConfigurer extends WebMvcConfigurerAdapter
 {
-	private static final Logger logger = LoggerFactory.getLogger(KitManager.class);
-
-	private static Map<Integer, KitDefinition> kits = new HashMap<>();
-
-	public static KitDefinition getKit(int id)
+	@Override
+	public void configureContentNegotiation(ContentNegotiationConfigurer configurer)
 	{
-		KitDefinition def = kits.get(id);
-		if (def != null)
-		{
-			return def;
-		}
-
-		try (FileInputStream in = new FileInputStream(new File("kits/" + id + ".json")))
-		{
-			def = new Gson().fromJson(new InputStreamReader(in), KitDefinition.class);
-			kits.put(id, def);
-			return def;
-		}
-		catch (IOException ex)
-		{
-			logger.warn(null, ex);
-			return null;
-		}
+		configurer.mediaType("js", MediaType.APPLICATION_JSON);
 	}
 }
