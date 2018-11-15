@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Jos <Malevolentdev@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,28 +22,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.rs.api;
+package net.runelite.client.plugins.itemstats;
 
-import net.runelite.api.PlayerComposition;
-import net.runelite.mapping.Import;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-public interface RSPlayerComposition extends PlayerComposition
+@Singleton
+class ItemStatChangesServiceImpl implements ItemStatChangesService
 {
-	@Import("isFemale")
-	boolean isFemale();
+	private final ItemStatChanges itemstatchanges;
 
-	@Import("bodyPartColours")
-	int[] getBodyPartColours();
+	@Inject
+	private ItemStatChangesServiceImpl(ItemStatChanges itemstatchanges)
+	{
+		this.itemstatchanges = itemstatchanges;
+	}
 
-	@Import("equipmentIds")
 	@Override
-	int[] getEquipmentIds();
-
-	@Import("transformedNpcId")
-	@Override
-	void setTransformedNpcId(int id);
-
-	@Import("setHash")
-	@Override
-	void setHash();
+	public Effect getItemStatChanges(int id)
+	{
+		return itemstatchanges.get(id);
+	}
 }

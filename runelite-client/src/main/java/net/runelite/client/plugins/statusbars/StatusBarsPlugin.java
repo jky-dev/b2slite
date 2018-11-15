@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Jos <Malevolentdev@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,28 +22,46 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.rs.api;
+package net.runelite.client.plugins.statusbars;
 
-import net.runelite.api.PlayerComposition;
-import net.runelite.mapping.Import;
+import javax.inject.Inject;
+import com.google.inject.Provides;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
+import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.itemstats.ItemStatPlugin;
+import net.runelite.client.ui.overlay.OverlayManager;
 
-public interface RSPlayerComposition extends PlayerComposition
+@PluginDescriptor(
+	name = "Status Bars",
+	description = "Draws status bars next to players inventory showing current HP & Prayer and healing amounts",
+	enabledByDefault = false
+)
+@PluginDependency(ItemStatPlugin.class)
+public class StatusBarsPlugin extends Plugin
 {
-	@Import("isFemale")
-	boolean isFemale();
+	@Inject
+	private StatusBarsOverlay overlay;
 
-	@Import("bodyPartColours")
-	int[] getBodyPartColours();
+	@Inject
+	private OverlayManager overlayManager;
 
-	@Import("equipmentIds")
 	@Override
-	int[] getEquipmentIds();
+	protected void startUp() throws Exception
+	{
+		overlayManager.add(overlay);
+	}
 
-	@Import("transformedNpcId")
 	@Override
-	void setTransformedNpcId(int id);
+	protected void shutDown() throws Exception
+	{
+		overlayManager.remove(overlay);
+	}
 
-	@Import("setHash")
-	@Override
-	void setHash();
+	@Provides
+	StatusBarsConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(StatusBarsConfig.class);
+	}
 }
