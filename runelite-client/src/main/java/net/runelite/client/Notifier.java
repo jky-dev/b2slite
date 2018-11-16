@@ -44,6 +44,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -157,7 +158,7 @@ public class Notifier
 
 		if (runeLiteConfig.enableFlashNotification() == FlashingType.PERSISTANT)
 		{
-			if (client.getMouseCurrentButton() != 0 || client.getGameState() != GameState.LOGGED_IN)
+			if (client.getMouseCurrentButton() != 0 || client.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer().getAnimation() != AnimationID.IDLE)
 			{
 				flashStart = null;
 				return;

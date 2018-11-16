@@ -399,9 +399,25 @@ public class IdleNotifierPlugin extends Plugin
 
 	private boolean checkMoving(Duration waitDuration)
 	{
+
 		if (!config.idlemoving())
 		{
 			return false;
+		}
+
+		String[] regionID = config.mapTiles().split(",");
+		boolean found = false;
+		if (regionID.length != 0)
+		{
+			for (String id : regionID)
+			{
+				if (Integer.toString(client.getLocalPlayer().getWorldLocation().getRegionID()).equals(id))
+				{
+					found = true;
+					break;
+				}
+			}
+			if (!found) return false;
 		}
 
 		if (client.getLocalPlayer().getAnimation() != AnimationID.IDLE)
