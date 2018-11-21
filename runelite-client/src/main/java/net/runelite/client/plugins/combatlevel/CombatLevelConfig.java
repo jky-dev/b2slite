@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Brett Middle <https://github.com/bmiddle>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,62 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.xptracker;
+package net.runelite.client.plugins.combatlevel;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import net.runelite.api.Skill;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-@Singleton
-class XpTrackerServiceImpl implements XpTrackerService
+@ConfigGroup("combatlevel")
+public interface CombatLevelConfig extends Config
 {
-	private final XpTrackerPlugin plugin;
-
-	@Inject
-	XpTrackerServiceImpl(XpTrackerPlugin plugin)
+	@ConfigItem(
+		keyName = "showLevelsUntil",
+		name = "Calculate next level",
+		description = "Mouse over the combat level to calculate what skill levels will increase combat."
+	)
+	default boolean showLevelsUntil()
 	{
-		this.plugin = plugin;
-	}
-
-	@Override
-	public int getActions(Skill skill)
-	{
-		return plugin.getSkillSnapshot(skill).getActionsInSession();
-	}
-
-	@Override
-	public int getActionsHr(Skill skill)
-	{
-		return plugin.getSkillSnapshot(skill).getActionsPerHour();
-	}
-
-	@Override
-	public int getActionsLeft(Skill skill)
-	{
-		return plugin.getSkillSnapshot(skill).getActionsRemainingToGoal();
-	}
-
-	@Override
-	public XpActionType getActionType(Skill skill)
-	{
-		return plugin.getSkillSnapshot(skill).getActionType();
-	}
-
-	@Override
-	public int getXpHr(Skill skill)
-	{
-		return plugin.getSkillSnapshot(skill).getXpPerHour();
-	}
-
-	@Override
-	public int getStartGoalXp(Skill skill)
-	{
-		return plugin.getSkillSnapshot(skill).getStartGoalXp();
-	}
-
-	@Override
-	public int getEndGoalXp(Skill skill)
-	{
-		return plugin.getSkillSnapshot(skill).getEndGoalXp();
+		return true;
 	}
 }
