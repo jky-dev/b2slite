@@ -70,6 +70,8 @@ public class IdleNotifierPlugin extends Plugin
 	private static final int HIGHEST_MONSTER_ATTACK_SPEED = 8; // Except Scarab Mage, but they are with other monsters
 	private static final Duration SIX_HOUR_LOGOUT_WARNING_AFTER_DURATION = Duration.ofMinutes(340);
 
+	private static final String FISHING_SPOT = "Fishing spot";
+
 	@Inject
 	private Notifier notifier;
 
@@ -96,6 +98,7 @@ public class IdleNotifierPlugin extends Plugin
 	private int lastCombatCountdown = 0;
 	private Instant sixHourWarningTime;
 	private boolean ready;
+	private boolean lastInteractWasCombat;
 
 	@Provides
 	IdleNotifierConfig provideConfig(ConfigManager configManager)
@@ -167,19 +170,8 @@ public class IdleNotifierPlugin extends Plugin
 			case SMITHING_SMELTING:
 			case SMITHING_CANNONBALL:
 			/* Fishing */
-			case FISHING_NET:
-			case FISHING_BIG_NET:
-			case FISHING_HARPOON:
-			case FISHING_BARBTAIL_HARPOON:
-			case FISHING_DRAGON_HARPOON:
-			case FISHING_CAGE:
-			case FISHING_POLE_CAST:
-			case FISHING_INFERNAL_HARPOON:
-			case FISHING_OILY_ROD:
-			case FISHING_KARAMBWAN:
 			case FISHING_CRUSHING_INFERNAL_EELS:
 			case FISHING_CUTTING_SACRED_EELS:
-			case FISHING_BAREHAND:
 			/* Mining(Normal) */
 			case MINING_BRONZE_PICKAXE:
 			case MINING_IRON_PICKAXE:
@@ -279,6 +271,15 @@ public class IdleNotifierPlugin extends Plugin
 			resetTimers();
 			lastInteract = target;
 			lastInteracting = Instant.now();
+			lastInteractWasCombat = true;
+		}
+		else if (target.getName() != null && target.getName().contains(FISHING_SPOT))
+		{
+			// Player is fishing
+			resetTimers();
+			lastInteract = target;
+			lastInteracting = Instant.now();
+			lastInteractWasCombat = false;
 		}
 	}
 
@@ -339,7 +340,8 @@ public class IdleNotifierPlugin extends Plugin
 
 		if (client.getGameState() != GameState.LOGGED_IN
 			|| local == null
-			|| System.currentTimeMillis() - client.getMouseLastPressedMillis() < 200
+			// If user has clicked in the last second then they're not idle so don't send idle notification
+			|| System.currentTimeMillis() - client.getMouseLastPressedMillis() < 1000
 			|| client.getKeyboardIdleTicks() < 10)
 		{
 			resetTimers();
@@ -371,9 +373,16 @@ public class IdleNotifierPlugin extends Plugin
 			notifier.notify("[" + local.getName() + "] is now idle!");
 		}
 
-		if (config.combatIdle() && checkOutOfCombat(waitDuration, local))
+		if (config.interactionIdle() && checkInteractionIdle(waitDuration, local))
 		{
-			notifier.notify("[" + local.getName() + "] is now out of combat!");
+			if (lastInteractWasCombat)
+			{
+				notifier.notify("[" + local.getName() + "] is now out of combat!");
+			}
+			else
+			{
+				notifier.notify("[" + local.getName() + "] is now idle!");
+			}
 		}
 
 		if (checkLowHitpoints())
@@ -514,7 +523,7 @@ public class IdleNotifierPlugin extends Plugin
 		return false;
 	}
 
-	private boolean checkOutOfCombat(Duration waitDuration, Player local)
+	private boolean checkInteractionIdle(Duration waitDuration, Player local)
 	{
 		if (lastInteract == null)
 		{
@@ -640,7 +649,7 @@ public class IdleNotifierPlugin extends Plugin
 			lastAnimation = IDLE;
 		}
 
-		// Reset combat idle timer
+		// Reset interaction idle timer
 		lastInteracting = null;
 		if (client.getGameState() == GameState.LOGIN_SCREEN || local == null || local.getInteracting() != lastInteract)
 		{

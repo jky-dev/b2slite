@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Infinitay <https://github.com/Infinitay>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,37 +23,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.runelite.cache;
+package net.runelite.api;
 
-public enum ConfigType
+/**
+ * An enumeration of PK skulls.
+ */
+public enum SkullIcon
 {
-	// types from https://github.com/im-frizzy/OpenRS/blob/master/source/net/openrs/cache/type/ConfigArchive.java
-	UNDERLAY(1),
-	IDENTKIT(3),
-	OVERLAY(4),
-	INV(5),
-	OBJECT(6),
-	ENUM(8),
-	NPC(9),
-	ITEM(10),
-	SEQUENCE(12),
-	SPOTANIM(13),
-	VARBIT(14),
-	VARCLIENT(19),
-	VARCLIENTSTRING(15),
-	VARPLAYER(16),
-	STRUCT(34),
-	AREA(35);
-
-	private final int id;
-
-	ConfigType(int id)
-	{
-		this.id = id;
-	}
-
-	public int getId()
-	{
-		return id;
-	}
+	/**
+	 * White skull from PVP world or wilderness
+	 */
+	SKULL,
+	/**
+	 * Red skull from Tzhaar Fight Pits
+	 */
+	SKULL_FIGHT_PIT,
+	/**
+	 * Deadman mode sprite carrying one key
+	 */
+	DEAD_MAN_ONE,
+	/**
+	 * Deadman mode sprite carrying two keys
+	 */
+	DEAD_MAN_TWO,
+	/**
+	 * Deadman mode sprite carrying three keys
+	 */
+	DEAD_MAN_THREE,
+	/**
+	 * Deadman mode sprite carrying four keys
+	 */
+	DEAD_MAN_FOUR,
+	/**
+	 * Deadman mode sprite carrying five keys
+	 */
+	DEAD_MAN_FIVE,
 }

@@ -32,16 +32,6 @@ import net.runelite.client.config.ConfigItem;
 public interface IdleNotifierConfig extends Config
 {
 	@ConfigItem(
-		keyName = "fishingidle",
-		name = "Idle Fishing Notifications",
-		description = "Configures if idle fishing notifications are enabled"
-	)
-	default boolean fishingIdle()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "animationidle",
 		name = "Idle Animation Notifications",
 		description = "Configures if idle animation notifications are enabled",
@@ -53,12 +43,12 @@ public interface IdleNotifierConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "combatidle",
-		name = "Combat Idle Notifications",
-		description = "Configures if out of combat notifications are enabled",
+		keyName = "interactionidle",
+		name = "Idle Interaction Notifications",
+		description = "Configures if idle interaction notifications are enabled e.g. combat, fishing",
 		position = 2
 	)
-	default boolean combatIdle()
+	default boolean interactionIdle()
 	{
 		return true;
 	}
@@ -117,27 +107,4 @@ public interface IdleNotifierConfig extends Config
 	{
 		return 0;
 	}
-
-	@ConfigItem(
-		keyName = "moving",
-		name = "Idle Moving",
-		position = 20,
-		description = "If no animation and not moving"
-	)
-	default boolean idlemoving()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "mapTiles",
-		name = "Map Tiles",
-		position = 21,
-		description = "Valid map tiles for idlemoving"
-	)
-	default String mapTiles()
-	{
-		return "";
-	}
-
 }
