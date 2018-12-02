@@ -31,6 +31,8 @@ import java.util.Locale;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
@@ -41,6 +43,12 @@ class BlastMineCollectExp extends Overlay
 	private final Client client;
 	private final BlastMinePluginConfig config;
 	private final PanelComponent panelComponent = new PanelComponent();
+
+	public static final int COAL_EXP = 30;
+	public static final int GOLD_EXP = 60;
+	public static final int MITHRIL_EXP = 110;
+	public static final int ADAMANT_EXP = 170;
+	public static final int RUNITE_EXP = 240;
 
 	@Inject
 	public BlastMineCollectExp(Client client, BlastMinePluginConfig config)
@@ -53,12 +61,19 @@ class BlastMineCollectExp extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
+		final Widget blastMineWidget = client.getWidget(WidgetInfo.BLAST_MINE);
+
+		if (blastMineWidget == null)
+		{
+			return null;
+		}
+
 		panelComponent.getChildren().clear();
 		if (config.showCollectionExp())
 		{
 			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Exp:")
-				.right(NumberFormat.getIntegerInstance(Locale.US).format(calculateExp()))
+				.left("Exp")
+				.right(NumberFormat.getIntegerInstance(Locale.getDefault()).format(calculateExp()))
 				.build());
 		}
 		return panelComponent.render(graphics);
@@ -71,7 +86,7 @@ class BlastMineCollectExp extends Overlay
 		int mithril = client.getVar(Varbits.BLAST_MINE_MITHRIL);
 		int adamant = client.getVar(Varbits.BLAST_MINE_ADAMANTITE);
 		int rune = client.getVar(Varbits.BLAST_MINE_RUNITE);
-		int exp = 30 * coalCount + 60 * gold + 110 * mithril + 170 * adamant + 240 * rune;
+		int exp = COAL_EXP * coalCount + GOLD_EXP * gold + MITHRIL_EXP * mithril + ADAMANT_EXP * adamant + RUNITE_EXP * rune;
 
 		if (config.isWearingFullProspector())
 		{

@@ -113,7 +113,7 @@ public interface BlastMinePluginConfig extends Config
 	@ConfigItem(
 		position = 7,
 		keyName = "isWearingFullProspector",
-		name = "Prospector's Outfit",
+		name = "Prospector's outfit equipped",
 		description = "Configures whether or not the collection exp should be multiplied by bonus"
 	)
 	default boolean isWearingFullProspector()
