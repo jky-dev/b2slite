@@ -48,6 +48,7 @@ import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.GraphicID;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.FlashingType;
@@ -158,7 +159,8 @@ public class Notifier
 
 		if (runeLiteConfig.enableFlashNotification() == FlashingType.PERSISTANT)
 		{
-			if (client.getMouseCurrentButton() != 0 || client.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer().getAnimation() == AnimationID.MINING_MOTHERLODE_DRAGON)
+			if (client.getMouseCurrentButton() != 0 || client.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer().getAnimation() == AnimationID.MINING_MOTHERLODE_DRAGON
+			|| (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() != GraphicID.FLYING_FISH))
 			{
 				flashStart = null;
 				return;
