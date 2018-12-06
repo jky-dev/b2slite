@@ -25,7 +25,6 @@
  */
 package net.runelite.client.plugins.idlenotifier;
 
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Provides;
 import java.time.Duration;
 import java.time.Instant;
@@ -52,6 +51,7 @@ import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 
@@ -185,6 +185,7 @@ public class IdleNotifierPlugin extends Plugin
 			case MINING_INFERNAL_PICKAXE:
 			case MINING_3A_PICKAXE:
 			case DENSE_ESSENCE_CHIPPING:
+			case DENSE_ESSENCE_CHISELING:
 			/* Mining(Motherlode) */
 			case MINING_MOTHERLODE_BRONZE:
 			case MINING_MOTHERLODE_IRON:

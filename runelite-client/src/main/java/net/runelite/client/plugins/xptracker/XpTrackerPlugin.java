@@ -27,7 +27,6 @@ package net.runelite.client.plugins.xptracker;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
@@ -51,6 +50,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.NPCManager;
 import net.runelite.client.game.SkillIconManager;
 import net.runelite.client.plugins.Plugin;

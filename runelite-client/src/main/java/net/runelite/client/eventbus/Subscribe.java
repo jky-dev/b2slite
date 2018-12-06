@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,35 +22,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.events;
+package net.runelite.client.eventbus;
 
-import net.runelite.api.Actor;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Represents the base event where an {@link Actor} has despawned.
- * <p>
- * To hook into a more focused actor type, see the {@link PlayerDespawned}
- * or {@link NpcDespawned} events.
- * <p>
- * Examples of when this event may trigger include:
- * <ul>
- *     <li>An actor moving out of render distance</li>
- *     <li>An actor despawning after death</li>
- *     <li>Moving out of or away from a region with Actor entities in it</li>
- * </ul>
- * <p>
- * During a world change, the event is only called for Players,
- * ie. {@link PlayerDespawned} will trigger but {@link NpcDespawned}
- * will not.
- * <p>
- * The client logging out does not trigger this event.
+ * Marks a method as an event subscriber.
  */
-public interface ActorDespawned
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@Documented
+public @interface Subscribe
 {
-	/**
-	 * Gets the despawned player or NPC.
-	 *
-	 * @return despawned entity
-	 */
-	Actor getActor();
 }
