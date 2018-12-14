@@ -42,6 +42,7 @@ import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
+import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
@@ -94,7 +95,7 @@ public class IdleNotifierPlugin extends Plugin
 	private boolean isMoving = false;
 	private WorldPoint worldPoint;
 	private Instant idleMovingTime;
-
+	private int lastSpecEnergy = 1000;
 	private int lastCombatCountdown = 0;
 	private Instant sixHourWarningTime;
 	private boolean ready;
@@ -401,6 +402,11 @@ public class IdleNotifierPlugin extends Plugin
 			notifier.notify("[" + local.getName() + "] has low oxygen!");
 		}
 
+		if (checkFullSpecEnergy())
+		{
+			notifier.notify("[" + local.getName() + "] has restored spec energy!");;
+		}
+
 		if (checkMoving(waitDuration))
 		{
 			notifier.notify("Move freak");
@@ -448,9 +454,26 @@ public class IdleNotifierPlugin extends Plugin
 			isMoving = true;
 			return false;
 		}
-
 		return (Instant.now().compareTo(idleMovingTime.plus(waitDuration)) >= 0);
+	}
 
+	private boolean checkFullSpecEnergy()
+	{
+		int currentSpecEnergy = client.getVar(VarPlayer.SPECIAL_ATTACK_PERCENT);
+
+		int threshold = config.getSpecEnergyThreshold() * 10;
+		if (threshold == 0)
+		{
+			lastSpecEnergy = currentSpecEnergy;
+			return false;
+		}
+
+		// Check if we have regenerated over the threshold, and that the
+		// regen was small enough.
+		boolean notify = lastSpecEnergy < threshold && currentSpecEnergy >= threshold
+			&& currentSpecEnergy - lastSpecEnergy <= 100;
+		lastSpecEnergy = currentSpecEnergy;
+		return notify;
 	}
 
 	private boolean checkLowOxygen()
