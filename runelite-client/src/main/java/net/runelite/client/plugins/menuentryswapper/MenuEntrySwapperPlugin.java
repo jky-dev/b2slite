@@ -521,6 +521,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 			swap("teleport", option, target, true);
 			swap("xeric's glade", option, target, true);
 			swap("farm teleport", option, target, true);
+			swap("lava maze", option, target, true);
 			if (config.swapDA())
 			{
 				swap("duel arena", option, target, true);
