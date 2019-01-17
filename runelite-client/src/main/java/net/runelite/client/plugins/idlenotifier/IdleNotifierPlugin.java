@@ -211,6 +211,7 @@ public class IdleNotifierPlugin extends Plugin
 			/* Farming */
 			case FARMING_MIX_ULTRACOMPOST:
 			/* Misc */
+			case PISCARILIUS_CRANE_REPAIR:
 			case SAND_COLLECTION:
 				resetTimers();
 				lastAnimation = animation;
