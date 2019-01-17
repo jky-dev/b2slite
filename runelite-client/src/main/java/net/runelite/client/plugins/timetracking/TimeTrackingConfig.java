@@ -74,11 +74,22 @@ public interface TimeTrackingConfig extends Config
 		keyName = "showOverlay",
 		name = "Show overlay",
 		description = "Shows overlay for herbs and birdhouses",
-		position = 4
+		position = 10
 	)
 	default boolean showOverlay()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+		keyName = "defaultTimerMinutes",
+		name = "Default Time (Minutes)",
+		description = "The default time for the timer in minutes",
+		position = 4
+	)
+	default int defaultTimerMinutes()
+	{
+		return 5;
 	}
 
 	@ConfigItem(
