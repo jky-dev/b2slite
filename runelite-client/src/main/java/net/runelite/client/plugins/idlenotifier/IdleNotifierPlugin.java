@@ -212,6 +212,7 @@ public class IdleNotifierPlugin extends Plugin
 			case FARMING_MIX_ULTRACOMPOST:
 			/* Misc */
 			case PISCARILIUS_CRANE_REPAIR:
+			case HOME_MAKE_TABLET:
 			case SAND_COLLECTION:
 				resetTimers();
 				lastAnimation = animation;
@@ -405,7 +406,7 @@ public class IdleNotifierPlugin extends Plugin
 
 		if (checkFullSpecEnergy())
 		{
-			notifier.notify("[" + local.getName() + "] has restored spec energy!");;
+			notifier.notify("[" + local.getName() + "] has restored spec energy!");
 		}
 
 		if (checkMoving(waitDuration))

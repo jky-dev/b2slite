@@ -45,12 +45,6 @@ import net.runelite.client.ui.overlay.OverlayManager;
 )
 public class HydraPlugin extends Plugin
 {
-	enum AttackStyle
-	{
-		RANGED,
-		MAGIC
-	}
-
 	// 0 for mage, 1 for range
 	@Getter
 	private int attackStyle = 0;
@@ -63,11 +57,14 @@ public class HydraPlugin extends Plugin
 	@Getter
 	private int totalAttacks = 6;
 
-	private int specialAttackCount = 0;
+	@Getter
+	private int specialAttackCount = 7;
 
 	private boolean mageTransition = false;
 	private boolean rangeTransition = false;
 	private boolean finalTransition = false;
+
+	private int previousID = -1;
 
 	@Getter
 	private NPC hydra = null;
@@ -79,18 +76,24 @@ public class HydraPlugin extends Plugin
 	private OverlayManager overlayManager;
 
 	@Inject
-	private HydraOverlay overlay;
+	private HydraOverlay hydraOverlay;
+
+	@Inject
+	private HydraOverlayAbove hydraOverlayAbove;
 
 	@Override
 	protected void startUp() throws Exception
 	{
-		overlayManager.add(overlay);
+		overlayManager.add(hydraOverlay);
+		overlayManager.add(hydraOverlayAbove);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		overlayManager.remove(overlay);
+		overlayManager.remove(hydraOverlay);
+		overlayManager.remove(hydraOverlayAbove);
+		reset();
 	}
 
 	@Subscribe
@@ -98,13 +101,19 @@ public class HydraPlugin extends Plugin
 	{
 		if (event.getNpc().getId() == NpcID.ALCHEMICAL_HYDRA_8622)
 		{
-			totalAttacks = 6;
-			attackCount = 0;
-			mageTransition = false;
-			rangeTransition = false;
-			finalTransition = false;
-			specialAttackCount = 0;
+			reset();
 		}
+	}
+
+	private void reset()
+	{
+		totalAttacks = 6;
+		attackCount = 0;
+		mageTransition = false;
+		rangeTransition = false;
+		finalTransition = false;
+		specialAttackCount = 7;
+		previousID = -1;
 	}
 
 	private void updateHydraState()
@@ -117,11 +126,16 @@ public class HydraPlugin extends Plugin
 			{
 				hydra = npc;
 
-				if (npc.getId() == NpcID.ALCHEMICAL_HYDRA) totalAttacks = 6;
+				if (npc.getId() == NpcID.ALCHEMICAL_HYDRA)
+				{
+					checkFormChange(npc.getId());
+					totalAttacks = 6;
+				}
 
 				// mage is double attacking, ranged is single attacking
 				if (npc.getId() == NpcID.ALCHEMICAL_HYDRA_8619)
 				{
+					checkFormChange(npc.getId());
 					if (attackStyle == 0)
 					{
 						totalAttacks = 6;
@@ -140,6 +154,7 @@ public class HydraPlugin extends Plugin
 				// both are single attacking
 				if (npc.getId() == NpcID.ALCHEMICAL_HYDRA_8620)
 				{
+					checkFormChange(npc.getId());
 					if (!mageTransition && attackStyle == 0)
 					{
 						attackCount /= 2;
@@ -151,6 +166,7 @@ public class HydraPlugin extends Plugin
 				// final phase, jad phase
 				if (npc.getId() == NpcID.ALCHEMICAL_HYDRA_8621)
 				{
+					checkFormChange(npc.getId());
 					if (!finalTransition)
 					{
 						if (attackCount != 0)
@@ -163,6 +179,19 @@ public class HydraPlugin extends Plugin
 					finalTransition = true;
 				}
 			}
+			else
+			{
+				hydra = null;
+			}
+		}
+	}
+
+	private void checkFormChange(int id)
+	{
+		if (id != previousID)
+		{
+			previousID = id;
+			specialAttackCount = 7;
 		}
 	}
 
@@ -171,6 +200,7 @@ public class HydraPlugin extends Plugin
 		// if it is a maged projectile
 		if (projectile == 1662)
 		{
+			specialAttackCount++;
 			// already mage
 			if (attackStyle == 0)
 			{
@@ -192,6 +222,7 @@ public class HydraPlugin extends Plugin
 		}
 		else if (projectile == 1663)
 		{
+			specialAttackCount++;
 			// already ranging
 			if (attackStyle == 1)
 			{

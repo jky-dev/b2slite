@@ -27,20 +27,10 @@ package net.runelite.client.plugins.hydra;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.util.List;
 import javax.inject.Inject;
 import net.runelite.api.Client;
-import net.runelite.api.GraphicsObject;
-import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
-import net.runelite.api.Perspective;
-import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.ui.overlay.Overlay;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 
@@ -62,6 +52,8 @@ public class HydraOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
+		if (!client.isInInstancedRegion()) return null;
+
 		panelComponent.getChildren().clear();
 		{
 			if (plugin.getAttackStyle() == 0)
@@ -78,6 +70,17 @@ public class HydraOverlay extends Overlay
 					.left("Range")
 					.right(Integer.toString(plugin.getAttackCount()) + "/" + Integer.toString(plugin.getTotalAttacks()))
 					.leftColor(Color.GREEN)
+					.build());
+			}
+			panelComponent.getChildren().add(LineComponent.builder()
+				.left("Special Att")
+				.right(Integer.toString(plugin.getSpecialAttackCount() % 10))
+				.build());
+			if (plugin.getHydra() != null)
+			{
+				panelComponent.getChildren().add(LineComponent.builder()
+					.left("AnimationID")
+					.right(Integer.toString(plugin.getHydra().getAnimation()))
 					.build());
 			}
 		}
