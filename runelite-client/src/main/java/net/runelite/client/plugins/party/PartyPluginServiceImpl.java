@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.http.api.ws.messages;
+package net.runelite.client.plugins.party;
 
-import java.time.Instant;
-import net.runelite.http.api.ws.WebsocketMessage;
+import java.util.UUID;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import net.runelite.client.plugins.party.data.PartyData;
 
-public class Ping extends WebsocketMessage
+@Singleton
+public class PartyPluginServiceImpl implements PartyPluginService
 {
-	private Instant time;
+	private final PartyPlugin plugin;
 
-	public Instant getTime()
+	@Inject
+	private PartyPluginServiceImpl(final PartyPlugin plugin)
 	{
-		return time;
+
+		this.plugin = plugin;
 	}
 
-	public void setTime(Instant time)
+	@Override
+	public PartyData getPartyData(UUID memberId)
 	{
-		this.time = time;
+		return plugin.getPartyData(memberId);
 	}
 }
