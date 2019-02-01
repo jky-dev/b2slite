@@ -28,6 +28,7 @@ public class HydraOverlayAbove extends Overlay
 {
 	private final Client client;
 	private final HydraPlugin plugin;
+	private HydraConfig config;
 
 	private static Color COLOR_ICON_BACKGROUND = new Color(0, 0, 0, 128);
 	private static final Color COLOR_ICON_BORDER = new Color(0, 0, 0, 255);
@@ -38,11 +39,12 @@ public class HydraOverlayAbove extends Overlay
 	private SkillIconManager iconManager;
 
 	@Inject
-	public HydraOverlayAbove(Client client, HydraPlugin plugin)
+	public HydraOverlayAbove(Client client, HydraPlugin plugin, HydraConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.client = client;
+		this.config = config;
 		this.plugin = plugin;
 	}
 
@@ -92,9 +94,8 @@ public class HydraOverlayAbove extends Overlay
 
 	private void renderNPCSize(Graphics2D graphics)
 	{
-		if (plugin.getHydra() == null) return;
+		if (plugin.getHydra() == null || !config.showHydraTile()) return;
 
-		Color color = Color.orange;
 		int size = 1;
 		NPCComposition composition = plugin.getHydra().getTransformedComposition();
 		if (composition != null)
@@ -104,7 +105,7 @@ public class HydraOverlayAbove extends Overlay
 		LocalPoint lp = plugin.getHydra().getLocalLocation();
 		Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
 
-		renderPoly(graphics, color, tilePoly);
+		renderPoly(graphics, config.hydraTileColour(), tilePoly);
 	}
 
 	// renders the rectangle around hydra
@@ -152,12 +153,12 @@ public class HydraOverlayAbove extends Overlay
 	private void renderIcon(Graphics2D graphics)
 	{
 		NPC npc = plugin.getHydra();
-		if (npc == null) return;
+		if (npc == null || !config.showPrayer()) return;
 		LocalPoint lp = npc.getLocalLocation();
 		if (lp != null)
 		{
 			Point point = Perspective.localToCanvas(client, lp, client.getPlane(),
-				npc.getLogicalHeight() - 600);
+				npc.getLogicalHeight() - config.prayerHeight());
 			if (point != null)
 			{
 				int bgPadding = 4;

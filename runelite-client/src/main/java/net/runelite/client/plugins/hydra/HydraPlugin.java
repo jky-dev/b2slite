@@ -24,6 +24,7 @@
  */
 package net.runelite.client.plugins.hydra;
 
+import com.google.inject.Provides;
 import java.util.List;
 import javax.inject.Inject;
 import lombok.Getter;
@@ -33,6 +34,7 @@ import net.runelite.api.NpcID;
 import net.runelite.api.Projectile;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.NpcDespawned;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -80,6 +82,16 @@ public class HydraPlugin extends Plugin
 
 	@Inject
 	private HydraOverlayAbove hydraOverlayAbove;
+
+	@Inject
+	private HydraConfig config;
+
+
+	@Provides
+	HydraConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(HydraConfig.class);
+	}
 
 	@Override
 	protected void startUp() throws Exception
@@ -249,7 +261,11 @@ public class HydraPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
-		if (!client.isInInstancedRegion()) return;
+		if (!client.isInInstancedRegion())
+		{
+			reset();
+			return;
+		}
 
 		updateHydraState();
 
