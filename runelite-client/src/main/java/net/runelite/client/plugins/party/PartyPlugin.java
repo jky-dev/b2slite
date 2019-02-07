@@ -26,6 +26,7 @@ package net.runelite.client.plugins.party;
 
 import com.google.inject.Binder;
 import com.google.inject.Provides;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -71,6 +72,7 @@ import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPointManager;
+import net.runelite.client.util.ColorUtil;
 import net.runelite.client.ws.PartyMember;
 import net.runelite.client.ws.PartyService;
 import net.runelite.client.ws.WSClient;
@@ -119,13 +121,13 @@ public class PartyPlugin extends Plugin implements KeyListener
 	private ChatMessageManager chatMessageManager;
 
 	@Getter
-	private final Map<UUID, PartyData> partyDataMap = new HashMap<>();
+	private final Map<UUID, PartyData> partyDataMap = Collections.synchronizedMap(new HashMap<>());
 
 	@Getter
 	private final List<PartyTilePingData> pendingTilePings = Collections.synchronizedList(new ArrayList<>());
 
 	private int lastHp, lastPray;
-	private boolean hotkeyDown;
+	private boolean hotkeyDown, doSync;
 
 	@Override
 	public void configure(Binder binder)
@@ -142,6 +144,7 @@ public class PartyPlugin extends Plugin implements KeyListener
 		wsClient.registerMessage(TilePing.class);
 		wsClient.registerMessage(LocationUpdate.class);
 		keyManager.registerKeyListener(this);
+		doSync = true; // Delay sync so eventbus can process correctly.
 	}
 
 	@Override
@@ -157,6 +160,7 @@ public class PartyPlugin extends Plugin implements KeyListener
 		wsClient.unregisterMessage(LocationUpdate.class);
 		keyManager.unregisterKeyListener(this);
 		hotkeyDown = false;
+		doSync = false;
 	}
 
 	@Provides
@@ -226,21 +230,30 @@ public class PartyPlugin extends Plugin implements KeyListener
 		}
 
 		event.consume();
-		wsClient.send(new TilePing(selectedSceneTile.getWorldLocation()));
+		final TilePing tilePing = new TilePing(selectedSceneTile.getWorldLocation());
+		tilePing.setMemberId(party.getLocalMember().getMemberId());
+		wsClient.send(tilePing);
 	}
 
 	@Subscribe
 	public void onTilePing(TilePing event)
 	{
-		log.debug("Got tile ping {}", event);
-
 		if (config.pings())
 		{
-			pendingTilePings.add(new PartyTilePingData(event.getPoint()));
+			final PartyData partyData = getPartyData(event.getMemberId());
+			final Color color = partyData != null ? partyData.getColor() : Color.RED;
+			pendingTilePings.add(new PartyTilePingData(event.getPoint(), color));
 		}
 
 		if (config.sounds())
 		{
+			WorldPoint point = event.getPoint();
+
+			if (point.getPlane() != client.getPlane() || !WorldPoint.isInScene(client, point.getX(), point.getY()))
+			{
+				return;
+			}
+
 			client.playSoundEffect(SoundEffectID.SMITH_ANVIL_TINK);
 		}
 	}
@@ -271,6 +284,16 @@ public class PartyPlugin extends Plugin implements KeyListener
 	@Subscribe
 	public void onGameTick(final GameTick event)
 	{
+		if (doSync && !party.getMembers().isEmpty())
+		{
+			// Request sync
+			final UserSync userSync = new UserSync();
+			userSync.setMemberId(party.getLocalMember().getMemberId());
+			ws.send(userSync);
+		}
+
+		doSync = false;
+
 		final int currentHealth = client.getBoostedSkillLevel(Skill.HITPOINTS);
 		final int currentPrayer = client.getBoostedSkillLevel(Skill.PRAYER);
 		final int realHealth = client.getRealSkillLevel(Skill.HITPOINTS);
@@ -354,7 +377,9 @@ public class PartyPlugin extends Plugin implements KeyListener
 			.runeLiteFormattedMessage(joinMessage)
 			.build());
 
-		if (partyData.getMemberId().equals(party.getLocalMember().getMemberId()))
+		final PartyMember localMember = party.getLocalMember();
+
+		if (localMember != null && partyData.getMemberId().equals(localMember.getMemberId()))
 		{
 			final String helpMessage = new ChatMessageBuilder()
 				.append(ChatColorType.HIGHLIGHT)
@@ -449,7 +474,7 @@ public class PartyPlugin extends Plugin implements KeyListener
 				worldMapManager.add(worldMapPoint);
 			}
 
-			return new PartyData(u, name, worldMapPoint);
+			return new PartyData(u, name, worldMapPoint, ColorUtil.fromObject(name, true));
 		});
 	}
 

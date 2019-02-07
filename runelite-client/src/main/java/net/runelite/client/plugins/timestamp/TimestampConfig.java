@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019, Tomas Slusny <slusnucky@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,56 +22,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.queries;
+package net.runelite.client.plugins.timestamp;
 
-import java.util.Arrays;
-import java.util.Objects;
-import lombok.RequiredArgsConstructor;
-import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
-import net.runelite.api.Item;
-import net.runelite.api.ItemContainer;
-import net.runelite.api.Query;
+import java.awt.Color;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-/**
- * Used for getting inventory items,deprecated as of existence of item container changed events
- *
- * @see net.runelite.api.events.ItemContainerChanged
- */
-@Deprecated
-@RequiredArgsConstructor
-public class InventoryItemQuery extends Query<Item, InventoryItemQuery>
+@ConfigGroup("timestamp")
+public interface TimestampConfig extends Config
 {
-	private final InventoryID inventory;
+	@ConfigItem(
+		keyName = "opaqueTimestamp",
+		name = "Timestamps (opaque)",
+		description = "Colour of Timestamps from the Timestamps plugin (opaque)"
+	)
+	Color opaqueTimestamp();
 
-	@Override
-	public Item[] result(Client client)
-	{
-		ItemContainer container = client.getItemContainer(inventory);
-		if (container == null)
-		{
-			return null;
-		}
-		return Arrays.stream(container.getItems())
-				.filter(Objects::nonNull)
-				.filter(predicate)
-				.toArray(Item[]::new);
-	}
-
-	public InventoryItemQuery idEquals(int... ids)
-	{
-		predicate = and(item ->
-		{
-			for (int id : ids)
-			{
-				if (item.getId() == id)
-				{
-					return true;
-				}
-			}
-			return false;
-		});
-		return this;
-	}
-
+	@ConfigItem(
+		keyName = "transparentTimestamp",
+		name = "Timestamps (transparent)",
+		description = "Colour of Timestamps from the Timestamps plugin (transparent)"
+	)
+	Color transparentTimestamp();
 }
