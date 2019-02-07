@@ -67,7 +67,7 @@ public interface HydraConfig extends Config
 	)
 	default int prayerHeight()
 	{
-		return -600;
+		return 450;
 	}
 
 	@ConfigItem(
