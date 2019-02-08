@@ -90,10 +90,16 @@ class BarrowsOverlay extends Overlay
 			}
 
 			// Player dots
-			graphics.setColor(npcColor);
+			graphics.setColor(playerColor);
 			final List<Player> players = client.getPlayers();
 			for (Player player : players)
 			{
+				if (player == local)
+				{
+					// Skip local player as we draw square for it later
+					continue;
+				}
+
 				net.runelite.api.Point minimapLocation = player.getMinimapLocation();
 				if (minimapLocation != null)
 				{
