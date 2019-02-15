@@ -157,11 +157,10 @@ public class Notifier
 
 	public void processFlash(final Graphics2D graphics)
 	{
-		if (flashStart == null)
+		if (flashStart == null || client.getGameCycle() % 40 >= 20)
 		{
 			return;
 		}
-
 		if (runeLiteConfig.enableFlashNotification() == FlashingType.PERSISTANT)
 		{
 			if (client.getMouseCurrentButton() != 0 || client.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer().getAnimation() == AnimationID.MINING_MOTHERLODE_DRAGON
@@ -171,10 +170,9 @@ public class Notifier
 				return;
 			}
 		}
-
-		if (client.getGameCycle() % 40 >= 20)
-
+		else if (client.getGameState() != GameState.LOGGED_IN)
 		{
+			flashStart = null;
 			return;
 		}
 
