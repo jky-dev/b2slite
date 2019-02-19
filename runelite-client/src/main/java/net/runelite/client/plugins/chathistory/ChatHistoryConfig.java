@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, TheStonedTurtle <https://github.com/TheStonedTurtle>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,24 +22,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.http.service;
+package net.runelite.client.plugins.chathistory;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
-import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-/**
- * Configure .js as application/json to trick Cloudflare into caching json responses
- */
-@Configuration
-@EnableWebMvc
-public class SpringContentNegotiationConfigurer extends WebMvcConfigurerAdapter
+@ConfigGroup("chathistory")
+public interface ChatHistoryConfig extends Config
 {
-	@Override
-	public void configureContentNegotiation(ContentNegotiationConfigurer configurer)
+	@ConfigItem(
+		keyName = "retainChatHistory",
+		name = "Retain Chat History",
+		description = "Retains chat history when logging in/out or world hopping",
+		position = 0
+	)
+	default boolean retainChatHistory()
 	{
-		configurer.mediaType("js", MediaType.APPLICATION_JSON);
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "pmTargetCycling",
+		name = "PM Target Cycling",
+		description = "Pressing Tab while sending a PM will cycle the target username based on PM history",
+		position = 1
+	)
+	default boolean pmTargetCycling()
+	{
+		return true;
 	}
 }

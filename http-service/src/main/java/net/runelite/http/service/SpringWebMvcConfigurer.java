@@ -22,17 +22,40 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.http.service.xp.beans;
+package net.runelite.http.service;
 
-import java.time.Instant;
-import lombok.Data;
+import java.util.List;
+import net.runelite.http.api.RuneLiteAPI;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-@Data
-public class PlayerEntity
+@Configuration
+@EnableWebMvc
+public class SpringWebMvcConfigurer extends WebMvcConfigurerAdapter
 {
-	private Integer id;
-	private String name;
-	private Instant tracked_since;
-	private Instant last_updated;
-	private Integer rank;
+	/**
+	 * Configure .js as application/json to trick Cloudflare into caching json responses
+	 */
+	@Override
+	public void configureContentNegotiation(ContentNegotiationConfigurer configurer)
+	{
+		configurer.mediaType("js", MediaType.APPLICATION_JSON);
+	}
+
+	/**
+	 * Use GSON instead of Jackson for JSON serialization
+	 * @param converters
+	 */
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters)
+	{
+		GsonHttpMessageConverter gsonHttpMessageConverter = new GsonHttpMessageConverter();
+		gsonHttpMessageConverter.setGson(RuneLiteAPI.GSON);
+		converters.add(gsonHttpMessageConverter);
+	}
 }
