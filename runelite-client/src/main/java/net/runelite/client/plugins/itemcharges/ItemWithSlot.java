@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Infinitay <https://github.com/Infinitay>
+ * Copyright (c) 2019, Tomas Slusny <slusnucky@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,32 +22,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.kingdomofmiscellania;
+package net.runelite.client.plugins.itemcharges;
 
-import java.awt.image.BufferedImage;
-import net.runelite.client.ui.overlay.infobox.Counter;
-import net.runelite.client.util.StackFormatter;
+import com.google.common.collect.Sets;
+import java.util.Set;
+import lombok.Getter;
+import net.runelite.api.EquipmentInventorySlot;
 
-public class KingdomCounter extends Counter
+@Getter
+enum ItemWithSlot
 {
-	private final KingdomPlugin plugin;
+	ABYSSAL_BRACELET(ItemChargeType.ABYSSAL_BRACELET, EquipmentInventorySlot.GLOVES),
+	DODGY_NECKLACE(ItemChargeType.DODGY_NECKLACE, EquipmentInventorySlot.AMULET),
+	TELEPORT(ItemChargeType.TELEPORT, EquipmentInventorySlot.WEAPON, EquipmentInventorySlot.AMULET, EquipmentInventorySlot.GLOVES, EquipmentInventorySlot.RING);
 
-	public KingdomCounter(BufferedImage image, KingdomPlugin plugin)
-	{
-		super(image, plugin, plugin.getFavor());
-		this.plugin = plugin;
-	}
+	private final ItemChargeType type;
+	private final Set<EquipmentInventorySlot> slots;
 
-	@Override
-	public String getText()
+	ItemWithSlot(final ItemChargeType type, final EquipmentInventorySlot... slots)
 	{
-		return KingdomPlugin.getFavorPercent(plugin.getFavor()) + "%";
-	}
-
-	@Override
-	public String getTooltip()
-	{
-		return "Favor: " + plugin.getFavor() + "/127" + "</br>"
-			+ "Coffer: " + StackFormatter.quantityToRSStackSize(plugin.getCoffer());
+		this.type = type;
+		this.slots = Sets.newHashSet(slots);
 	}
 }

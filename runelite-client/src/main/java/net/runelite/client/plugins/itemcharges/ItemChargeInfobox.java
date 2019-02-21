@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Infinitay <https://github.com/Infinitay>
+ * Copyright (c) 2018, Hydrox6 <ikada@protonmail.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,32 +22,39 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.kingdomofmiscellania;
+package net.runelite.client.plugins.itemcharges;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
+import lombok.Getter;
+import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.client.ui.overlay.infobox.Counter;
-import net.runelite.client.util.StackFormatter;
 
-public class KingdomCounter extends Counter
+@Getter
+class ItemChargeInfobox extends Counter
 {
-	private final KingdomPlugin plugin;
+	private final ItemChargePlugin plugin;
+	private final ItemWithSlot item;
+	private final EquipmentInventorySlot slot;
 
-	public KingdomCounter(BufferedImage image, KingdomPlugin plugin)
+	ItemChargeInfobox(
+		ItemChargePlugin plugin,
+		BufferedImage image,
+		String name,
+		int charges,
+		ItemWithSlot item,
+		EquipmentInventorySlot slot)
 	{
-		super(image, plugin, plugin.getFavor());
+		super(image, plugin, charges);
+		setTooltip(name);
 		this.plugin = plugin;
+		this.item = item;
+		this.slot = slot;
 	}
 
 	@Override
-	public String getText()
+	public Color getTextColor()
 	{
-		return KingdomPlugin.getFavorPercent(plugin.getFavor()) + "%";
-	}
-
-	@Override
-	public String getTooltip()
-	{
-		return "Favor: " + plugin.getFavor() + "/127" + "</br>"
-			+ "Coffer: " + StackFormatter.quantityToRSStackSize(plugin.getCoffer());
+		return getPlugin().getColor(getCount());
 	}
 }
