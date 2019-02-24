@@ -30,7 +30,6 @@ import java.awt.Graphics2D;
 import java.time.Instant;
 import javax.inject.Inject;
 import net.runelite.client.plugins.timetracking.farming.FarmingTracker;
-import net.runelite.client.plugins.timetracking.farming.PatchImplementation;
 import net.runelite.client.plugins.timetracking.hunter.BirdHouseTracker;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -67,7 +66,7 @@ class TimeTrackingOverlay extends Overlay
 					.color(Color.GREEN)
 					.build());
 
-				if (birdHouseTracker.getCompletionTime() <= 0)
+				if (birdHouseTracker.getCompletionTime() <= 0 && config.showBirdHouse())
 				{
 					panelComponent.getChildren().add(LineComponent.builder()
 						.left("Birdhouses:")
@@ -75,7 +74,7 @@ class TimeTrackingOverlay extends Overlay
 						.build());
 				}
 
-				if (farmingTracker.getCompletionTime(Tab.HERB) - Instant.now().getEpochSecond() <= 0)
+				if (farmingTracker.getCompletionTime(Tab.HERB) - Instant.now().getEpochSecond() <= 0 && config.showHerbs())
 				{
 					panelComponent.getChildren().add(LineComponent.builder()
 						.left("Herbs:")
