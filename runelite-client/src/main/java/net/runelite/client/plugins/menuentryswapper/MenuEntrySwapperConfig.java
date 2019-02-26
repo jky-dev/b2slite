@@ -283,4 +283,14 @@ public interface MenuEntrySwapperConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "swapMaxCape",
+		name = "Max Cape",
+		description = "Swap tele option on max cape"
+	)
+	default MaxCapeMode swapMaxCape()
+	{
+		return MaxCapeMode.CRAFTING;
+	}
+
 }

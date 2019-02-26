@@ -564,6 +564,17 @@ public class MenuEntrySwapperPlugin extends Plugin
 			{
 				swap("rub", option, target, true);
 			}
+			if (config.swapMaxCape() != MaxCapeMode.OFF)
+			{
+				if (config.swapMaxCape() == MaxCapeMode.CRAFTING)
+				{
+					swap("crafting guild", option, target, false);
+				}
+				else if (config.swapMaxCape() == MaxCapeMode.TELE_HOUSE)
+				{
+					swap("tele to poh", option, target, false);
+				}
+			}
 		}
 		else if (option.equals("wield"))
 		{
