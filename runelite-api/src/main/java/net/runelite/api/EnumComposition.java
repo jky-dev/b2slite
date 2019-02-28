@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Tyler <https://github.com/tylerthardy>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,17 +22,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.slayer;
+package net.runelite.api;
 
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.ui.overlay.infobox.Counter;
-
-import java.awt.image.BufferedImage;
-
-class TaskCounter extends Counter
+public interface EnumComposition
 {
-	TaskCounter(BufferedImage img, Plugin plugin, int amount)
-	{
-		super(img, plugin, amount);
-	}
+	int[] getIntVals();
+
+	String[] getStringVals();
+
+	int getIntValue(int key);
+
+	String getStringValue(int key);
 }

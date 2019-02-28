@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Tyler <https://github.com/tylerthardy>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,17 +22,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.slayer;
+package net.runelite.rs.api;
 
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.ui.overlay.infobox.Counter;
+import net.runelite.api.EnumComposition;
+import net.runelite.mapping.Import;
 
-import java.awt.image.BufferedImage;
-
-class TaskCounter extends Counter
+public interface RSEnum extends EnumComposition, RSCacheableNode
 {
-	TaskCounter(BufferedImage img, Plugin plugin, int amount)
-	{
-		super(img, plugin, amount);
-	}
+	@Import("keys")
+	int[] getKeys();
+
+	@Import("intVals")
+	@Override
+	int[] getIntVals();
+
+	@Import("stringVals")
+	@Override
+	String[] getStringVals();
+
+	@Import("defaultInt")
+	int getDefaultInt();
+
+	@Import("defaultString")
+	String getDefaultString();
 }
