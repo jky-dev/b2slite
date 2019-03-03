@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, trimbe <github.com/trimbe>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,19 +23,50 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.events;
+package net.runelite.mixins;
 
-import lombok.Data;
+import net.runelite.api.MessageNode;
+import net.runelite.api.mixins.Inject;
+import net.runelite.api.mixins.Mixin;
+import net.runelite.rs.api.RSCacheableNode;
+import net.runelite.rs.api.RSChatLineBuffer;
 
-/**
- * An event where a new RuneLite account session has been opened
- * with the server.
- * <p>
- * Note: This event is not to be confused with a RuneScape session,
- * it has nothing to do with whether an account is being logged in.
- */
-@Data
-public class SessionOpen
+@Mixin(RSChatLineBuffer.class)
+public abstract class RSChatLineBufferMixin implements RSChatLineBuffer
 {
+	@Inject
+	@Override
+	public void removeMessageNode(MessageNode node)
+	{
+		MessageNode[] lines = getLines();
+		final int length = getLength();
+		int found = -1;
 
+		// Find the index of the node
+		for (int idx = 0; idx < length; idx++)
+		{
+			if (lines[idx] == node)
+			{
+				found = idx;
+				break;
+			}
+		}
+
+		if (found == -1)
+		{
+			return;
+		}
+
+		// Shift down all other messages
+		for (int i = found; i < length - 1; i++)
+		{
+			lines[i] = lines[i + 1];
+		}
+		lines[length - 1] = null;
+		setLength(length - 1);
+
+		RSCacheableNode rsCacheableNode = (RSCacheableNode) node;
+		rsCacheableNode.unlink();
+		rsCacheableNode.unlinkDual();
+	}
 }
