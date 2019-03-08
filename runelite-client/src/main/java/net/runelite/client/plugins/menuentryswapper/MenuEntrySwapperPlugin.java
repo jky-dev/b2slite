@@ -568,7 +568,14 @@ public class MenuEntrySwapperPlugin extends Plugin
 			{
 				if (config.swapMaxCape() == MaxCapeMode.CRAFTING)
 				{
-					swap("crafting guild", option, target, false);
+					if (client.getLocalPlayer().getWorldLocation().getRegionID() == 11571)
+					{
+						swap("tele to poh", option, target, false);
+					}
+					else
+					{
+						swap("crafting guild", option, target, false);
+					}
 				}
 				else if (config.swapMaxCape() == MaxCapeMode.TELE_HOUSE)
 				{
