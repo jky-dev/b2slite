@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Brett Middle <https://github.com/bmiddle>
+ * Copyright (c) 2018, Woox <https://github.com/wooxsolo>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,32 +22,74 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.combatlevel;
+package net.runelite.client.plugins.npcunaggroarea;
 
+import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("combatlevel")
-public interface CombatLevelConfig extends Config
+@ConfigGroup("npcUnaggroArea")
+public interface NpcAggroAreaConfig extends Config
 {
+	String CONFIG_GROUP = "npcUnaggroArea";
+	String CONFIG_CENTER1 = "center1";
+	String CONFIG_CENTER2 = "center2";
+	String CONFIG_LOCATION = "location";
+	String CONFIG_DURATION = "duration";
+
 	@ConfigItem(
-		keyName = "showLevelsUntil",
-		name = "Calculate next level",
-		description = "Mouse over the combat level to calculate what skill levels will increase combat."
+		keyName = "npcUnaggroAlwaysActive",
+		name = "Always active",
+		description = "Always show this plugins overlays<br>Otherwise, they will only be shown when any NPC name matches the list",
+		position = 1
 	)
-	default boolean showLevelsUntil()
+	default boolean alwaysActive()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "npcUnaggroNames",
+		name = "NPC names",
+		description = "Enter names of NPCs where you wish to use this plugin",
+		position = 2
+	)
+	default String npcNamePatterns()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "npcUnaggroShowTimer",
+		name = "Show timer",
+		description = "Display a timer until NPCs become unaggressive",
+		position = 3
+	)
+	default boolean showTimer()
 	{
 		return true;
 	}
 
 	@ConfigItem(
-		keyName = "wildernessAttackLevelRange",
-		name = "Show level range in wilderness",
-		description = "Displays a PVP-world-like attack level range in the wilderness"
+		keyName = "npcUnaggroShowAreaLines",
+		name = "Show area lines",
+		description = "Display lines, when walked past, the unaggressive timer resets",
+		position = 4
 	)
-	default boolean wildernessAttackLevelRange()
+	default boolean showAreaLines()
 	{
-		return true;
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "npcUnaggroAreaColor",
+		name = "Area lines colour",
+		description = "Choose colour to use for marking NPC unaggressive area",
+		position = 5
+	)
+	default Color aggroAreaColor()
+	{
+		return Color.YELLOW;
 	}
 }

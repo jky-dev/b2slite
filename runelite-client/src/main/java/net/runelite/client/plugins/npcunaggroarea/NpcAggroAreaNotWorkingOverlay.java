@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
- * Copyright (c) 2018, Lotto <https://github.com/devLotto>
+ * Copyright (c) 2018, Woox <https://github.com/wooxsolo>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,50 +22,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.http.api.worlds;
+package net.runelite.client.plugins.npcunaggroarea;
 
-import com.google.gson.JsonParseException;
-import net.runelite.http.api.RuneLiteAPI;
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.inject.Inject;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.OverlayPriority;
+import net.runelite.client.ui.overlay.components.LineComponent;
+import net.runelite.client.ui.overlay.components.PanelComponent;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-public class WorldClient
+class NpcAggroAreaNotWorkingOverlay extends Overlay
 {
-	private static final Logger logger = LoggerFactory.getLogger(WorldClient.class);
+	private final NpcAggroAreaPlugin plugin;
+	private final PanelComponent panelComponent;
 
-	public WorldResult lookupWorlds() throws IOException
+	@Inject
+	private NpcAggroAreaNotWorkingOverlay(NpcAggroAreaPlugin plugin)
 	{
-		HttpUrl url = RuneLiteAPI.getApiBase().newBuilder()
-			.addPathSegment("worlds.js")
-			.build();
+		this.plugin = plugin;
 
-		logger.debug("Built URI: {}", url);
+		panelComponent = new PanelComponent();
+		panelComponent.setPreferredSize(new Dimension(150, 0));
+		panelComponent.getChildren().add(LineComponent.builder()
+			.left("Unaggressive NPC timers will start working when you teleport far away or enter a dungeon.")
+			.build());
 
-		Request request = new Request.Builder()
-			.url(url)
-			.build();
+		setPriority(OverlayPriority.LOW);
+		setPosition(OverlayPosition.TOP_LEFT);
+	}
 
-		try (Response response = RuneLiteAPI.CLIENT.newCall(request).execute())
+	@Override
+	public Dimension render(Graphics2D graphics)
+	{
+		if (!plugin.isActive() || plugin.getSafeCenters()[1] != null)
 		{
-			if (!response.isSuccessful())
-			{
-				logger.debug("Error looking up worlds: {}", response);
-				return null;
-			}
+			return null;
+		}
 
-			InputStream in = response.body().byteStream();
-			return RuneLiteAPI.GSON.fromJson(new InputStreamReader(in), WorldResult.class);
-		}
-		catch (JsonParseException ex)
-		{
-			throw new IOException(ex);
-		}
+		return panelComponent.render(graphics);
 	}
 }

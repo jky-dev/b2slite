@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
- * Copyright (c) 2018, Lotto <https://github.com/devLotto>
+ * Copyright (c) 2018, Woox <https://github.com/wooxsolo>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,50 +22,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.http.api.worlds;
+package net.runelite.client.plugins.npcunaggroarea;
 
-import com.google.gson.JsonParseException;
-import net.runelite.http.api.RuneLiteAPI;
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import lombok.Getter;
+import lombok.Setter;
+import net.runelite.client.plugins.Plugin;
+import net.runelite.client.ui.overlay.infobox.Timer;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-public class WorldClient
+class AggressionTimer extends Timer
 {
-	private static final Logger logger = LoggerFactory.getLogger(WorldClient.class);
+	@Getter
+	@Setter
+	private boolean visible;
 
-	public WorldResult lookupWorlds() throws IOException
+	AggressionTimer(Duration duration, BufferedImage image, Plugin plugin, boolean visible)
 	{
-		HttpUrl url = RuneLiteAPI.getApiBase().newBuilder()
-			.addPathSegment("worlds.js")
-			.build();
+		super(duration.toMillis(), ChronoUnit.MILLIS, image, plugin);
+		setTooltip("Time until NPCs become unaggressive");
+		this.visible = visible;
+	}
 
-		logger.debug("Built URI: {}", url);
+	@Override
+	public Color getTextColor()
+	{
+		Duration timeLeft = Duration.between(Instant.now(), getEndTime());
 
-		Request request = new Request.Builder()
-			.url(url)
-			.build();
-
-		try (Response response = RuneLiteAPI.CLIENT.newCall(request).execute())
+		if (timeLeft.getSeconds() < 60)
 		{
-			if (!response.isSuccessful())
-			{
-				logger.debug("Error looking up worlds: {}", response);
-				return null;
-			}
+			return Color.RED.brighter();
+		}
 
-			InputStream in = response.body().byteStream();
-			return RuneLiteAPI.GSON.fromJson(new InputStreamReader(in), WorldResult.class);
-		}
-		catch (JsonParseException ex)
-		{
-			throw new IOException(ex);
-		}
+		return Color.WHITE;
+	}
+
+	@Override
+	public boolean render()
+	{
+		return visible && super.render();
 	}
 }
