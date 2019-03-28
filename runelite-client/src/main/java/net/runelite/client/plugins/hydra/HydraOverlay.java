@@ -38,13 +38,15 @@ public class HydraOverlay extends Overlay
 {
 	private final Client client;
 	private final HydraPlugin plugin;
+	private final HydraConfig config;
 
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	public HydraOverlay(Client client, HydraPlugin plugin)
+	public HydraOverlay(Client client, HydraConfig config, HydraPlugin plugin)
 	{
 		this.client = client;
+		this.config = config;
 		this.plugin = plugin;
 		setPosition(OverlayPosition.TOP_LEFT);
 	}
@@ -52,6 +54,8 @@ public class HydraOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
+		if (!config.showInfobox()) return null;
+
 		if (!client.isInInstancedRegion()) return null;
 
 		panelComponent.getChildren().clear();
