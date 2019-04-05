@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Seth <http://github.com/sethtroll>
+ * Copyright (c) 2019, Abel Briggs <https://github.com/abelbriggs1>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,45 +22,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.boosts;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import net.runelite.client.ui.overlay.infobox.InfoBox;
-import net.runelite.client.ui.overlay.infobox.InfoBoxPriority;
+package net.runelite.client.plugins.grounditems.config;
 
-public class StatChangeIndicator extends InfoBox
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public enum ValueCalculationMode
 {
-	private final boolean up;
-	private final BoostsPlugin plugin;
-	private final BoostsConfig config;
+	HA("High Alchemy"), // calc highlight by HA value
+	GE("Grand Exchange"), // calc by GE
+	HIGHEST("Highest"); // use whatever is highest.
 
-	StatChangeIndicator(boolean up, BufferedImage image, BoostsPlugin plugin, BoostsConfig config)
-	{
-		super(image, plugin);
-		this.up = up;
-		this.plugin = plugin;
-		this.config = config;
-		setPriority(InfoBoxPriority.MED);
-		setTooltip(up ? "Next debuff change" : "Next buff change");
-	}
+	private final String name;
 
 	@Override
-	public String getText()
+	public String toString()
 	{
-		return String.format("%02d", plugin.getChangeTime(up ? plugin.getChangeUpTicks() : plugin.getChangeDownTicks()));
-	}
-
-	@Override
-	public Color getTextColor()
-	{
-		return (up ? plugin.getChangeUpTicks() : plugin.getChangeDownTicks()) < 10 ? Color.RED.brighter() : Color.WHITE;
-	}
-
-	@Override
-	public boolean render()
-	{
-		final int time = up ? plugin.getChangeUpTicks() : plugin.getChangeDownTicks();
-		return config.displayInfoboxes() && time != -1;
+		return name;
 	}
 }
