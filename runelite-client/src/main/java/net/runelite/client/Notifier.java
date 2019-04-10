@@ -143,7 +143,7 @@ public class Notifier
 				.build();
 
 			chatMessageManager.queue(QueuedMessage.builder()
-				.type(ChatMessageType.GAME)
+				.type(ChatMessageType.CONSOLE)
 				.name(appName)
 				.runeLiteFormattedMessage(formattedMessage)
 				.build());
@@ -159,6 +159,7 @@ public class Notifier
 	{
 		if (flashStart == null || client.getGameCycle() % 40 >= 20)
 		{
+			if (client.getMouseCurrentButton() != 0) flashStart = null;
 			return;
 		}
 		if (runeLiteConfig.enableFlashNotification() == FlashingType.PERSISTANT)

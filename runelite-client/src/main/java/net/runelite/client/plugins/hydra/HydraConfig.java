@@ -74,9 +74,20 @@ public interface HydraConfig extends Config
 		position = 3,
 		keyName = "showHydraPrayer",
 		name = "Hydra's Attack Style Indicator",
-		description = "Displays hydra's size box for luring over vents"
+		description = "Displays hydra's prayer indicator"
 	)
 	default boolean showPrayer()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 3,
+		keyName = "showInfoBox",
+		name = "Hydra's AnimationID InfoBox",
+		description = "Displays infobox"
+	)
+	default boolean showInfobox()
 	{
 		return false;
 	}

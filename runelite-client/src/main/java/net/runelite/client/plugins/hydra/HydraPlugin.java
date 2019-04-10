@@ -28,6 +28,7 @@ import com.google.inject.Provides;
 import java.util.List;
 import javax.inject.Inject;
 import lombok.Getter;
+import lombok.Setter;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
@@ -54,6 +55,7 @@ public class HydraPlugin extends Plugin
 	private int lastAttackStyle = 0;
 
 	@Getter
+	@Setter
 	private int attackCount = 0;
 
 	@Getter
