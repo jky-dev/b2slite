@@ -157,9 +157,9 @@ public class Notifier
 
 	public void processFlash(final Graphics2D graphics)
 	{
-		if (flashStart == null || client.getGameCycle() % 40 >= 20 || client.getMouseCurrentButton() != 0)
+		if (flashStart == null || client.getGameCycle() % 40 >= 20)
 		{
-			flashStart = null;
+			if (client.getMouseCurrentButton() != 0) flashStart = null;
 			return;
 		}
 		if (runeLiteConfig.enableFlashNotification() == FlashingType.PERSISTANT)
