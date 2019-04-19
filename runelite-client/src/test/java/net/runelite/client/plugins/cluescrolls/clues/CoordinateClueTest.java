@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Devin French <https://github.com/devinfrench>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,53 +22,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.queries;
+package net.runelite.client.plugins.cluescrolls.clues;
 
-import net.runelite.api.Client;
-import net.runelite.api.Query;
-import net.runelite.api.widgets.WidgetItem;
+import net.runelite.api.coords.WorldPoint;
+import org.junit.Test;
 
-public abstract class WidgetItemQuery extends Query<WidgetItem, WidgetItemQuery>
+public class CoordinateClueTest
 {
-
-	public WidgetItemQuery idEquals(int... ids)
+	@Test
+	public void testDuplicateCoordinates()
 	{
-		predicate = and(item ->
-		{
-			for (int id : ids)
-			{
-				if (item.getId() == id)
-				{
-					return true;
-				}
-			}
-			return false;
-		});
-		return this;
+		// If this doesn't throw then the clues map doesn't have duplicate keys
+		new CoordinateClue("test", new WorldPoint(0, 0, 0));
 	}
-
-	public WidgetItemQuery indexEquals(int... indexes)
-	{
-		predicate = and(item ->
-		{
-			for (int index : indexes)
-			{
-				if (item.getIndex() == index)
-				{
-					return true;
-				}
-			}
-			return false;
-		});
-		return this;
-	}
-
-	public WidgetItemQuery quantityEquals(int quantity)
-	{
-		predicate = and(item -> item.getQuantity() == quantity);
-		return this;
-	}
-
-	@Override
-	public abstract WidgetItem[] result(Client client);
 }
