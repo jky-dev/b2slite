@@ -37,14 +37,12 @@ import net.runelite.api.Query;
 import net.runelite.api.events.ConfigChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.util.QueryRunner;
 
 @PluginDescriptor(
 	name = "Minnows Stats",
@@ -67,9 +65,6 @@ public class MinnowsPlugin extends Plugin
 
 	@Inject
 	private OverlayManager overlayManager;
-
-	@Inject
-	private QueryRunner queryRunner;
 
 	@Getter(AccessLevel.PACKAGE)
 	private int minnowsCaught;
@@ -138,19 +133,6 @@ public class MinnowsPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
-		Query inventoryQuery = new InventoryWidgetItemQuery().idEquals(ItemID.MINNOW);
-		WidgetItem[] inventoryWidgetItems = queryRunner.runQuery(inventoryQuery);
-
-		if (inventoryWidgetItems.length == 1 && minnowsCount == -1)
-		{
-			minnowsCount = inventoryWidgetItems[0].getQuantity();
-			startTime = System.currentTimeMillis();
-		}
-		else if (inventoryWidgetItems.length == 1)
-		{
-			minnowsCaught = inventoryWidgetItems[0].getQuantity() - minnowsCount;
-		}
-
 		if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() == GraphicID.FLYING_FISH)
 		{
 			notifier.notify("Flying fish");
