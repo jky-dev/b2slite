@@ -131,6 +131,8 @@ public class WidgetID
 	public static final int QUESTTAB_GROUP_ID = 629;
 	public static final int MUSIC_GROUP_ID = 239;
 	public static final int BARROWS_PUZZLE_GROUP_ID = 25;
+	public static final int KEPT_ON_DEATH_GROUP_ID = 4;
+	public static final int GUIDE_PRICE_GROUP_ID = 464;
 
 	static class WorldMap
 	{
@@ -280,6 +282,7 @@ public class WidgetID
 	{
 		static final int EMOTE_WINDOW = 0;
 		static final int EMOTE_CONTAINER = 1;
+		static final int EMOTE_SCROLLBAR = 2;
 	}
 
 	static class Cluescroll
@@ -772,6 +775,7 @@ public class WidgetID
 	{
 		static final int CONTAINER = 0;
 		static final int LIST = 3;
+		static final int SCROLLBAR = 4;
 	}
 
 	static class Barrows_Puzzle
