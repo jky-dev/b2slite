@@ -153,6 +153,8 @@ public class Notifier
 		{
 			flashStart = Instant.now();
 		}
+
+		log.debug(message);
 	}
 
 	public void processFlash(final Graphics2D graphics)
