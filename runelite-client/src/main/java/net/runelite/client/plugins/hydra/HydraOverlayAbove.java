@@ -64,7 +64,9 @@ public class HydraOverlayAbove extends Overlay
 	public Dimension render(Graphics2D graphics)
 	{
 		if (!client.isInInstancedRegion() && plugin.getHydra() == null) return null;
+
 		updateIconBackground();
+
 		renderIcon(graphics);
 
 		renderGroundObject(graphics);
