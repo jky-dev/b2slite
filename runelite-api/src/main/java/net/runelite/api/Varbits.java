@@ -487,7 +487,10 @@ public enum Varbits
 	/**
 	 * The active tab within the quest interface
 	 */
-	QUEST_TAB(8168);
+	QUEST_TAB(8168),
+
+	// TOB BLOAT
+	BLOAT_ENTERED_ROOM(6447);
 
 	/**
 	 * The raw varbit ID.
