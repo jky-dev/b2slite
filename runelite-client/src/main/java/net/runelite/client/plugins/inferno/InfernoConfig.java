@@ -33,11 +33,22 @@ public interface InfernoConfig extends Config
 {
 	@ConfigItem(
 		position = 0,
-		keyName = "keyName",
-		name = "Name",
-		description = "Description"
+		keyName = "Nibber Overlay",
+		name = "Nibber Overlay",
+		description = "Shows if there are any nibbas left"
 	)
-	default boolean showHydraTile()
+	default boolean displayNibbaOverlay()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 1,
+		keyName = "Prayer Helper",
+		name = "Prayer Helper",
+		description = "Tells you what to flick in how many ticks"
+	)
+	default boolean showPrayerHelp()
 	{
 		return false;
 	}
