@@ -24,6 +24,7 @@
  */
 package net.runelite.client.plugins.TOB;
 
+import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -44,6 +45,17 @@ public interface TobConfig extends Config
 
 	@ConfigItem(
 		position = 1,
+		keyName = "maidenPoolColor",
+		name = "Maiden Pool Color",
+		description = "Configures the color for Maiden pools"
+	)
+	default Color maidenColor()
+	{
+		return Color.WHITE;
+	}
+
+	@ConfigItem(
+		position = 2,
 		keyName = "showBloatDrops",
 		name = "Bloat Drops",
 		description = "Highlights falling objects in bloat"
@@ -51,6 +63,17 @@ public interface TobConfig extends Config
 	default boolean showFallingObjects()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		position = 3,
+		keyName = "bloatColor",
+		name = "Bloat Feet Color",
+		description = "Configures the color for falling feet"
+	)
+	default Color bloatColor()
+	{
+		return Color.WHITE;
 	}
 
 }

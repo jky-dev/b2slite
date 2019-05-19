@@ -50,7 +50,7 @@ public class TobOverlay extends Overlay
 		{
 			if (graphicsObject.getId() != 1579) continue;
 
-			drawPolygon(graphicsObject, graphics);
+			drawPolygon(graphicsObject, graphics, config.maidenColor());
 		}
 	}
 
@@ -63,18 +63,18 @@ public class TobOverlay extends Overlay
 		{
 			if (graphicsObject.getId() < 1570 || graphicsObject.getId() > 1573) continue;
 
-			drawPolygon(graphicsObject, graphics);
+			drawPolygon(graphicsObject, graphics, config.bloatColor());
 		}
 	}
 
-	private void drawPolygon(GraphicsObject graphicsObject, Graphics2D graphics)
+	private void drawPolygon(GraphicsObject graphicsObject, Graphics2D graphics, Color color)
 	{
 		LocalPoint lp = graphicsObject.getLocation();
 		Polygon poly = Perspective.getCanvasTilePoly(client, lp);
 
 		if (poly != null)
 		{
-			OverlayUtil.renderPolygon(graphics, poly, Color.red);
+			OverlayUtil.renderPolygon(graphics, poly, color);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Jacky <liangj97@gmail.com>
+ * Copyright (c) 2018, Kamiel
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,15 +22,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.cox;
+package net.runelite.client.plugins.raids.solver;
 
-import java.awt.Color;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.Range;
+import lombok.Getter;
+import lombok.Setter;
 
-@ConfigGroup("hydra")
-public interface CoxConfig extends Config
+public class Room
 {
+	@Getter
+	private final int position;
+
+	@Getter
+	private final char symbol;
+
+	@Getter
+	@Setter
+	private Room next;
+
+	@Getter
+	@Setter
+	private Room previous;
+
+	Room(int position, char symbol)
+	{
+		this.position = position;
+		this.symbol = symbol;
+	}
 }

@@ -302,6 +302,7 @@ public class ScreenshotPlugin extends Plugin
 		}
 	}
 
+	// if a player has died, add them to a list with a counter
 	private void checkDeadPlayers()
 	{
 		List<Player> players = client.getPlayers();
@@ -310,21 +311,26 @@ public class ScreenshotPlugin extends Plugin
 		{
 			if (player.getHealthRatio() == 0 && player != client.getLocalPlayer() && !deadPlayers.containsKey(player))
 			{
-				deadPlayers.put(player, 6);
+				// 15 ticks should be enough so that we dont have double screenshots of deaths
+				deadPlayers.put(player, 15);
 			}
 		}
 	}
 
+	// decrement counter
 	private void screenshotDeadPlayers()
 	{
 		for (Map.Entry<Player, Integer> entry : deadPlayers.entrySet())
 		{
 			entry.setValue(entry.getValue() - 1);
 
-			if (entry.getValue() == 1)
+			// 5 ticks after first entry (15-10)
+			if (entry.getValue() == 10)
 			{
 				takeScreenshot(entry.getKey().getName() + " has died! " + format(new Date()));
 			}
+
+			// the player should no longer be alive
 			if (entry.getValue() == 0)
 			{
 				deadPlayers.remove(entry.getKey());
