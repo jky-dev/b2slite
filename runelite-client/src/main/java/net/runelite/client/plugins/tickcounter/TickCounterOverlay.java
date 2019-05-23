@@ -37,6 +37,7 @@ public class TickCounterOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D g)
 	{
+		// if (!client.isInInstancedRegion()) return null;
 		List<LayoutableRenderableEntity> elems = panelComponent.getChildren();
 		elems.clear();
 		panelComponent.setBackgroundColor(config.bgColor());
