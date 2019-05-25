@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Dreyri <https://github.com/Dreyri>
+ * Copyright (c) 2019, Tim Lehner <Timothy.Lehner.2011@live.rhul.ac.uk>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,57 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.minnows;
+package net.runelite.client.plugins.raidsthieving;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
+import lombok.Getter;
+import lombok.Setter;
+import net.runelite.api.GameObject;
+import net.runelite.api.coords.WorldPoint;
 
-@ConfigGroup("minnows")
-public interface MinnowsConfig extends Config
+/**
+ * Wrapper class for a GameObject that represents a chest in the thieving room of Chambers of Xeric.
+ */
+@Getter
+public class ThievingChest
 {
-	@ConfigItem(
-		keyName = "camera",
-		name = "Detached Camera",
-		description = "Detaches camera"
-	)
-	default boolean detachedCamera()
+	/**
+	 * If the chest has never been opened, it could have bats.
+	 */
+	@Setter
+	private boolean everOpened;
+
+	/**
+	 * If the chest is empty, it could have bats.
+	 */
+	@Setter
+	private boolean empty;
+
+	/**
+	 * If the chest contains a poison trap instead.
+	 */
+	@Setter
+	private boolean poison;
+
+
+	@Setter
+	private int chestId;
+
+	private final WorldPoint localPoint;
+	private final InstancePoint instancePoint;
+
+	/**
+	 * Constructor for a ThievingChest object
+	 *
+	 * @param gameObject The gameobject thats corresponds with this trap.
+	 */
+	ThievingChest(GameObject gameObject, InstancePoint instancePoint)
 	{
-		return false;
+		this.everOpened = false;
+		this.poison = false;
+		this.empty = false;
+		localPoint = gameObject.getWorldLocation();
+		this.instancePoint = instancePoint;
+		this.chestId = -1;
 	}
+
 }

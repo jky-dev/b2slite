@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Tim Lehner <Timothy.Lehner.2011@live.rhul.ac.uk>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,36 +22,40 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.config;
+package net.runelite.client.plugins.raidsthieving.BatSolver;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+// There are three distinct Thieving rooms, distinguished by the position of the entrance relative to the exit
+// e.g. If you enter the room and must turn left to get to the exit and trough, this is a LEFT_TURN
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface ConfigItem
+import net.runelite.client.plugins.raidsthieving.InstancePoint;
+
+public enum ThievingRoomType
 {
-	int position() default -1;
+	LEFT_TURN(3271, 5389),
+	RIGHT_TURN(3350, 5399),
+	STRAIGHT(3317, 5397);
 
-	String keyName();
+	private final int x;
+	private final int y;
 
-	String name();
+	ThievingRoomType(int x, int y)
+	{
+		this.x = x;
+		this.y = y;
+	}
 
-	String description();
+	public static ThievingRoomType identifyByInstancePoint(InstancePoint point)
+	{
+		for (ThievingRoomType type : ThievingRoomType.values())
+		{
+			if (Math.abs(type.x - point.getX()) <= 1 &&
+				Math.abs(type.y - point.getY()) <= 1)
+			{
+				return type;
+			}
+		}
 
-	boolean hidden() default false;
+		return null;
+	}
 
-	String warning() default "";
-
-	boolean secret() default false;
-
-	String group() default "";
-
-	String unhide() default "";
-
-	String hide() default "";
-
-	String parent() default "";
 }

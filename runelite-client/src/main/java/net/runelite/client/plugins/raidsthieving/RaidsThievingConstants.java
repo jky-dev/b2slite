@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2017, Tim Lehner <Timothy.Lehner.2011@live.rhul.ac.uk>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,36 +22,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.config;
+package net.runelite.client.plugins.raidsthieving;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface ConfigItem
+public class RaidsThievingConstants
 {
-	int position() default -1;
-
-	String keyName();
-
-	String name();
-
-	String description();
-
-	boolean hidden() default false;
-
-	String warning() default "";
-
-	boolean secret() default false;
-
-	String group() default "";
-
-	String unhide() default "";
-
-	String hide() default "";
-
-	String parent() default "";
+	public static final int CLOSED_CHEST_ID = 29742;
+	public static final int OPEN_EMPTY_CHEST = 29743;
+	public static final int OPEN_FULL_CHEST_1 = 29744;
+	public static final int OPEN_FULL_CHEST_2 = 29745;
+	public static final int EMPTY_TROUGH = 29746;
+	public static final int[] STORAGE = {29769, 29770, 29771, 29772};
 }

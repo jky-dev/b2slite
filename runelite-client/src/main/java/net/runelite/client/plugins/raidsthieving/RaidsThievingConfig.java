@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2017, Tim Lehner <Timothy.Lehner.2011@live.rhul.ac.uk>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,36 +22,46 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.config;
+package net.runelite.client.plugins.raidsthieving;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.awt.Color;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface ConfigItem
+@ConfigGroup("raidsthievingplugin")
+public interface RaidsThievingConfig extends Config
 {
-	int position() default -1;
+	@ConfigItem(
+		position = 1,
+		keyName = "hexColorPotentialBat",
+		name = "Potential Bat",
+		description = "Color of marker for chests which could have bat"
+	)
+	default Color getPotentialBatColor()
+	{
+		return Color.YELLOW;
+	}
 
-	String keyName();
+	@ConfigItem(
+		position = 2,
+		keyName = "hexColorPoison",
+		name = "Poison trap",
+		description = "Color of chest with poison"
+	)
+	default Color getPoisonTrapColor()
+	{
+		return Color.GREEN;
+	}
 
-	String name();
-
-	String description();
-
-	boolean hidden() default false;
-
-	String warning() default "";
-
-	boolean secret() default false;
-
-	String group() default "";
-
-	String unhide() default "";
-
-	String hide() default "";
-
-	String parent() default "";
+	@ConfigItem(
+		position = 5,
+		keyName = "batNotify",
+		name = "Notify when found",
+		description = "Send notification if you see bats being found."
+	)
+	default boolean batFoundNotify()
+	{
+		return false;
+	}
 }
