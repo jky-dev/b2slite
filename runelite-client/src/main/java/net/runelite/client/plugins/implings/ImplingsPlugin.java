@@ -27,7 +27,9 @@ package net.runelite.client.plugins.implings;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -52,11 +54,17 @@ import net.runelite.client.ui.overlay.OverlayManager;
 )
 public class ImplingsPlugin extends Plugin
 {
+	@Getter
+	private Map<ImplingType, Integer> implingCounterMap = new HashMap<>();
+
 	@Getter(AccessLevel.PACKAGE)
 	private final List<NPC> implings = new ArrayList<>();
 
 	@Inject
 	private OverlayManager overlayManager;
+
+	@Inject
+	private ImplingCounterOverlay implingCounterOverlay;
 
 	@Inject
 	private ImplingsOverlay overlay;
@@ -79,6 +87,7 @@ public class ImplingsPlugin extends Plugin
 	{
 		overlayManager.add(overlay);
 		overlayManager.add(minimapOverlay);
+		overlayManager.add(implingCounterOverlay);
 	}
 
 	@Override
@@ -86,6 +95,7 @@ public class ImplingsPlugin extends Plugin
 	{
 		overlayManager.remove(overlay);
 		overlayManager.remove(minimapOverlay);
+		overlayManager.remove(implingCounterOverlay);
 	}
 
 	@Subscribe
@@ -97,6 +107,16 @@ public class ImplingsPlugin extends Plugin
 		if (impling != null)
 		{
 			implings.add(npc);
+
+			ImplingType type = impling.getImplingType();
+			if (implingCounterMap.containsKey(type))
+			{
+				implingCounterMap.put(type, implingCounterMap.get(type) + 1);
+			}
+			else
+			{
+				implingCounterMap.put(type, 1);
+			}
 		}
 	}
 
@@ -106,6 +126,7 @@ public class ImplingsPlugin extends Plugin
 		if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING)
 		{
 			implings.clear();
+			implingCounterMap.clear();
 		}
 	}
 
@@ -119,6 +140,9 @@ public class ImplingsPlugin extends Plugin
 
 		NPC npc = npcDespawned.getNpc();
 		implings.remove(npc);
+
+		Impling impling = Impling.findImpling(npc.getId());
+		if (impling != null) implingCounterMap.put(impling.getImplingType(), implingCounterMap.get(impling.getImplingType()) - 1);
 	}
 
 	boolean showNpc(NPC npc)
@@ -171,7 +195,12 @@ public class ImplingsPlugin extends Plugin
 			return null;
 		}
 
-		switch (impling.getImplingType())
+		return typeToColor(impling.getImplingType());
+	}
+
+	Color typeToColor(ImplingType type)
+	{
+		switch (type)
 		{
 
 			case BABY:
