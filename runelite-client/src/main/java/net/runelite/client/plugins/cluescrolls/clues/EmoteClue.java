@@ -27,14 +27,19 @@ package net.runelite.client.plugins.cluescrolls.clues;
 import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import lombok.Getter;
+import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import static net.runelite.api.EquipmentInventorySlot.*;
 import static net.runelite.api.EquipmentInventorySlot.LEGS;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
 import static net.runelite.api.ItemID.*;
+import net.runelite.api.Perspective;
+import net.runelite.api.ScriptID;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import static net.runelite.client.plugins.cluescrolls.ClueScrollOverlay.TITLED_CONTENT_COLOR;
@@ -46,6 +51,7 @@ import static net.runelite.client.plugins.cluescrolls.clues.emote.Emote.*;
 import static net.runelite.client.plugins.cluescrolls.clues.emote.Emote.BULL_ROARER;
 import net.runelite.client.plugins.cluescrolls.clues.emote.ItemRequirement;
 import net.runelite.client.plugins.cluescrolls.clues.emote.RangeItemRequirement;
+import net.runelite.client.plugins.cluescrolls.clues.emote.STASHUnit;
 import static net.runelite.client.plugins.cluescrolls.clues.emote.STASHUnit.*;
 import static net.runelite.client.plugins.cluescrolls.clues.emote.STASHUnit.SHANTAY_PASS;
 import net.runelite.client.plugins.cluescrolls.clues.emote.SingleItemRequirement;
@@ -166,7 +172,16 @@ public class EmoteClue extends ClueScroll implements TextClueScroll, LocationClu
 		new EmoteClue("Yawn in the rogues' general store. Beware of double agents! Equip an adamant square shield, blue dragon vambraces and a rune pickaxe.", NOTERAZZOS_SHOP_IN_THE_WILDERNESS, new WorldPoint(3026, 3701, 0), YAWN, item(ADAMANT_SQ_SHIELD), item(BLUE_DHIDE_VAMB), item(RUNE_PICKAXE)),
 		new EmoteClue("Yawn at the top of Trollheim. Equip a lava battlestaff, black dragonhide vambraces and a mind shield.", ON_TOP_OF_TROLLHEIM_MOUNTAIN, new WorldPoint(2887, 3676, 0), YAWN, item(LAVA_BATTLESTAFF), item(BLACK_DHIDE_VAMB), item(MIND_SHIELD)),
 		new EmoteClue("Yawn in the centre of Arceuus library. Nod your head before you talk to me. Equip blue dragonhide vambraces, adamant boots and an adamant dagger.", ENTRANCE_OF_THE_ARCEUUS_LIBRARY, new WorldPoint(1632, 3807, 0), YAWN, YES, item(BLUE_DHIDE_VAMB), item(ADAMANT_BOOTS), item(ADAMANT_DAGGER)),
-		new EmoteClue("Swing a bullroarer at the top of the watchtower. Beware of double agents! Equip a dragon plateskirt, climbing boots and a dragon chainbody.", TOP_FLOOR_OF_THE_YANILLE_WATCHTOWER, new WorldPoint(2932, 4712, 0), BULL_ROARER, item(DRAGON_PLATESKIRT), item(CLIMBING_BOOTS), item(DRAGON_CHAINBODY_3140), item(ItemID.BULL_ROARER)));
+		new EmoteClue("Swing a bullroarer at the top of the watchtower. Beware of double agents! Equip a dragon plateskirt, climbing boots and a dragon chainbody.", TOP_FLOOR_OF_THE_YANILLE_WATCHTOWER, new WorldPoint(2932, 4712, 0), BULL_ROARER, item(DRAGON_PLATESKIRT), item(CLIMBING_BOOTS), item(DRAGON_CHAINBODY_3140), item(ItemID.BULL_ROARER)),
+		new EmoteClue("Blow a raspberry at Gypsy Aris in her tent. Equip a gold ring and a gold necklace.", GYPSY_TENT_ENTRANCE, new WorldPoint(3203, 3424, 0), RASPBERRY, item(GOLD_RING), item(GOLD_NECKLACE)),
+		new EmoteClue("Bow to Brugsen Bursen at the Grand Exchange.", null, new WorldPoint(3164, 3477, 0), BOW),
+		new EmoteClue("Cheer at Iffie Nitter. Equip a chef hat and a red cape.", FINE_CLOTHES_ENTRANCE, new WorldPoint(3205, 3416, 0), CHEER, item(CHEFS_HAT), item(RED_CAPE)),
+		new EmoteClue("Clap at Bob's Brilliant Axes. Equip a bronze axe and leather boots.", BOB_AXES_ENTRANCE, new WorldPoint(3231, 3203, 0), CLAP, item(BRONZE_AXE), item(LEATHER_BOOTS)),
+		new EmoteClue("Panic at Al Kharid mine.", null, new WorldPoint(3300, 3314, 0), PANIC),
+		new EmoteClue("Spin at Flynn's Mace Shop.", null, new WorldPoint(2950, 3387, 0), SPIN));
+
+	private static final String UNICODE_CHECK_MARK = "\u2713";
+	private static final String UNICODE_BALLOT_X = "\u2717";
 
 	private static SingleItemRequirement item(int itemId)
 	{
@@ -198,19 +213,19 @@ public class EmoteClue extends ClueScroll implements TextClueScroll, LocationClu
 		return new SlotLimitationRequirement(description, slots);
 	}
 
-	private String text;
-	private Integer stashUnit;
-	private WorldPoint location;
-	private Emote firstEmote;
-	private Emote secondEmote;
-	private ItemRequirement[] itemRequirements;
+	private final String text;
+	private final STASHUnit stashUnit;
+	private final WorldPoint location;
+	private final Emote firstEmote;
+	private final Emote secondEmote;
+	private final ItemRequirement[] itemRequirements;
 
-	private EmoteClue(String text, Integer stashUnit, WorldPoint location, Emote firstEmote, ItemRequirement... itemRequirements)
+	private EmoteClue(String text, STASHUnit stashUnit, WorldPoint location, Emote firstEmote, @Nonnull ItemRequirement... itemRequirements)
 	{
 		this(text, stashUnit, location, firstEmote, null, itemRequirements);
 	}
 
-	private EmoteClue(String text, Integer stashUnit, WorldPoint location, Emote firstEmote, Emote secondEmote, ItemRequirement... itemRequirements)
+	private EmoteClue(String text, STASHUnit stashUnit, WorldPoint location, Emote firstEmote, Emote secondEmote, @Nonnull ItemRequirement... itemRequirements)
 	{
 		this.text = text;
 		this.stashUnit = stashUnit;
@@ -238,15 +253,19 @@ public class EmoteClue extends ClueScroll implements TextClueScroll, LocationClu
 				.build());
 		}
 
-		if (getItemRequirements() == null)
+		if (itemRequirements.length > 0)
 		{
+			Client client = plugin.getClient();
+			client.runScript(ScriptID.WATSON_STASH_UNIT_CHECK, stashUnit.getObjectId(), 0, 0, 0);
+			int[] intStack = client.getIntStack();
+			boolean stashUnitBuilt = intStack[0] == 1;
+
 			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Items:")
-				.right("None")
+				.left("STASH Unit:")
+				.right(stashUnitBuilt ? UNICODE_CHECK_MARK : UNICODE_BALLOT_X)
+				.rightColor(stashUnitBuilt ? Color.GREEN : Color.RED)
 				.build());
-		}
-		else
-		{
+
 			panelComponent.getChildren().add(LineComponent.builder().left("Equip:").build());
 
 			Item[] equipment = plugin.getEquippedItems();
@@ -268,15 +287,15 @@ public class EmoteClue extends ClueScroll implements TextClueScroll, LocationClu
 			System.arraycopy(equipment, 0, combined, 0, equipment.length);
 			System.arraycopy(inventory, 0, combined, equipment.length, inventory.length);
 
-			for (ItemRequirement requirement : getItemRequirements())
+			for (ItemRequirement requirement : itemRequirements)
 			{
 				boolean equipmentFulfilled = requirement.fulfilledBy(equipment);
 				boolean combinedFulfilled = requirement.fulfilledBy(combined);
 
 				panelComponent.getChildren().add(LineComponent.builder()
-					.left(requirement.getCollectiveName(plugin.getClient()))
+					.left(requirement.getCollectiveName(client))
 					.leftColor(TITLED_CONTENT_COLOR)
-					.right(combinedFulfilled ? "\u2713" : "\u2717")
+					.right(combinedFulfilled ? UNICODE_CHECK_MARK : UNICODE_BALLOT_X)
 					.rightColor(equipmentFulfilled ? Color.GREEN : (combinedFulfilled ? Color.ORANGE : Color.RED))
 					.build());
 			}
@@ -286,14 +305,28 @@ public class EmoteClue extends ClueScroll implements TextClueScroll, LocationClu
 	@Override
 	public void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin)
 	{
-		LocalPoint localLocation = LocalPoint.fromWorld(plugin.getClient(), getLocation());
+		LocalPoint localPoint = LocalPoint.fromWorld(plugin.getClient(), getLocation());
 
-		if (localLocation == null)
+		if (localPoint != null)
 		{
-			return;
+			OverlayUtil.renderTileOverlay(plugin.getClient(), graphics, localPoint, plugin.getEmoteImage(), Color.ORANGE);
 		}
 
-		OverlayUtil.renderTileOverlay(plugin.getClient(), graphics, localLocation, plugin.getEmoteImage(), Color.ORANGE);
+		final WorldPoint[] worldPoints = stashUnit.getWorldPoints();
+
+		for (final WorldPoint worldPoint : worldPoints)
+		{
+			final LocalPoint stashUnitLocalPoint = LocalPoint.fromWorld(plugin.getClient(), worldPoint);
+
+			if (stashUnitLocalPoint != null)
+			{
+				final Polygon poly = Perspective.getCanvasTilePoly(plugin.getClient(), stashUnitLocalPoint);
+				if (poly != null)
+				{
+					OverlayUtil.renderPolygon(graphics, poly, Color.RED);
+				}
+			}
+		}
 	}
 
 	public static EmoteClue forText(String text)

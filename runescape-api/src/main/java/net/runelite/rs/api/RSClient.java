@@ -31,7 +31,6 @@ import net.runelite.api.World;
 import net.runelite.api.widgets.Widget;
 import net.runelite.mapping.Construct;
 import net.runelite.mapping.Import;
-import net.runelite.mapping.Protect;
 
 public interface RSClient extends RSGameEngine, Client
 {
@@ -823,7 +822,6 @@ public interface RSClient extends RSGameEngine, Client
 	void revalidateWidgetScroll(Widget[] group, Widget w, boolean postEvent);
 
 	@Import("menuAction")
-	@Protect
 	void menuAction(int var0, int var1, int var2, int var3, String var4, String var5, int var6, int var7);
 
 	@Import("Viewport_entityCountAtMouse")
@@ -932,4 +930,41 @@ public interface RSClient extends RSGameEngine, Client
 
 	@Import("getEnum")
 	RSEnum getRsEnum(int id);
+
+	@Import("menuX")
+	int getMenuX();
+
+	@Import("menuY")
+	int getMenuY();
+
+	@Import("menuHeight")
+	int getMenuHeight();
+
+	@Import("menuWidth")
+	int getMenuWidth();
+
+	@Import("fontBold12")
+	RSFont getFontBold12();
+
+	@Import("drawHorizontalLine")
+	void RasterizerDrawHorizontalLine(int x, int y, int w, int rgb);
+
+	@Import("drawVerticalLine")
+	void RasterizerDrawVerticalLine(int x, int y, int h, int rgb);
+
+	@Import("drawGradient")
+	void RasterizerDrawGradient(int x, int y, int w, int h, int rgbTop, int rgbBottom);
+
+	@Import("fillRectangleAlpha")
+	void RasterizerFillRectangleAlpha(int x, int y, int w, int h, int rgb, int a);
+
+	@Import("drawRectangle")
+	void RasterizerDrawRectangle(int x, int y, int w, int h, int rgb);
+
+	@Import("drawCircle")
+	void RasterizerDrawCircle(int x, int y, int r, int rgb);
+
+	@Import("healthbarCache")
+	@Override
+	RSNodeCache getHealthBarCache();
 }

@@ -60,6 +60,8 @@ public interface Client extends GameEngine
 	 */
 	Logger getLogger();
 
+	String getBuildID();
+
 	/**
 	 * Gets a list of all valid players from the player cache.
 	 *
@@ -1600,4 +1602,8 @@ public interface Client extends GameEngine
 	NodeCache getItemCompositionCache();
 
 	EnumComposition getEnum(int id);
+
+	void draw2010Menu();
+
+	NodeCache getHealthBarCache();
 }
