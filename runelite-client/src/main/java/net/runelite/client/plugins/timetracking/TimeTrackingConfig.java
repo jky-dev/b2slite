@@ -71,6 +71,39 @@ public interface TimeTrackingConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showOverlay",
+		name = "Show overlay",
+		description = "Shows overlay for herbs and birdhouses",
+		position = 10
+	)
+	default boolean showOverlay()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "showHerbs",
+		name = "Show Herb Overlay Timer",
+		description = "Shows overlay for herbs",
+		position = 11
+	)
+	default boolean showHerbs()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "showBH",
+		name = "Show BirdHouse Overlay Timer",
+		description = "Shows overlay for birdHouses",
+		position = 12
+	)
+	default boolean showBirdHouse()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "defaultTimerMinutes",
 		name = "Default Time (Minutes)",
 		description = "The default time for the timer in minutes",

@@ -563,10 +563,39 @@ public class MenuEntrySwapperPlugin extends Plugin
 			}
 		}
 		// Put all item-related swapping after shift-click
-		else if (config.swapTeleportItem() && option.equals("wear"))
+		else if (config.swapTeleportItem() && (option.equals("wear") || option.equals("remove")))
 		{
-			swap("rub", option, target, true);
 			swap("teleport", option, target, true);
+			swap("xeric's glade", option, target, true);
+			swap("farm teleport", option, target, true);
+			swap("lava maze", option, target, true);
+			swap("mount karuulm", option, target, true);
+			if (config.swapDA())
+			{
+				swap("duel arena", option, target, true);
+			}
+			else
+			{
+				swap("rub", option, target, true);
+			}
+			if (config.swapMaxCape() != MaxCapeMode.OFF)
+			{
+				if (config.swapMaxCape() == MaxCapeMode.CRAFTING)
+				{
+					if (client.getLocalPlayer().getWorldLocation().getRegionID() == 11571)
+					{
+						swap("tele to poh", option, target, false);
+					}
+					else
+					{
+						swap("crafting guild", option, target, false);
+					}
+				}
+				else if (config.swapMaxCape() == MaxCapeMode.TELE_HOUSE)
+				{
+					swap("tele to poh", option, target, false);
+				}
+			}
 		}
 		else if (option.equals("wield"))
 		{

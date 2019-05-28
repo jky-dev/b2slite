@@ -128,6 +128,7 @@ public class ClientUI
 	private PluginPanel pluginPanel;
 	private ClientPluginToolbar pluginToolbar;
 	private ClientTitleToolbar titleToolbar;
+	private JComponent titleBar; // for windowsnap
 	private JButton currentButton;
 	private NavigationButton currentNavButton;
 	private boolean sidebarOpen;
@@ -388,7 +389,7 @@ public class ClientUI
 			{
 				frame.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
 
-				final JComponent titleBar = SubstanceCoreUtilities.getTitlePaneComponent(frame);
+				titleBar = SubstanceCoreUtilities.getTitlePaneComponent(frame);
 				titleToolbar.putClientProperty(SubstanceTitlePaneUtilities.EXTRA_COMPONENT_KIND, SubstanceTitlePaneUtilities.ExtraComponentKind.TRAILING);
 				titleBar.add(titleToolbar);
 
@@ -596,10 +597,24 @@ public class ClientUI
 		if (OSType.getOSType() == OSType.MacOS)
 		{
 			OSXUtil.requestFocus();
+			frame.requestFocus();
+			giveClientFocus();
+		}
+		else if (OSType.getOSType() == OSType.Windows && System.getProperty("os.name").contains("10"))
+		{
+			frame.setAlwaysOnTop(true);
+			frame.setAlwaysOnTop(config.gameAlwaysOnTop());
+			frame.requestFocus();
+			giveClientFocus();
+		}
+		else
+		{
+			frame.requestFocus();
+			giveClientFocus();
 		}
 
-		frame.requestFocus();
-		giveClientFocus();
+
+
 	}
 
 	/**
@@ -921,5 +936,15 @@ public class ClientUI
 			configManager.unsetConfiguration(CONFIG_GROUP, CONFIG_CLIENT_MAXIMIZED);
 			configManager.setConfiguration(CONFIG_GROUP, CONFIG_CLIENT_BOUNDS, bounds);
 		}
+	}
+
+	public ContainableFrame getFrame()
+	{
+		return frame;
+	}
+
+	public JComponent getTitleBar()
+	{
+		return titleBar;
 	}
 }

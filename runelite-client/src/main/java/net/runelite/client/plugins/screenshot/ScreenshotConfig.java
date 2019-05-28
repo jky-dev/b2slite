@@ -197,4 +197,12 @@ public interface ScreenshotConfig extends Config
 	{
 		return Keybind.NOT_SET;
 	}
+
+	@ConfigItem(
+		keyName = "otherPlayersDeath",
+		name = "Screen on other player deaths",
+		description = "Takes a screenshot when other people near you die",
+		position = 15
+	)
+	default boolean screenshotOtherDeaths() { return false; }
 }

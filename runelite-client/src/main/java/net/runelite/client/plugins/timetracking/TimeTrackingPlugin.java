@@ -54,6 +54,7 @@ import net.runelite.client.plugins.timetracking.farming.FarmingTracker;
 import net.runelite.client.plugins.timetracking.hunter.BirdHouseTracker;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
 
@@ -87,6 +88,12 @@ public class TimeTrackingPlugin extends Plugin
 
 	@Inject
 	private ScheduledExecutorService executorService;
+
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
+	private TimeTrackingOverlay overlay;
 
 	private ScheduledFuture panelUpdateFuture;
 
@@ -125,6 +132,8 @@ public class TimeTrackingPlugin extends Plugin
 		clientToolbar.addNavigation(navButton);
 
 		panelUpdateFuture = executorService.scheduleAtFixedRate(this::updatePanel, 200, 200, TimeUnit.MILLISECONDS);
+
+		overlayManager.add(overlay);
 	}
 
 	@Override
@@ -140,6 +149,8 @@ public class TimeTrackingPlugin extends Plugin
 		}
 
 		clientToolbar.removeNavigation(navButton);
+
+		overlayManager.remove(overlay);
 	}
 
 	@Subscribe

@@ -108,7 +108,7 @@ public interface IdleNotifierConfig extends Config
 		return 0;
 	}
 
-	@ConfigItem(
+	@ ConfigItem(
 		keyName = "spec",
 		name = "Special Attack Energy Notification Threshold",
 		position = 8,
@@ -117,5 +117,37 @@ public interface IdleNotifierConfig extends Config
 	default int getSpecEnergyThreshold()
 	{
 		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "moving",
+		name = "Idle Moving",
+		position = 20,
+		description = "If no animation and not moving"
+	)
+	default boolean idlemoving()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "mapTiles",
+		name = "Map Tiles",
+		position = 21,
+		description = "Valid map tiles for idlemoving"
+	)
+	default String mapTiles()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "fishingidle",
+		name = "Idle Fishing Notifications",
+		description = "Configures if idle fishing notifications are enabled"
+	)
+	default boolean fishingIdle()
+	{
+		return true;
 	}
 }

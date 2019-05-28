@@ -291,4 +291,26 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		position = 18,
+		keyName = "swapDuelArena",
+		name = "Swap Duel Arena",
+		description = "One click duel arena"
+	)
+	default boolean swapDA()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapMaxCape",
+		name = "Max Cape",
+		description = "Swap tele option on max cape"
+	)
+	default MaxCapeMode swapMaxCape()
+	{
+		return MaxCapeMode.CRAFTING;
+	}
+
 }

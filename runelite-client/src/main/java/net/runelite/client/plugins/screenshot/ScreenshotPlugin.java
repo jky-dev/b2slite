@@ -44,8 +44,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -67,6 +71,7 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.LocalPlayerDeath;
+import net.runelite.api.events.PlayerDespawned;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import static net.runelite.api.widgets.WidgetID.BARROWS_REWARD_GROUP_ID;
@@ -189,6 +194,8 @@ public class ScreenshotPlugin extends Plugin
 
 	private NavigationButton titleBarButton;
 
+	private Map<Player, Integer> deadPlayers = new HashMap<>();
+
 	private final HotkeyListener hotkeyListener = new HotkeyListener(() -> config.hotkey())
 	{
 		@Override
@@ -258,6 +265,14 @@ public class ScreenshotPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
+		if (config.screenshotOtherDeaths())
+		{
+			// check to see if anyone has died
+			checkDeadPlayers();
+
+			screenshotDeadPlayers();
+		}
+
 		if (!shouldTakeScreenshot)
 		{
 			return;
@@ -285,6 +300,48 @@ public class ScreenshotPlugin extends Plugin
 		{
 			takeScreenshot(fileName);
 		}
+	}
+
+	// if a player has died, add them to a list with a counter
+	private void checkDeadPlayers()
+	{
+		List<Player> players = client.getPlayers();
+
+		for (Player player : players)
+		{
+			if (player.getHealthRatio() == 0 && player != client.getLocalPlayer() && !deadPlayers.containsKey(player))
+			{
+				// 15 ticks should be enough so that we dont have double screenshots of deaths
+				deadPlayers.put(player, 15);
+			}
+		}
+	}
+
+	// decrement counter
+	private void screenshotDeadPlayers()
+	{
+		for (Map.Entry<Player, Integer> entry : deadPlayers.entrySet())
+		{
+			entry.setValue(entry.getValue() - 1);
+
+			// 5 ticks after first entry (15-10)
+			if (entry.getValue() == 10)
+			{
+				takeScreenshot(entry.getKey().getName() + " has died! " + format(new Date()));
+			}
+
+			// the player should no longer be alive
+			if (entry.getValue() == 0)
+			{
+				deadPlayers.remove(entry.getKey());
+			}
+		}
+	}
+
+	@Subscribe
+	public void onPlayerDespawned(PlayerDespawned event)
+	{
+		deadPlayers.remove(event.getPlayer());
 	}
 
 	@Subscribe
