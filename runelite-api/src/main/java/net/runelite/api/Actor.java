@@ -38,6 +38,10 @@ import net.runelite.api.coords.WorldPoint;
  */
 public interface Actor extends Renderable
 {
+	int getActionFrame();
+
+	int getActionFrameCycle();
+
 	/**
 	 * Gets the combat level of the actor.
 	 *
@@ -152,13 +156,6 @@ public interface Actor extends Renderable
 
 	@VisibleForDevtools
 	void setSpotAnimFrame(int spotAnimFrame);
-
-	/**
-	 * Gets the height of the actors model.
-	 *
-	 * @return the height
-	 */
-	int getModelHeight();
 
 	/**
 	 * Gets the canvas area of the current tile the actor is standing on.
