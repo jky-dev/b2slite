@@ -150,4 +150,11 @@ public interface IdleNotifierConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		keyName = "runeDrag",
+		name = "Idling at Rune Dragons",
+		description = "Notifications settings for idling at Rune Dragons"
+	)
+	default boolean runeDragonIdle() { return false; }
 }

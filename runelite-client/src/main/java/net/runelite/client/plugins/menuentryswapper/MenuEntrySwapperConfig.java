@@ -298,9 +298,9 @@ public interface MenuEntrySwapperConfig extends Config
 		name = "Swap Duel Arena",
 		description = "One click duel arena"
 	)
-	default boolean swapDA()
+	default DuelRingMode swapDA()
 	{
-		return false;
+		return DuelRingMode.CASTLE_WARS;
 	}
 
 	@ConfigItem(
@@ -312,5 +312,4 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return MaxCapeMode.CRAFTING;
 	}
-
 }

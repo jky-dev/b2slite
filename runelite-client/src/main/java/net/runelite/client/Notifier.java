@@ -166,8 +166,7 @@ public class Notifier
 		}
 		if (runeLiteConfig.enableFlashNotification() == FlashingType.PERSISTANT)
 		{
-			if (client.getMouseCurrentButton() != 0 || client.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer().getAnimation() == AnimationID.MINING_MOTHERLODE_DRAGON
-			|| (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getGraphic() != GraphicID.FLYING_FISH))
+			if (client.getMouseCurrentButton() != 0 || client.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer().getAnimation() == AnimationID.MINING_MOTHERLODE_DRAGON)
 			{
 				flashStart = null;
 				return;

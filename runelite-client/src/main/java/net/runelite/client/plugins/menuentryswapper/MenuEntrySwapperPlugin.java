@@ -371,6 +371,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 			return;
 		}
 
+		if (option.equals("use") && target.contains("iron ore"))
+		{
+			swap("drop", option, target, true);
+		}
+
 		if (option.equals("talk-to"))
 		{
 			if (config.swapPickpocket() && target.contains("h.a.m."))
@@ -570,7 +575,15 @@ public class MenuEntrySwapperPlugin extends Plugin
 			swap("farm teleport", option, target, true);
 			swap("lava maze", option, target, true);
 			swap("mount karuulm", option, target, true);
-			if (config.swapDA())
+			if (config.swapDA() == DuelRingMode.CASTLE_WARS)
+			{
+				swap("castle wars", option, target, true);
+			}
+			else if (config.swapDA() == DuelRingMode.CLAN_WARS)
+			{
+				swap("clan wars", option, target, true);
+			}
+			else if (config.swapDA() == DuelRingMode.DUEL_ARENA)
 			{
 				swap("duel arena", option, target, true);
 			}
