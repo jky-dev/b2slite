@@ -88,6 +88,7 @@ public class PriceCheckerPlugin extends Plugin
 	protected void startUp() throws Exception
 	{
 		itemIds = new HashSet<>();
+		onConfigChanged(null);
 		overlayManager.add(overlay);
 	}
 
