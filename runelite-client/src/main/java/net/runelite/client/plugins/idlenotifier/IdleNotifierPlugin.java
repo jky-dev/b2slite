@@ -45,6 +45,7 @@ import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
@@ -93,6 +94,10 @@ public class IdleNotifierPlugin extends Plugin
 	private boolean notifyOxygen = true;
 	private boolean notifyIdleLogout = true;
 	private boolean notify6HourLogout = true;
+	private boolean isFishing = false;
+	private boolean isMoving = false;
+	private WorldPoint worldPoint;
+	private Instant idleMovingTime;
 	private int lastSpecEnergy = 1000;
 	private int lastCombatCountdown = 0;
 	private Instant sixHourWarningTime;
@@ -317,6 +322,8 @@ public class IdleNotifierPlugin extends Plugin
 					sixHourWarningTime = Instant.now().plus(SIX_HOUR_LOGOUT_WARNING_AFTER_DURATION);
 					ready = false;
 					resetTimers();
+					worldPoint = client.getLocalPlayer().getWorldLocation();
+					idleMovingTime = Instant.now();
 				}
 
 				break;
@@ -383,6 +390,16 @@ public class IdleNotifierPlugin extends Plugin
 			notifier.notify("[" + local.getName() + "] is about to log out from being online for 6 hours!");
 		}
 
+		if (local.getInteracting() != null && local.getInteracting().getName().contains("Fishing spot"))
+		{
+			isFishing = true;
+		}
+		else if (config.fishingIdle() && isFishing)
+		{
+			isFishing = false;
+			notifier.notify("[" + local.getName() + "] has stopped fishing!");
+		}
+
 		if (config.animationIdle() && checkAnimationIdle(waitDuration, local))
 		{
 			notifier.notify("[" + local.getName() + "] is now idle!");
@@ -419,6 +436,55 @@ public class IdleNotifierPlugin extends Plugin
 		{
 			notifier.notify("[" + local.getName() + "] has restored spec energy!");
 		}
+
+		if (checkMoving(waitDuration))
+		{
+			notifier.notify("Move freak");
+		}
+	}
+
+	private boolean checkMoving(Duration waitDuration)
+	{
+
+		if (!config.idlemoving())
+		{
+			return false;
+		}
+
+		String[] regionID = config.mapTiles().split(",");
+		boolean found = false;
+		if (regionID.length != 0)
+		{
+			for (String id : regionID)
+			{
+				if (Integer.toString(client.getLocalPlayer().getWorldLocation().getRegionID()).equals(id))
+				{
+					found = true;
+					break;
+				}
+			}
+			if (!found) return false;
+		}
+
+		if (client.getLocalPlayer().getAnimation() != AnimationID.IDLE)
+		{
+			isMoving = true;
+			return false;
+		}
+		else if (isMoving)
+		{
+			idleMovingTime = Instant.now();
+			isMoving = false;
+		}
+
+		if (!(client.getLocalPlayer().getWorldLocation().getX() == worldPoint.getX() && client.getLocalPlayer().getWorldLocation().getY() == worldPoint.getY()))
+		{
+			worldPoint = client.getLocalPlayer().getWorldLocation();
+			idleMovingTime = Instant.now();
+			isMoving = true;
+			return false;
+		}
+		return (Instant.now().compareTo(idleMovingTime.plus(waitDuration)) >= 0);
 	}
 
 	private boolean checkFullSpecEnergy()

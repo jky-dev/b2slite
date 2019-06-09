@@ -489,6 +489,9 @@ public enum Varbits
 	 */
 	QUEST_TAB(8168),
 
+	// TOB BLOAT
+	BLOAT_ENTERED_ROOM(6447),
+
 	/**
 	 * Explorer ring
 	 */

@@ -44,13 +44,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.GraphicID;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
+import net.runelite.client.config.FlashingType;
 import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.ui.ClientUI;
 import net.runelite.client.util.OSType;
@@ -146,7 +149,7 @@ public class Notifier
 				.build());
 		}
 
-		if (runeLiteConfig.enableFlashNotification())
+		if (runeLiteConfig.enableFlashNotification() != FlashingType.OFF)
 		{
 			flashStart = Instant.now();
 		}
@@ -158,7 +161,16 @@ public class Notifier
 	{
 		if (flashStart == null || client.getGameCycle() % 40 >= 20)
 		{
+			if (client.getMouseCurrentButton() != 0) flashStart = null;
 			return;
+		}
+		if (runeLiteConfig.enableFlashNotification() == FlashingType.PERSISTANT)
+		{
+			if (client.getMouseCurrentButton() != 0 || client.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer().getAnimation() == AnimationID.MINING_MOTHERLODE_DRAGON)
+			{
+				flashStart = null;
+				return;
+			}
 		}
 		else if (client.getGameState() != GameState.LOGGED_IN)
 		{
@@ -171,7 +183,7 @@ public class Notifier
 		graphics.fill(new Rectangle(client.getCanvas().getSize()));
 		graphics.setColor(color);
 
-		if (Instant.now().minusMillis(FLASH_DURATION).isAfter(flashStart))
+		if (runeLiteConfig.enableFlashNotification() == FlashingType.DEFAULT && Instant.now().minusMillis(FLASH_DURATION).isAfter(flashStart))
 		{
 			flashStart = null;
 		}
