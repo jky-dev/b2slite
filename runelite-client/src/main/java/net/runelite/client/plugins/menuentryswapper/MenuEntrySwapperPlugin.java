@@ -570,6 +570,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		// Put all item-related swapping after shift-click
 		else if (config.swapTeleportItem() && (option.equals("wear") || option.equals("remove")))
 		{
+			swap("teleport to poh", option, target, true);
 			swap("teleport", option, target, true);
 			swap("xeric's glade", option, target, true);
 			swap("farm teleport", option, target, true);
