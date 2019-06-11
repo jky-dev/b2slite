@@ -402,6 +402,7 @@ public class CoxPlugin extends Plugin
 				timer = 45;
 			}
 		}
+
 		if (needOlm = true)
 		{
 			for (NPC monster : client.getNpcs())
@@ -420,7 +421,6 @@ public class CoxPlugin extends Plugin
 
 			}
 		}
-
 
 		if (runGuard)
 		{

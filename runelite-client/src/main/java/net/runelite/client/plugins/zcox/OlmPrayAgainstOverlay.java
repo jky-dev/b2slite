@@ -43,25 +43,26 @@ import net.runelite.client.ui.overlay.components.PanelComponent;
 
 class OlmPrayAgainstOverlay extends Overlay
 {
-
+	private CoxConfig config;
 	private final CoxPlugin plugin;
 	private final Client client;
 	private final SpriteManager spriteManager;
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	OlmPrayAgainstOverlay(CoxPlugin plugin, Client client, SpriteManager spriteManager)
+	OlmPrayAgainstOverlay(CoxPlugin plugin, Client client, SpriteManager spriteManager, CoxConfig config)
 	{
 		this.plugin = plugin;
 		this.client = client;
 		this.spriteManager = spriteManager;
+		this.config = config;
 		setPosition(OverlayPosition.BOTTOM_RIGHT);
 		panelComponent.setOrientation(ComponentOrientation.VERTICAL);
 	}
 
 	public Dimension render(Graphics2D graphics2D)
 	{
-		if (plugin.getPrayAgainstOlm() == null)
+		if (plugin.getPrayAgainstOlm() == null || config.showOlmAttack())
 		{
 			return null;
 		}

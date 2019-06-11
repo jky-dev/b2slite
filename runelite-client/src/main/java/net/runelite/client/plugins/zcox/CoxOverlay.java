@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.inject.Inject;
 import net.runelite.api.Client;
+import net.runelite.api.GraphicsObject;
 import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.Perspective;
@@ -154,7 +155,6 @@ public class CoxOverlay extends Overlay
 			}
 		}
 
-
 		if (plugin.isRunTekton())
 		{
 			if (config.Tekton())
@@ -183,6 +183,7 @@ public class CoxOverlay extends Overlay
 		if (plugin.isRunOlm())
 		{
 			NPC boss = plugin.getOlm_NPC();
+
 			if (config.OlmCrystals())
 			{
 				for (WorldPoint p : plugin.getOlm_Crystals())
@@ -200,11 +201,13 @@ public class CoxOverlay extends Overlay
 
 
 			}
+
 			if (config.OlmSpec())
 			{
 
 
 			}
+
 			if (config.OlmTick())
 			{
 				if (boss != null)
@@ -257,6 +260,24 @@ public class CoxOverlay extends Overlay
 				}
 			}
 
+			if (config.showOlmLightning())
+			{
+				List<GraphicsObject> graphicsObjects = client.getGraphicsObjects();
+
+				for (GraphicsObject graphicsObject : graphicsObjects)
+				{
+					if (graphicsObject.getId() == 1447 || graphicsObject.getId() == 1356)
+					{
+						LocalPoint lp = graphicsObject.getLocation();
+						Polygon poly = Perspective.getCanvasTilePoly(client, lp);
+
+						if (poly != null)
+						{
+							OverlayUtil.renderPolygon(graphics, poly, Color.RED);
+						}
+					}
+				}
+			}
 		}
 		return null;
 	}

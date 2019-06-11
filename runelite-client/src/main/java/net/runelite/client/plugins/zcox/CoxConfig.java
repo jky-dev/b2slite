@@ -110,4 +110,26 @@ public interface CoxConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		position = 7,
+		keyName = "OlmAttack",
+		name = "Toggle Olm Attack",
+		description = ""
+	)
+	default boolean showOlmAttack()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 8,
+		keyName = "OlmLightning",
+		name = "Show Olm Lightning",
+		description = ""
+	)
+	default boolean showOlmLightning()
+	{
+		return true;
+	}
+
 }
