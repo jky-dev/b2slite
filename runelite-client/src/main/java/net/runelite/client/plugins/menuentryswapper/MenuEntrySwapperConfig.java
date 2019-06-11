@@ -263,6 +263,16 @@ public interface MenuEntrySwapperConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "TeleFromEquipped",
+		name = "Teleport from Equipped Screen",
+		description = "Allows you to teleport from equipped items (used with Teleport Item)"
+	)
+	default boolean swapTeleportFromEquipped()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "swapAbyssTeleport",
 		name = "Teleport to Abyss",
 		description = "Swap Talk-to with Teleport for the Mage of Zamorak"
@@ -293,10 +303,10 @@ public interface MenuEntrySwapperConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 18,
-		keyName = "swapDuelArena",
+		keyName = "swapDuelRing",
 		name = "Swap Duel Arena",
-		description = "One click duel arena"
+		description = "One click duel arena",
+		position = 25
 	)
 	default DuelRingMode swapDA()
 	{
@@ -306,10 +316,132 @@ public interface MenuEntrySwapperConfig extends Config
 	@ConfigItem(
 		keyName = "swapMaxCape",
 		name = "Max Cape",
-		description = "Swap tele option on max cape"
+		description = "Swap tele option on max cape",
+		position = 26
 	)
 	default MaxCapeMode swapMaxCape()
 	{
 		return MaxCapeMode.CRAFTING;
+	}
+
+	@ConfigItem(
+		keyName = "swapDesert",
+		name = "Desert Amulet",
+		description = "Swap tele option on desert amulet",
+		position = 27
+	)
+	default DesertAmuletMode swapDesert()
+	{
+		return DesertAmuletMode.NARDAH;
+	}
+
+	@ConfigItem(
+		keyName = "swapArdy",
+		name = "Ardourgne Cloak",
+		description = "Swap tele option on Ardougne Cloak",
+		position = 28
+	)
+	default ArdyCloakMode swapArdy()
+	{
+		return ArdyCloakMode.FARM;
+	}
+
+	@ConfigItem(
+		keyName = "swapMory",
+		name = "Morytania Legs",
+		description = "Swap tele option on legs",
+		position = 29
+	)
+	default MoryLegsMode swapMoryLegs()
+	{
+		return MoryLegsMode.BURGH;
+	}
+
+	@ConfigItem(
+		keyName = "swapGloves",
+		name = "Karamja Gloves",
+		description = "Swap tele option on gloves",
+		position = 30
+	)
+	default KaramGloveMode swapKaramGloves()
+	{
+		return KaramGloveMode.GEM;
+	}
+
+	@ConfigItem(
+		keyName = "swapGlory",
+		name = "Amulet of Glory",
+		description = "Swap tele option on glory",
+		position = 31
+	)
+	default GloryMode swapGlory()
+	{
+		return GloryMode.EDGE;
+	}
+
+	@ConfigItem(
+		keyName = "swapXerics",
+		name = "Xerics Talisman",
+		description = "Swap tele option on xeric's talisman",
+		position = 32
+	)
+	default XericsTalismanMode swapXerics()
+	{
+		return XericsTalismanMode.HONOUR;
+	}
+
+	@ConfigItem(
+		keyName = "swapGames",
+		name = "Games Necklace",
+		description = "Swap tele option on Games Necklace",
+		position = 33
+	)
+	default GamesNecklaceMode swapGames()
+	{
+		return GamesNecklaceMode.TEARS;
+	}
+
+	@ConfigItem(
+		keyName = "swapBlessing",
+		name = "Rada's Blessing",
+		description = "Swap tele option on Rada's Blessing",
+		position = 34
+	)
+	default BlessingMode swapBlessing()
+	{
+		return BlessingMode.MOUNT;
+	}
+
+	@ConfigItem(
+		keyName = "swapDigsite",
+		name = "Digsite Pendant",
+		description = "Swap tele option on Digsite Pendant",
+		position = 35
+	)
+	default DigsiteMode swapDigsite()
+	{
+		return DigsiteMode.ISLAND;
+	}
+
+	@ConfigItem(
+		keyName = "swapFishingCape",
+		name = "Fishing Cape",
+		description = "Swap tele option on Fishing Cape",
+		position = 36
+	)
+	default FishingCapeMode swapFishingCape()
+	{
+		return FishingCapeMode.GUILD;
+	}
+
+	@ConfigItem(
+		keyName = "swapMemoirs",
+		name = "Kharedst's Memoirs",
+		description = "Swap tele option on Kharedst's Memoirs",
+		position = 37
+	)
+	default MemoirsMode swapMemoirs()
+	{
+		return MemoirsMode.OFF;
 	}
 }

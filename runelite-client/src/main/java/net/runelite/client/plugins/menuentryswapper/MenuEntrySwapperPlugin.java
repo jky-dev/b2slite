@@ -568,48 +568,135 @@ public class MenuEntrySwapperPlugin extends Plugin
 			}
 		}
 		// Put all item-related swapping after shift-click
-		else if (config.swapTeleportItem() && (option.equals("wear") || option.equals("remove")))
+		else if (config.swapTeleportItem() && (option.equals("wear") || option.equals("remove") || option.equals("wield") || option.equals("equip")))
 		{
-			swap("teleport to poh", option, target, true);
-			swap("teleport", option, target, true);
-			swap("xeric's glade", option, target, true);
-			swap("farm teleport", option, target, true);
-			swap("lava maze", option, target, true);
-			swap("mount karuulm", option, target, true);
-			if (config.swapDA() == DuelRingMode.CASTLE_WARS)
+			if (option.equals("wear"))
 			{
-				swap("castle wars", option, target, true);
+				if (config.swapArdy() != ArdyCloakMode.OFF)
+				{
+					switch(config.swapArdy())
+					{
+						case FARM:
+							swap("farm teleport", option, target, true);
+							break;
+						case MONASTERY:
+							swap("monastery teleport", option, target, true);
+							break;
+					}
+				}
+				if (config.swapMoryLegs() != MoryLegsMode.OFF)
+				{
+					swap(config.swapMoryLegs().toString().toLowerCase(), option, target, true);
+				}
 			}
-			else if (config.swapDA() == DuelRingMode.CLAN_WARS)
+
+			if (option.equals("remove") && config.swapTeleportFromEquipped())
 			{
-				swap("clan wars", option, target, true);
+				if (config.swapArdy() != ArdyCloakMode.OFF)
+				{
+					switch(config.swapArdy())
+					{
+						case FARM:
+							swap("ardougne farm", option, target, true);
+							break;
+						case MONASTERY:
+							swap("kandarin monastery", option, target, true);
+							break;
+					}
+				}
+				if (config.swapMoryLegs() != MoryLegsMode.OFF)
+				{
+					switch(config.swapMoryLegs())
+					{
+						case BURGH:
+							swap("burgh de rott", option, target, true);
+							break;
+						case ECTO:
+							swap("ectofuntus pit", option, target, true);
+							break;
+					}
+				}
+				if (config.swapDA() != DuelRingMode.OFF)
+				{
+					swap(config.swapDA().toString().toLowerCase(), option, target, true);
+				}
+				if (config.swapMaxCape() != MaxCapeMode.OFF)
+				{
+					if (config.swapMaxCape() == MaxCapeMode.CRAFTING)
+					{
+						if (client.getLocalPlayer().getWorldLocation().getRegionID() == 11571)
+						{
+							swap("tele to poh", option, target, true);
+						}
+						else
+						{
+							swap("crafting guild", option, target, true);
+						}
+					}
+					else if (config.swapMaxCape() == MaxCapeMode.TELE_HOUSE)
+					{
+						swap("tele to poh", option, target, true);
+					}
+				}
+				if (config.swapGlory() != GloryMode.OFF)
+				{
+					swap(config.swapGlory().toString().toLowerCase(), option, target, true);
+				}
+				if (config.swapXerics() != XericsTalismanMode.OFF)
+				{
+					swap(config.swapXerics().toString().toLowerCase(), option, target, true);
+				}
+				if (config.swapGames() != GamesNecklaceMode.OFF)
+				{
+					swap(config.swapGames().toString().toLowerCase(), option, target, true);
+				}
+				if (config.swapDigsite() != DigsiteMode.OFF)
+				{
+					swap(config.swapDigsite().toString().toLowerCase(), option, target, true);
+				}
+				if (config.swapMemoirs() != MemoirsMode.OFF)
+				{
+					swap(config.swapMemoirs().toString().toLowerCase(), option, target, true);
+				}
+				swap("warriors' guild", option, target, true);
 			}
-			else if (config.swapDA() == DuelRingMode.DUEL_ARENA)
+
+			if (option.equals("wear") || (option.equals("remove") && config.swapTeleportFromEquipped()))
 			{
-				swap("duel arena", option, target, true);
+				if (config.swapDesert() != DesertAmuletMode.OFF)
+				{
+					swap(config.swapDesert().toString().toLowerCase(), option, target, true);
+				}
+				if (config.swapKaramGloves() != KaramGloveMode.OFF)
+				{
+					swap(config.swapKaramGloves().toString().toLowerCase(), option, target, true);
+				}
+				if (config.swapFishingCape() != FishingCapeMode.OFF)
+				{
+					swap(config.swapFishingCape().toString().toLowerCase(), option, target, true);
+				}
+			}
+
+			if (option.equals("equip") || (option.equals("remove") && config.swapTeleportFromEquipped()))
+			{
+				if (config.swapBlessing() != BlessingMode.OFF)
+				{
+					swap(config.swapBlessing().toString().toLowerCase(), option, target, true);
+				}
+			}
+
+			if (target.contains("construct. cape(t)"))
+			{
+				swap("tele to poh", option, target, true);
 			}
 			else
 			{
-				swap("rub", option, target, true);
+				swap("teleport", option, target, true);
 			}
-			if (config.swapMaxCape() != MaxCapeMode.OFF)
-			{
-				if (config.swapMaxCape() == MaxCapeMode.CRAFTING)
-				{
-					if (client.getLocalPlayer().getWorldLocation().getRegionID() == 11571)
-					{
-						swap("tele to poh", option, target, false);
-					}
-					else
-					{
-						swap("crafting guild", option, target, false);
-					}
-				}
-				else if (config.swapMaxCape() == MaxCapeMode.TELE_HOUSE)
-				{
-					swap("tele to poh", option, target, false);
-				}
-			}
+
+			swap("lava maze", option, target, true);
+
+			swap("rub", option, target, true);
 		}
 		else if (option.equals("wield"))
 		{
