@@ -144,7 +144,8 @@ public interface IdleNotifierConfig extends Config
 	@ConfigItem(
 		keyName = "fishingidle",
 		name = "Idle Fishing Notifications",
-		description = "Configures if idle fishing notifications are enabled"
+		description = "Configures if idle fishing notifications are enabled",
+		position = 22
 	)
 	default boolean fishingIdle()
 	{
@@ -154,7 +155,8 @@ public interface IdleNotifierConfig extends Config
 	@ConfigItem(
 		keyName = "runeDrag",
 		name = "Idling at Rune Dragons",
-		description = "Notifications settings for idling at Rune Dragons"
+		description = "Notifications settings for idling at Rune Dragons",
+		position = 23
 	)
 	default boolean runeDragonIdle() { return false; }
 }
