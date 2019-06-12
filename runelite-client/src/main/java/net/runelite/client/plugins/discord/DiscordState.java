@@ -175,15 +175,32 @@ class DiscordState
 		// Replace snapshot with + to make tooltip shorter (so it will span only 1 line)
 		final String versionShortHand = properties.getVersion().replace("-SNAPSHOT", "+");
 
-		final DiscordPresence.DiscordPresenceBuilder presenceBuilder = DiscordPresence.builder()
-			.state(MoreObjects.firstNonNull(state, ""))
-			.details(MoreObjects.firstNonNull(details, ""))
-			.largeImageText("b2sLite")
-			//.largeImageText(properties.getTitle() + " v" + versionShortHand)
-			.startTimestamp(event.getStart())
-			.smallImageKey(imageKey)
-			.partyMax(PARTY_MAX)
-			.partySize(party.getMembers().size());
+		final DiscordPresence.DiscordPresenceBuilder presenceBuilder;
+
+		if (config.showCustomMessage().isEmpty())
+		{
+			 presenceBuilder = DiscordPresence.builder()
+				.state(MoreObjects.firstNonNull(state, "")) // place of where you are
+				.details(MoreObjects.firstNonNull(details, "")) // what you are doing
+				.largeImageText("b2sLite")
+				//.largeImageText(properties.getTitle() + " v" + versionShortHand)
+				.startTimestamp(event.getStart())
+				.smallImageKey(imageKey)
+				.partyMax(PARTY_MAX)
+				.partySize(party.getMembers().size());
+		}
+		else
+		{
+			presenceBuilder = DiscordPresence.builder()
+				.state(config.showCustomMessage()) // place of where you are
+				.details(MoreObjects.firstNonNull(details, "")) // what you are doing
+				.largeImageText("b2sLite")
+				//.largeImageText(properties.getTitle() + " v" + versionShortHand)
+				.startTimestamp(event.getStart())
+				.smallImageKey(imageKey)
+				.partyMax(PARTY_MAX)
+				.partySize(party.getMembers().size());
+		}
 
 		if (party.isOwner())
 		{

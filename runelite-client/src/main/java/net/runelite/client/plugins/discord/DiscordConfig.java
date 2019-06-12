@@ -118,4 +118,15 @@ public interface DiscordConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		keyName = "customMessage",
+		name = "Show a custom message",
+		description = "Shows a custom message in your discord presence.",
+		position = 9
+	)
+	default String showCustomMessage()
+	{
+		return "";
+	}
 }
