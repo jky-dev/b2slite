@@ -184,22 +184,12 @@ public class CoxOverlay extends Overlay
 		{
 			NPC boss = plugin.getOlm_NPC();
 
-			if (config.OlmCrystals())
+			if (config.OlmHeals())
 			{
-				for (WorldPoint p : plugin.getOlm_Crystals())
-				{
-					drawTile(graphics, p, Color.RED, 1, 255, 0);
-				}
 				for (WorldPoint p : plugin.getOlm_Heal())
 				{
 					drawTile(graphics, p, Color.BLUE, 3, 255, 0);
 				}
-				for (WorldPoint p : plugin.getOlm_PSN())
-				{
-					drawTile(graphics, p, Color.GREEN, 3, 255, 0);
-				}
-
-
 			}
 
 			if (config.OlmSpec())
@@ -260,13 +250,12 @@ public class CoxOverlay extends Overlay
 				}
 			}
 
-			if (config.showOlmLightning())
 			{
 				List<GraphicsObject> graphicsObjects = client.getGraphicsObjects();
 
 				for (GraphicsObject graphicsObject : graphicsObjects)
 				{
-					if (graphicsObject.getId() == 1447 || graphicsObject.getId() == 1356)
+					if ((graphicsObject.getId() == 1447 && config.OlmCrystals()) || (config.showOlmLightning() && graphicsObject.getId() == 1356))
 					{
 						LocalPoint lp = graphicsObject.getLocation();
 						Polygon poly = Perspective.getCanvasTilePoly(client, lp);

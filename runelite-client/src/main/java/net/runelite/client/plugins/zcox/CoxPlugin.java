@@ -501,28 +501,6 @@ public class CoxPlugin extends Plugin
 
 			for (GraphicsObject o : client.getGraphicsObjects())
 			{
-				if (o.getId() == GRAPHICSOBJECT_ID_CRYSTAL)
-				{
-					WorldPoint newloc;
-					for (int x = -1; x <= 1; x++)
-					{
-						for (int y = -1; y <= 1; y++)
-						{
-							newloc = WorldPoint.fromLocal(client, o.getLocation());
-
-							if (config.LargeCrystals())
-							{
-								newloc = newloc.dx(x);
-								newloc = newloc.dy(y);
-							}
-							Olm_Crystals.add(newloc);
-						}
-
-					}
-
-
-				}
-
 				if (sleepcount <= 0)
 				{
 					if (o.getId() == 1338)
@@ -543,7 +521,6 @@ public class CoxPlugin extends Plugin
 					}
 
 				}
-
 
 				if (o.getId() == GRAPHICSOBJECT_ID_HEAL)
 				{

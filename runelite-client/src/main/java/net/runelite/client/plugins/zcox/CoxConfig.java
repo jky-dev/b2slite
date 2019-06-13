@@ -100,15 +100,12 @@ public interface CoxConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 6,
-		keyName = "LargeCrystals",
-		name = "Mark Large AoE Crystals rather then small ones",
-		description = ""
+			position = 6,
+			keyName = "OlmHeal",
+			name = "Olm Heal Tile Indicator",
+			description = "Highlights Olm's heal tiles"
 	)
-	default boolean LargeCrystals()
-	{
-		return true;
-	}
+	default boolean OlmHeals() { return false; }
 
 	@ConfigItem(
 		position = 7,
