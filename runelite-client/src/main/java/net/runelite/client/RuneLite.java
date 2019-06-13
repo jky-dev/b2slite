@@ -216,7 +216,8 @@ public class RuneLite
 
 		injector = Guice.createInjector(new RuneLiteModule(
 			options.valueOf(updateMode),
-			developerMode));
+			true));
+			//developerMode));
 
 		injector.getInstance(RuneLite.class).start();
 
