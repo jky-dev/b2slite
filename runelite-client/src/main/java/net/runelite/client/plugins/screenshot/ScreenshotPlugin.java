@@ -44,7 +44,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -67,6 +66,7 @@ import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.SpriteID;
 import net.runelite.api.WorldType;
+import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
@@ -267,9 +267,6 @@ public class ScreenshotPlugin extends Plugin
 	{
 		if (config.screenshotOtherDeaths())
 		{
-			// check to see if anyone has died
-			checkDeadPlayers();
-
 			screenshotDeadPlayers();
 		}
 
@@ -302,21 +299,6 @@ public class ScreenshotPlugin extends Plugin
 		}
 	}
 
-	// if a player has died, add them to a list with a counter
-	private void checkDeadPlayers()
-	{
-		List<Player> players = client.getPlayers();
-
-		for (Player player : players)
-		{
-			if (player.getHealthRatio() == 0 && player != client.getLocalPlayer() && !deadPlayers.containsKey(player))
-			{
-				// 15 ticks should be enough so that we dont have double screenshots of deaths
-				deadPlayers.put(player, 15);
-			}
-		}
-	}
-
 	// decrement counter
 	private void screenshotDeadPlayers()
 	{
@@ -324,8 +306,8 @@ public class ScreenshotPlugin extends Plugin
 		{
 			entry.setValue(entry.getValue() - 1);
 
-			// 5 ticks after first entry (15-10)
-			if (entry.getValue() == 10)
+			// 5 ticks after first entry 10 - 6
+			if (entry.getValue() == 6)
 			{
 				takeScreenshot(entry.getKey().getName() + " has died! " + format(new Date()));
 			}
@@ -807,5 +789,20 @@ public class ScreenshotPlugin extends Plugin
 	int gettheatreOfBloodNumber()
 	{
 		return theatreOfBloodNumber;
+	}
+
+	@Subscribe
+	public void onAnimationChanged(AnimationChanged event)
+	{
+		if (!(event.getActor() instanceof Player)) return;
+
+		Player player = (Player)event.getActor();
+
+		if (player == client.getLocalPlayer() || !player.isFriend() || !player.isClanMember()) return;
+
+		if (player.getAnimation() == 836) // death animation
+		{
+			deadPlayers.put(player, 10);
+		}
 	}
 }

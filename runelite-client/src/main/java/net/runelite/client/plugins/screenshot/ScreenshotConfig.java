@@ -200,8 +200,8 @@ public interface ScreenshotConfig extends Config
 
 	@ConfigItem(
 		keyName = "otherPlayersDeath",
-		name = "Screen on other player deaths",
-		description = "Takes a screenshot when other people near you die",
+		name = "Screenshot friend/clan member death",
+		description = "Takes a screenshot when a clan member or friend dies",
 		position = 15
 	)
 	default boolean screenshotOtherDeaths() { return false; }
