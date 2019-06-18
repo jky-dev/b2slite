@@ -798,7 +798,7 @@ public class ScreenshotPlugin extends Plugin
 
 		Player player = (Player)event.getActor();
 
-		if (player == client.getLocalPlayer() || !player.isFriend() || !player.isClanMember()) return;
+		if (player == client.getLocalPlayer() || (!player.isFriend() && !player.isClanMember())) return;
 
 		if (player.getAnimation() == 836) // death animation
 		{
