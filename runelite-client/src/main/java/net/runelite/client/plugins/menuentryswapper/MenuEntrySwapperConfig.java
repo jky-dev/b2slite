@@ -444,4 +444,12 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return MemoirsMode.OFF;
 	}
+
+	@ConfigItem(
+		keyName = "customSwap",
+		name = "Custom menu swap",
+		description = "Swap opt1|target1:opt2|target2, separated by commas",
+		position = 38
+	)
+	default String customSwap() { return ""; }
 }

@@ -371,11 +371,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			return;
 		}
 
-		if (option.equals("use") && target.contains("iron ore"))
-		{
-			swap("drop", option, target, true);
-		}
-
 		if (option.equals("talk-to"))
 		{
 			if (config.swapPickpocket() && target.contains("h.a.m."))
@@ -709,6 +704,19 @@ public class MenuEntrySwapperPlugin extends Plugin
 		else if (config.swapBones() && option.equals("bury"))
 		{
 			swap("use", option, target, true);
+		}
+
+		if (!config.customSwap().isEmpty())
+		{
+			String[] swaps = config.customSwap().split(",");
+
+			for (String string : swaps)
+			{
+				if (option.equals(string.split(":")[0].split("\\|")[0].toLowerCase()) && target.contains(string.split(":")[0].split("\\|")[1].toLowerCase()))
+				{
+					swap(string.split(":")[1].split("\\|")[0].toLowerCase(), option, string.split(":")[1].split("\\|")[1].toLowerCase(), true);
+				}
+			}
 		}
 	}
 
