@@ -110,7 +110,7 @@ public interface CoxConfig extends Config
 	@ConfigItem(
 		position = 7,
 		keyName = "OlmAttack",
-		name = "Toggle Olm Attack",
+		name = "Show what to pray against Olm's Attack",
 		description = ""
 	)
 	default boolean showOlmAttack()

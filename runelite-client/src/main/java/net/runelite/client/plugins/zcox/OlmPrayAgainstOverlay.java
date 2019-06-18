@@ -62,7 +62,7 @@ class OlmPrayAgainstOverlay extends Overlay
 
 	public Dimension render(Graphics2D graphics2D)
 	{
-		if (plugin.getPrayAgainstOlm() == null || config.showOlmAttack())
+		if (plugin.getPrayAgainstOlm() == null || !config.showOlmAttack())
 		{
 			return null;
 		}
