@@ -339,9 +339,12 @@ public class TheatrePlugin extends Plugin {
 			return;
 		}
 		int Id = 0;
+		// ignore swapper for boss nylo
+		/*
 		if (BossNylo != null) {
 			Id = BossNylo.getId();
 		}
+		*/
 		String target = Text.removeTags(event.getTarget()).toLowerCase();
 		if (attackType != 0) {
 			stripEntries(attackType, target, Id);
@@ -965,10 +968,13 @@ public class TheatrePlugin extends Plugin {
 
 	}
 
-	private void stripEntries(int style, String target, int NyloID) {
+	private void stripEntries(int style, String target, int NyloID)
+	{
 		String Keep = null;
-		if (NyloID == 0) {
-			switch (style) {
+		if (NyloID == 0)
+		{
+			switch (style)
+			{
 				case 1:
 					Keep = "Nylocas Ischyros";
 					break;
@@ -979,53 +985,56 @@ public class TheatrePlugin extends Plugin {
 					Keep = "Nylocas Hagios";
 					break;
 			}
-		} else {
-			Keep = "fuckaadamhypocrticalpos";
-			switch (NyloID) {
+		}
+		else
+		{
+			Keep = "";
+			switch (NyloID)
+			{
 				case 8356://0=idk 1= melee 2= range 3= mage
-					if (style == 3) {
-
+					if (style == 3)
+					{
 						Keep = "Nylocas Vasilias";
 					}
 					break;
 				case 8357:
-					if (style == 2) {
+					if (style == 2)
+					{
 						Keep = "Nylocas Vasilias";
 					}
 					break;
 				default:
-					if (style == 1) {
+					if (style == 1)
+					{
 						Keep = "Nylocas Vasilias";
 					}
 			}
-
 		}
 		int entryLength = 0;
 		List<MenuEntry> entryList = new ArrayList<>();
 		for (MenuEntry entry : client.getMenuEntries()) {
-			if (Text.removeTags(entry.getTarget()).contains(Keep) && entry.getOption().equals("Attack")) {
-
+			if (Text.removeTags(entry.getTarget()).contains(Keep) && entry.getOption().equals("Attack"))
+			{
 				entryList.add(entry);
 				entryLength++;
 			}
-			if (entry.getOption().equalsIgnoreCase("walk here") || entry.getOption().equalsIgnoreCase("pass") || entry.getOption().equalsIgnoreCase("take")) {
+			if (entry.getOption().equalsIgnoreCase("walk here") || entry.getOption().equalsIgnoreCase("pass") || entry.getOption().equalsIgnoreCase("take"))
+			{
 				entryList.add(entry);
 				entryLength++;
 			}
 		}
 
 		//System.out.println("i see " + entryLength + " good options using style" + style);
-		if (entryLength != 0) {
+		if (entryLength != 0)
+		{
 			MenuEntry[] newEntries = new MenuEntry[entryLength];
-
-
-			for (int i = 0; i < (entryLength); i++) {
+			for (int i = 0; i < (entryLength); i++)
+			{
 				newEntries[i] = entryList.get(i);
 			}
 			client.setMenuEntries(newEntries);
 		}
-
-
 	}
 
 	private int searchIndex(MenuEntry[] entries, String option, String target, boolean strict) {
