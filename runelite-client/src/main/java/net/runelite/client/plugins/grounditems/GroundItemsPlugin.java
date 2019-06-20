@@ -62,6 +62,7 @@ import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.ConfigChanged;
 import net.runelite.api.events.FocusChanged;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.ItemQuantityChanged;
 import net.runelite.api.events.ItemSpawned;
@@ -210,6 +211,15 @@ public class GroundItemsPlugin extends Plugin
 			collectedGroundItems.clear();
 		}
 	}
+	@Subscribe
+	public void onGameTick(GameTick event)
+	{
+		for (GroundItem item : collectedGroundItems.values())
+		{
+			if (item.getTicks() == -1) continue;
+			item.setTicks(item.getTicks() - 1);
+		}
+	}
 
 	@Subscribe
 	public void onItemSpawned(ItemSpawned itemSpawned)
@@ -349,6 +359,7 @@ public class GroundItemsPlugin extends Plugin
 			if (groundItem != null)
 			{
 				groundItem.setMine(true);
+				groundItem.setTicks(200);
 
 				boolean shouldNotify = config.onlyShowLoot() && config.highlightedColor().equals(getHighlighted(
 					groundItem.getName(),
@@ -380,8 +391,8 @@ public class GroundItemsPlugin extends Plugin
 			.haPrice(alchPrice)
 			.height(tile.getItemLayer().getHeight())
 			.tradeable(itemComposition.isTradeable())
+			.ticks(100)
 			.build();
-
 
 		// Update item price in case it is coins
 		if (realItemId == COINS)

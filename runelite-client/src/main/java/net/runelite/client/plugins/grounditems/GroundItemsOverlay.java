@@ -254,6 +254,13 @@ public class GroundItemsOverlay extends Overlay
 						.append(StackFormatter.quantityToStackSize(price))
 						.append(" gp)");
 				}
+
+				if (item.getTicks() > 0 && config.showTimer())
+				{
+					itemStringBuilder
+						.append(" - ")
+						.append(item.getTicks());
+				}
 			}
 
 			final String itemString = itemStringBuilder.toString();

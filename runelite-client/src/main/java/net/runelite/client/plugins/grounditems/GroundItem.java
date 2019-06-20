@@ -44,6 +44,7 @@ class GroundItem
 	private int offset;
 	private boolean tradeable;
 	private boolean isMine;
+	private int ticks;
 
 	int getHaPrice()
 	{
