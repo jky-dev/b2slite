@@ -178,8 +178,7 @@ class DiscordState
 		final DiscordPresence.DiscordPresenceBuilder presenceBuilder = DiscordPresence.builder()
 				.state(config.showCustomMessage().isEmpty() ? MoreObjects.firstNonNull(state, "") : config.showCustomMessage()) // place of where you are
 				.details(MoreObjects.firstNonNull(details, "")) // what you are doing
-				.largeImageText("b2sLite")
-				//.largeImageText(properties.getTitle() + " v" + versionShortHand)
+				.largeImageText(properties.getTitle() + " v" + versionShortHand)
 				.startTimestamp(event.getStart())
 				.smallImageKey(imageKey)
 				.partyMax(PARTY_MAX)
