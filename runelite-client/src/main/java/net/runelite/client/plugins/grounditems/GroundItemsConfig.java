@@ -370,4 +370,15 @@ public interface GroundItemsConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "removeTake",
+		name = "Remove take option",
+		description = "Remove option to take item off ground",
+		position = 29
+	)
+	default boolean removeTake()
+	{
+		return false;
+	}
+
 }
