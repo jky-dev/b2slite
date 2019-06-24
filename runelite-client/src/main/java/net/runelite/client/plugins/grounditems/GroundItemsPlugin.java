@@ -390,7 +390,7 @@ public class GroundItemsPlugin extends Plugin
 			.haPrice(alchPrice)
 			.height(tile.getItemLayer().getHeight())
 			.tradeable(itemComposition.isTradeable())
-			.ticks(100)
+			.ticks(tile.getWorldLocation().equals(client.getLocalPlayer().getWorldLocation()) ? 200 : 100)
 			.build();
 
 		// Update item price in case it is coins
