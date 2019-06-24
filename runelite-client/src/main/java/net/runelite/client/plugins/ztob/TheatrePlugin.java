@@ -339,17 +339,13 @@ public class TheatrePlugin extends Plugin {
 			return;
 		}
 		int Id = 0;
-		// ignore swapper for boss nylo
-		/*
 		if (BossNylo != null) {
 			Id = BossNylo.getId();
 		}
-		*/
 		String target = Text.removeTags(event.getTarget()).toLowerCase();
 		if (attackType != 0) {
 			stripEntries(attackType, target, Id);
 		}
-
 	}
 
 	@Subscribe
@@ -378,7 +374,7 @@ public class TheatrePlugin extends Plugin {
 			case NpcID.NYLOCAS_VASILIAS_8355:
 			case NpcID.NYLOCAS_VASILIAS_8356:
 			case NpcID.NYLOCAS_VASILIAS_8357:
-				BossNylo = npc;
+				runNylocas = false;
 				break;
 			case NPCID_NYLOCAS_PILLAR:
 				runNylocas = true;
