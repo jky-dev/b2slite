@@ -97,4 +97,15 @@ public interface ChatNotificationsConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		position = 6,
+		keyName = "notifyOnPM",
+		name = "Notify on PM",
+		description = "Notifies you whenever you receive a PM"
+	)
+	default PmNotification notifyOnPM()
+	{
+		return PmNotification.OFF;
+	}
 }

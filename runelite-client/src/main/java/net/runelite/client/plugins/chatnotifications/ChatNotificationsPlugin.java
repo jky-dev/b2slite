@@ -27,6 +27,7 @@ package net.runelite.client.plugins.chatnotifications;
 
 import com.google.common.base.Strings;
 import com.google.inject.Provides;
+import java.awt.Toolkit;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,6 +47,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.ClientUI;
 import net.runelite.client.util.Text;
 
 @PluginDescriptor(
@@ -58,6 +60,9 @@ public class ChatNotificationsPlugin extends Plugin
 {
 	@Inject
 	private Client client;
+
+	@Inject
+	private ClientUI clientUI;
 
 	@Inject
 	private ChatNotificationsConfig config;
@@ -134,6 +139,16 @@ public class ChatNotificationsPlugin extends Plugin
 
 		switch (chatMessage.getType())
 		{
+			case PRIVATECHAT:
+				if (config.notifyOnPM() == PmNotification.STANDARD)
+				{
+					notifier.notify(chatMessage.getName() + " sent you a PM.");
+				}
+				else if (config.notifyOnPM() == PmNotification.SOUND_ONLY && !clientUI.isFocused())
+				{
+					Toolkit.getDefaultToolkit().beep();
+				}
+				break;
 			case TRADEREQ:
 				if (chatMessage.getMessage().contains("wishes to trade with you.") && config.notifyOnTrade())
 				{
