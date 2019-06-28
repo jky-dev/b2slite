@@ -9,6 +9,7 @@ b2sLite is a fork of the open source OSRS client RuneLite.
 * Persistant flashing notifier
 * Alchemical Hydra helper
 * Chambers of Xerics and Theater of Blood helper plugins
+* Inferno plugin (tm)
 * Grotesque Guardians tile overlays
 * Time Tracker overlay for herbs/birdhouses
 * Screenshot friends/clan members deaths
