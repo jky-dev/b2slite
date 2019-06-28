@@ -22,9 +22,7 @@ public class TheatreXarpusOverlay extends Overlay {
 	private TheatreXarpusOverlay(TheatrePlugin plugin, TheatreConfig config)
 	{
 		super(plugin);
-		setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
-		setPosition(OverlayPosition.DYNAMIC);
-		setPosition(OverlayPosition.DETACHED);
+		setPosition(OverlayPosition.TOP_LEFT);
 		this.plugin = plugin;
 		this.config = config;
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Theatre xarpus overlay"));

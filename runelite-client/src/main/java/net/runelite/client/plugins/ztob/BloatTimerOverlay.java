@@ -54,34 +54,7 @@ public class BloatTimerOverlay extends Overlay {
 				}
 			}
 		}
-
-
-
-
-
 		return null;
-	}
-
-	private void drawTile(Graphics2D graphics, WorldPoint point, Color color, int strokeWidth, int outlineAlpha, int fillAlpha) {
-		WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
-		if (point.distanceTo(playerLocation) >= 32) {
-			return;
-		}
-		LocalPoint lp = LocalPoint.fromWorld(client, point);
-		if (lp == null) {
-			return;
-		}
-
-		Polygon poly = Perspective.getCanvasTilePoly(client, lp);
-		if (poly == null) {
-			return;
-		}
-		//OverlayUtil.renderPolygon(graphics, poly, color);
-		graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), outlineAlpha));
-		graphics.setStroke(new BasicStroke(strokeWidth));
-		graphics.draw(poly);
-		graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), fillAlpha));
-		graphics.fill(poly);
 	}
 
 	private void renderTextLocation(Graphics2D graphics, String txtString, int fontSize, int fontStyle, Color fontColor, net.runelite.api.Point canvasPoint)

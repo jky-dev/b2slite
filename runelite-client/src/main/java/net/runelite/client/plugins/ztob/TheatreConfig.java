@@ -8,9 +8,12 @@
 
 package net.runelite.client.plugins.ztob;
 
+import java.awt.Color;
+import java.awt.event.KeyEvent;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ModifierlessKeybind;
 import net.runelite.client.config.Range;
 
 @ConfigGroup("Theatre")
@@ -30,6 +33,17 @@ public interface TheatreConfig extends Config
 
 	@ConfigItem(
 		position = 1,
+		keyName = "maidenPoolColor",
+		name = "Maiden Pool Color",
+		description = "Configures the color for Maiden pools"
+	)
+	default Color maidenColor()
+	{
+		return Color.WHITE;
+	}
+
+	@ConfigItem(
+		position = 2,
 		keyName = "MaidenSpawns",
 		name = "Maiden blood spawns",
 		description = ""
@@ -40,7 +54,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 2,
+		position = 3,
 		keyName = "BloatIndicator",
 		name = "Bloat Indicator",
 		description = ""
@@ -51,7 +65,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 3,
+		position = 4,
 		keyName = "bloat Timer",
 		name = "Bloat Timer",
 		description = ""
@@ -62,7 +76,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 4,
+		position = 5,
 		keyName = "bloatFeet",
 		name = "Bloat Feet",
 		description = ""
@@ -73,7 +87,18 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 5,
+		position = 6,
+		keyName = "bloatColor",
+		name = "Bloat Feet Color",
+		description = "Configures the color for falling feet"
+	)
+	default Color bloatColor()
+	{
+		return Color.WHITE;
+	}
+
+	@ConfigItem(
+		position = 7,
 		keyName = "NyloPillars",
 		name = "Nylocas pillar health",
 		description = ""
@@ -86,7 +111,7 @@ public interface TheatreConfig extends Config
 
 
 	@ConfigItem(
-		position = 6,
+		position = 8,
 		keyName = "NyloBlasts",
 		name = "Nylocas explosions",
 		description = ""
@@ -97,7 +122,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 7,
+		position = 9,
 		keyName = "NyloMenu",
 		name = "Hide Attack options for Nylocas",
 		description = ""
@@ -108,7 +133,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 8,
+		position = 10,
 		keyName = "highlightSote",
 		name = "Sote Missiles",
 		description = "Highlight Sotetseg's Missiles with pray type"
@@ -119,7 +144,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 9,
+		position = 11,
 		keyName = "SotetsegMaze1",
 		name = "Sotetseg maze",
 		description = ""
@@ -130,7 +155,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 10,
+		position = 12,
 		keyName = "SotetsegMaze2",
 		name = "Sotetseg maze (solo mode)",
 		description = ""
@@ -141,7 +166,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 11,
+		position = 13,
 		keyName = "XarpusExhumed",
 		name = "Xarpus Exhumed",
 		description = ""
@@ -152,7 +177,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 12,
+		position = 14,
 		keyName = "XarpusTick",
 		name = "Xarpus Tick",
 		description = ""
@@ -163,7 +188,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 13,
+		position = 15,
 		keyName = "xarpusExhumes",
 		name = "Xarpus Exhume Counter",
 		description = ""
@@ -174,7 +199,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 14,
+		position = 16,
 		keyName = "VerzikCupcakes",
 		name = "Verzik Projectile Markers",
 		description = ""
@@ -185,7 +210,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 15,
+		position = 17,
 		keyName = "VerzikTick",
 		name = "Verzik P3 Tick",
 		description = ""
@@ -196,7 +221,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 16,
+		position = 18,
 		keyName = "VerzikMelee",
 		name = "Verzik P3 Melee Range",
 		description = ""
@@ -207,7 +232,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 17,
+		position = 19,
 		keyName = "VerzikYellow",
 		name = "Verzik Yellow Timing",
 		description = ""
@@ -218,7 +243,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 18,
+		position = 20,
 		keyName = "Verzik Nylo",
 		name = "Verzik Nylo Overlay",
 		description = ""
@@ -229,7 +254,7 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 19,
+		position = 21,
 		keyName = "VerzikTankTile",
 		name = "Verzik P3 Tile Overlay",
 		description = ""
@@ -237,6 +262,17 @@ public interface TheatreConfig extends Config
 	default boolean verzikTankTile()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		position = 22,
+		keyName = "VerzikP3TimerKey",
+		name = "Verzik P3 Manual Timer Key",
+		description = ""
+	)
+	default ModifierlessKeybind verzikTimerKey()
+	{
+		return new ModifierlessKeybind(KeyEvent.VK_S, 0);
 	}
 
 

@@ -46,6 +46,7 @@ import net.runelite.api.kit.KitType;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -214,6 +215,8 @@ public class TheatrePlugin extends Plugin {
 
 	private int P3_attacksLeft;
 
+	private boolean tornadosActive = false;
+
 	@Inject
 	private Client client;
 
@@ -353,12 +356,16 @@ public class TheatrePlugin extends Plugin {
 
 		NPC npc = npcSpawned.getNpc();
 		switch (npc.getId()) {
+			case NPC_ID_TORNADO:
+				tornadosActive = true;
+				break;
 			case NpcID.THE_MAIDEN_OF_SUGADINTI:
 			case NpcID.THE_MAIDEN_OF_SUGADINTI_8361:
 			case NpcID.THE_MAIDEN_OF_SUGADINTI_8362:
 			case NpcID.THE_MAIDEN_OF_SUGADINTI_8363:
 			case NpcID.THE_MAIDEN_OF_SUGADINTI_8364:
 			case NpcID.THE_MAIDEN_OF_SUGADINTI_8365:
+				tornadosActive = false;
 				runMaiden = true;
 				break;
 			case NpcID.BLOOD_SPAWN:
@@ -408,7 +415,7 @@ public class TheatrePlugin extends Plugin {
 			case NpcID.XARPUS_8340:
 			case NpcID.XARPUS_8341:
 				runXarpus = true;
-				exhumecount = 25;
+				exhumecount = 15;
 				Xarpus_NPC = npc;
 				Xarpus_Stare = false;
 				Xarpus_TicksUntilShoot = 9;
@@ -582,11 +589,14 @@ public class TheatrePlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onVarbitChanged(VarbitChanged event) {
-		if (runBloat) {
-
-			if (client.getVar(Varbits.BLOAT_ENTERED_ROOM) == 1) {
-				if (!bloatFlag) {
+	public void onVarbitChanged(VarbitChanged event)
+	{
+		if (runBloat)
+		{
+			if (client.getVar(Varbits.BLOAT_ENTERED_ROOM) == 1)
+			{
+				if (!bloatFlag)
+				{
 					bloatTimer = 0;
 					bloatFlag = true;
 				}
@@ -595,11 +605,14 @@ public class TheatrePlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onGraphicsObjectCreated(GraphicsObjectCreated event) {
+	public void onGraphicsObjectCreated(GraphicsObjectCreated event)
+	{
 		GraphicsObject obj = event.getGraphicsObject();
-		if (obj.getId() == 1570 || obj.getId() == 1571 || obj.getId() == 1572 || obj.getId() == 1573 || obj.getId() == 1574 || obj.getId() == 1575 || obj.getId() == 1576) {
+		if (obj.getId() == 1570 || obj.getId() == 1571 || obj.getId() == 1572 || obj.getId() == 1573 || obj.getId() == 1574 || obj.getId() == 1575 || obj.getId() == 1576)
+		{
 			WorldPoint p = WorldPoint.fromLocal(client, obj.getLocation());
-			if (temp.size() == 0) {
+			if (temp.size() == 0)
+			{
 
 			} else {
 
@@ -607,13 +620,15 @@ public class TheatrePlugin extends Plugin {
 		}
 	}
 
-
 	@Subscribe
 	public void onGameTick(GameTick event) {
-		if (runMaiden) {
+		if (runMaiden)
+		{
 			Maiden_BloodSpatters.clear();
-			for (GraphicsObject o : client.getGraphicsObjects()) {
-				if (o.getId() == GRAPHICSOBJECT_ID_MAIDEN) {
+			for (GraphicsObject o : client.getGraphicsObjects())
+			{
+				if (o.getId() == GRAPHICSOBJECT_ID_MAIDEN)
+				{
 					Maiden_BloodSpatters.add(WorldPoint.fromLocal(client, o.getLocation()));
 				}
 			}
@@ -621,50 +636,52 @@ public class TheatrePlugin extends Plugin {
 			Maiden_SpawnLocations2.clear();
 			Maiden_SpawnLocations2.addAll(Maiden_SpawnLocations);
 			Maiden_SpawnLocations.clear();
-			for (NPC spawn : Maiden_Spawns) {
+			for (NPC spawn : Maiden_Spawns)
+			{
 				Maiden_SpawnLocations.add(spawn.getWorldLocation());
 			}
 		}
 
-		if (runBloat) {
-
+		if (runBloat)
+		{
 			localTemp.clear();
-
 			//System.out.println("Temp flag" + tempFlag);
 			//System.out.println("Temp2 flag" + temp2Flag);
-
-
-			for (GraphicsObject obj : client.getGraphicsObjects()) {
-				if (obj.getId() == 1570 || obj.getId() == 1571 || obj.getId() == 1572 || obj.getId() == 1573 || obj.getId() == 1574 || obj.getId() == 1575 || obj.getId() == 1576) {
+			for (GraphicsObject obj : client.getGraphicsObjects())
+			{
+				if (obj.getId() == 1570 || obj.getId() == 1571 || obj.getId() == 1572 || obj.getId() == 1573 || obj.getId() == 1574 || obj.getId() == 1575 || obj.getId() == 1576)
+				{
 					WorldPoint p = WorldPoint.fromLocal(client, obj.getLocation());
 					//Already have some feet in temp Set
-					if (temp.size() > 0) {
+					if (temp.size() > 0)
+					{
 						//System.out.println("temp size > 0, tempflag set false, tempflag2 set true");
 						tempFlag = false;
 						temp2Flag = true;
-					} else {
+					}
+					else
+					{
 						//System.out.println("temp size 0, tempflag set true, tempflag2 set false");
 						tempFlag = true;
 						temp2Flag = false;
-
 					}
 					localTemp.add(p);
 				}
 			}
 
-			if (tempFlag) {
+			if (tempFlag)
+			{
 				temp2.clear();
 				temp2Flag = false;
 				temp.addAll(localTemp);
-
-
 				//System.out.println("temp2 cleared, temp2flag set false, added to temp set");
-			} else if (temp2Flag) {
+			}
+			else if (temp2Flag)
+			{
 				temp.clear();
 				tempFlag = false;
 				temp2.addAll(localTemp);
 				//System.out.println("temp cleared, tempflag set false, added to temp2 set");
-
 			}
 
 			Bloat_downCount++;
@@ -673,9 +690,11 @@ public class TheatrePlugin extends Plugin {
 			{
 				bloatTimer++;
 				Bloat_downCount = 0;
-				if (Bloat_NPC.getHealth() == 0) {
+				if (Bloat_NPC.getHealth() == 0)
+				{
 					Bloat_State = 2;
-				} else
+				}
+				else
 					Bloat_State = 1;
 			} else {
 				if (25 < Bloat_downCount && Bloat_downCount < 35) {
@@ -845,7 +864,6 @@ public class TheatrePlugin extends Plugin {
 				//}
 				//Xarpus_previousAnimation = Xarpus_NPC.getAnimation();
 			}
-
 		}
 
 		if (runVerzik) {
@@ -885,16 +903,8 @@ public class TheatrePlugin extends Plugin {
 				}
 			}
 
-			if (Verzik_NPC.getId() == VERZIK_ID_P3) {
-				boolean tornadosActive = false;
-				for (NPC npc : client.getNpcs()) {
-					if (npc.getId() == NPC_ID_TORNADO) {
-						tornadoList.add(npc);
-						tornadosActive = true;
-						break;
-					}
-				}
-
+			if (Verzik_NPC.getId() == VERZIK_ID_P3)
+			{
 				boolean isGreenBall = false;
 				for (Projectile projectile : client.getProjectiles()) {
 					if (projectile.getId() == PROJECTILE_ID_P3_GREEN) {
@@ -958,10 +968,7 @@ public class TheatrePlugin extends Plugin {
 						break;
 				}
 			}
-
 		}
-
-
 	}
 
 	private void stripEntries(int style, String target, int NyloID)

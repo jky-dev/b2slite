@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import net.runelite.api.Client;
+import net.runelite.api.GraphicsObject;
 import net.runelite.api.GroundObject;
 import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
@@ -53,13 +54,17 @@ public class TheatreOverlay extends Overlay {
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
+		List<GraphicsObject> graphicsObjects = client.getGraphicsObjects();
+
 		if (plugin.isRunMaiden())
 		{
 			if (config.MaidenBlood())
 			{
-				for (WorldPoint point : plugin.getMaiden_BloodSpatters())
+				for (GraphicsObject graphicsObject : graphicsObjects)
 				{
-					drawTile(graphics, point, new Color(36, 248, 229), 2, 150, 10);
+					if (graphicsObject.getId() != 1579) continue;
+
+					drawPolygon(graphicsObject, graphics, config.maidenColor());
 				}
 			}
 
@@ -80,32 +85,11 @@ public class TheatreOverlay extends Overlay {
 		{
 			if (config.bloatFeetIndicator())
 			{
-				if (plugin.getTemp().size() > 0)
+				for (GraphicsObject graphicsObject : graphicsObjects)
 				{
-					if (plugin.isTempFlag())
-					{
-						for (WorldPoint point : plugin.getTemp())
-						{
+					if (graphicsObject.getId() < 1570 || graphicsObject.getId() > 1573) continue;
 
-							drawTile(graphics, point, Color.black, 4, 255, 0);
-
-						}
-
-					}
-				}
-				else if (plugin.getTemp2().size() > 0)
-				{
-					if (plugin.isTemp2Flag())
-					{
-						for (WorldPoint point : plugin.getTemp2())
-						{
-
-							drawTile(graphics, point, Color.black, 4, 255, 0);
-
-
-						}
-
-					}
+					drawPolygon(graphicsObject, graphics, config.bloatColor());
 				}
 			}
 			NPC bloat = plugin.getBloat_NPC();
@@ -228,7 +212,6 @@ public class TheatreOverlay extends Overlay {
 			}
 		}
 
-
 		if (plugin.isRunXarpus())
 		{
 			NPC boss = plugin.getXarpus_NPC();
@@ -279,8 +262,6 @@ public class TheatreOverlay extends Overlay {
 
 		if (plugin.isRunVerzik())
 		{
-
-
 			if (config.VerzikCupcakes())
 			{
 				for (WorldPoint p : plugin.getVerzik_RangeProjectiles().values())
@@ -350,6 +331,17 @@ public class TheatreOverlay extends Overlay {
 		}
 
 		return null;
+	}
+
+	private void drawPolygon(GraphicsObject graphicsObject, Graphics2D graphics, Color color)
+	{
+		LocalPoint lp = graphicsObject.getLocation();
+		Polygon poly = Perspective.getCanvasTilePoly(client, lp);
+
+		if (poly != null)
+		{
+			OverlayUtil.renderPolygon(graphics, poly, color);
+		}
 	}
 
 	private void drawTile(Graphics2D graphics, WorldPoint point, Color color, int strokeWidth, int outlineAlpha, int fillAlpha) {
