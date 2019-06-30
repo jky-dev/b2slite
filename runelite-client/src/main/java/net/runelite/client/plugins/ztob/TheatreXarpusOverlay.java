@@ -28,15 +28,15 @@ public class TheatreXarpusOverlay extends Overlay {
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Theatre xarpus overlay"));
 
 	}
+
 	@Override
 	public Dimension render(Graphics2D graphics) {
 		if (plugin.isRunXarpus())
 		{
-			if (config.XarpusExhumeOverlay()) {
-				if (plugin.getXarpus_NPC().getId() == 8339) {
+			if (config.XarpusExhumeOverlay() && plugin.getXarpus_NPC().getId() == 8339)
+			{
 					panelComponent.getChildren().clear();
 					String overlayTitle = "Exhume Counter";
-
 
 					// Build overlay title
 					panelComponent.getChildren().add(TitleComponent.builder()
@@ -44,16 +44,10 @@ public class TheatreXarpusOverlay extends Overlay {
 						.color(Color.GREEN)
 						.build());
 
-					//Set the size of overlay
-					panelComponent.setPreferredSize(new Dimension(
-						graphics.getFontMetrics().stringWidth(overlayTitle) + 30, 0
-					));
-
 					panelComponent.getChildren().add(LineComponent.builder()
 						.left("Exhumes: ")
 						.right(String.valueOf(plugin.getExhumecount()))
 						.build());
-				}
 			}
 			return panelComponent.render(graphics);
 		}
