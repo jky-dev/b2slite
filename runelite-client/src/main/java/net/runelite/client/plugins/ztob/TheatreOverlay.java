@@ -231,9 +231,6 @@ public class TheatreOverlay extends Overlay {
 			{
 				for (GroundObject o : plugin.getXarpus_Exhumeds().keySet())
 				{
-
-
-
 					Polygon poly = o.getCanvasTilePoly();
 					if (poly != null)
 					{
@@ -251,14 +248,9 @@ public class TheatreOverlay extends Overlay {
 						Point point = ex.getCanvasTextLocation(graphics, ticksremaining, 0);
 						renderTextLocation(graphics, ticksremaining, 12, Font.BOLD, Color.white, point);
 					}
-
 				}
-
-
 			}
-
 		}
-
 
 		if (plugin.isRunVerzik())
 		{
