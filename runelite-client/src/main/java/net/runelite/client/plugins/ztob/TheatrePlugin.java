@@ -8,8 +8,10 @@
 
 package net.runelite.client.plugins.ztob;
 
+import com.google.errorprone.annotations.Var;
 import com.google.inject.Provides;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,7 +55,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
 
 @PluginDescriptor(
-	name = "Theater of Blood",
+	name = "Theatre of Blood",
 	description = "All-in-one plugin for Theatre of Blood",
 	tags = {"ToB", "theatre", "blood"}
 )
@@ -217,6 +219,14 @@ public class TheatrePlugin extends Plugin {
 
 	private boolean tornadosActive = false;
 
+	@Getter
+	private boolean correctSpellbook = false;
+
+	@Getter
+	private boolean inTobLobby = false;
+
+	private final int TOB_LOBBY = 14642;
+
 	@Inject
 	private Client client;
 
@@ -241,6 +251,8 @@ public class TheatrePlugin extends Plugin {
 	@Inject
 	private BloatTimerOverlay bloatTimerOverlay;
 
+	@Inject TheatreReminderOverlay reminderOverlay;
+
 	@Provides
 	TheatreConfig getConfig(ConfigManager configManager) {
 		return configManager.getConfig(TheatreConfig.class);
@@ -252,6 +264,7 @@ public class TheatrePlugin extends Plugin {
 		overlayManager.add(xarpusOverlay);
 		overlayManager.add(verzikNyloOverlay);
 		overlayManager.add(bloatTimerOverlay);
+		overlayManager.add(reminderOverlay);
 	}
 
 	@Override
@@ -260,6 +273,7 @@ public class TheatrePlugin extends Plugin {
 		overlayManager.remove(xarpusOverlay);
 		overlayManager.remove(xarpusOverlay);
 		overlayManager.remove(bloatTimerOverlay);
+		overlayManager.add(reminderOverlay);
 	}
 
 	@Subscribe
@@ -602,6 +616,11 @@ public class TheatrePlugin extends Plugin {
 				}
 			}
 		}
+
+		if (client.getVar(Varbits.SPELLBOOK) == 1)
+		{
+			correctSpellbook = true;
+		}
 	}
 
 	@Subscribe
@@ -622,6 +641,7 @@ public class TheatrePlugin extends Plugin {
 
 	@Subscribe
 	public void onGameTick(GameTick event) {
+		inTobLobby = client.getLocalPlayer().getWorldLocation().getRegionID() == TOB_LOBBY;
 		if (runMaiden)
 		{
 			Maiden_BloodSpatters.clear();

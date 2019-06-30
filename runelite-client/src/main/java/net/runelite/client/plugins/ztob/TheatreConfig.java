@@ -266,13 +266,13 @@ public interface TheatreConfig extends Config
 
 	@ConfigItem(
 		position = 22,
-		keyName = "VerzikP3TimerKey",
-		name = "Verzik P3 Manual Timer Key",
-		description = ""
+		keyName = "ancientsReminder",
+		name = "Spellbook reminder",
+		description = "Checks to see if you are on the Ancient spellbook"
 	)
-	default ModifierlessKeybind verzikTimerKey()
+	default boolean ancientsReminder()
 	{
-		return new ModifierlessKeybind(KeyEvent.VK_S, 0);
+		return true;
 	}
 
 
