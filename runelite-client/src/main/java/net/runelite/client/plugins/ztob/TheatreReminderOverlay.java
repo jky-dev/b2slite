@@ -28,7 +28,6 @@ public class TheatreReminderOverlay extends Overlay {
 	}
 	@Override
 	public Dimension render(Graphics2D graphics) {
-
 		if (plugin.isInTobLobby() && !plugin.isCorrectSpellbook() && config.ancientsReminder())
 		{
 			panelComponent.getChildren().clear();
@@ -37,12 +36,10 @@ public class TheatreReminderOverlay extends Overlay {
 				.text("ANCIENTS PLEASE")
 				.color(Color.RED)
 				.build());
-
 			return panelComponent.render(graphics);
 		}
 
 		return null;
-
 	}
 
 

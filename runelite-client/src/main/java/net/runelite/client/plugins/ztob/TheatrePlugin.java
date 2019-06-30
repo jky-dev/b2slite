@@ -617,10 +617,7 @@ public class TheatrePlugin extends Plugin {
 			}
 		}
 
-		if (client.getVar(Varbits.SPELLBOOK) == 1)
-		{
-			correctSpellbook = true;
-		}
+		correctSpellbook = client.getVar(Varbits.SPELLBOOK) == 1;
 	}
 
 	@Subscribe
