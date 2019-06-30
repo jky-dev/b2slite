@@ -43,12 +43,13 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.ProjectileMoved;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 @PluginDescriptor(
@@ -68,6 +69,7 @@ public class HydraPlugin extends Plugin
 
 	private boolean inHydraInstance;
 	private int lastAttackTick;
+	private int currentHydraID;
 
 	private static final int[] HYDRA_REGIONS = {
 		5279, 5280,
@@ -105,7 +107,7 @@ public class HydraPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onGameStateChanged(GameStateChanged state)
+	public void onGameStateChanged(GameStateChanged state)
 	{
 		if (state.getGameState() != GameState.LOGGED_IN)
 		{
@@ -130,6 +132,8 @@ public class HydraPlugin extends Plugin
 			if (npc.getId() == NpcID.ALCHEMICAL_HYDRA)
 			{
 				hydra = new Hydra(npc);
+				currentHydraID = NpcID.ALCHEMICAL_HYDRA;
+				inHydraInstance = true;
 				break;
 			}
 		}
@@ -138,15 +142,74 @@ public class HydraPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onNpcSpawned(NpcSpawned event)
+	public void onGameTick(GameTick event)
 	{
-		if (!inHydraInstance || event.getNpc().getId() != NpcID.ALCHEMICAL_HYDRA)
+		for (NPC npc : client.getNpcs())
 		{
+			int id = npc.getId();
+			if (id == currentHydraID) return;
+			if (id == 8619 || id == 8620 || id == 8621)
+			{
+				log.debug("onGameTick: switching");
+				switch (id)
+				{
+					case NpcID.ALCHEMICAL_HYDRA_8619:
+						hydra.changePhase(HydraPhase.TWO);
+						break;
+					case NpcID.ALCHEMICAL_HYDRA_8620:
+						hydra.changePhase(HydraPhase.THREE);
+						break;
+					case NpcID.ALCHEMICAL_HYDRA_8621:
+						hydra.changePhase(HydraPhase.FOUR);
+						break;
+				}
+				currentHydraID = id;
+				log.debug("onGameTick: current = {}", currentHydraID);
+			}
+
+		}
+	}
+
+	@Subscribe
+	public void onNpcSpawned(NpcSpawned event)
+	{
+//		if (!inHydraInstance || event.getNpc().getId() != NpcID.ALCHEMICAL_HYDRA)
+//		{
+//			return;
+//		}
+		if (!inHydraInstance) return;
+		log.debug("spawned {}", event.getNpc().getId());
+//		hydra = new Hydra(event.getNpc());
+//		addOverlays();
+		log.debug("npc spawned now switching");
+		switch (event.getNpc().getId())
+		{
+			case NpcID.ALCHEMICAL_HYDRA:
+				hydra = new Hydra(event.getNpc());
+				inHydraInstance = true;
+				break;
+			case NpcID.ALCHEMICAL_HYDRA_8619:
+				hydra.changePhase(HydraPhase.TWO);
+				break;
+			case NpcID.ALCHEMICAL_HYDRA_8620:
+				hydra.changePhase(HydraPhase.THREE);
+				break;
+			case NpcID.ALCHEMICAL_HYDRA_8621:
+				hydra.changePhase(HydraPhase.FOUR);
+				break;
+		}
+	}
+
+	@Subscribe
+	public void onNpcDespawned(NpcDespawned event)
+	{
+		if (event.getNpc().getId() == NpcID.ALCHEMICAL_HYDRA_8621)
+		{
+			hydra = null;
+			poisonProjectiles.clear();
+			removeOverlays();
 			return;
 		}
-
-		hydra = new Hydra(event.getNpc());
-		addOverlays();
 	}
 
 	@Subscribe
@@ -166,16 +229,21 @@ public class HydraPlugin extends Plugin
 			|| actor.getAnimation() == phase.getDeathAnim1() &&
 			phase == HydraPhase.THREE) // We want the pray to switch ye ok ty
 		{
+			log.debug("anim: changed switch");
+
 			switch (phase)
 			{
 				case ONE:
 					hydra.changePhase(HydraPhase.TWO);
+					log.debug("switch to phase 2");
 					return;
 				case TWO:
 					hydra.changePhase(HydraPhase.THREE);
+					log.debug("switch to phase 3");
 					return;
 				case THREE:
 					hydra.changePhase(HydraPhase.FOUR);
+					log.debug("switch to phase 4");
 					return;
 				case FOUR:
 					hydra = null;
@@ -190,11 +258,13 @@ public class HydraPlugin extends Plugin
 
 		else if (actor.getAnimation() == phase.getSpecAnimationId() && phase.getSpecAnimationId() != 0)
 		{
+			log.debug("anim: changed setting next special");
 			hydra.setNextSpecial(hydra.getNextSpecial() + 9);
 		}
 
 		if (poisonProjectiles.isEmpty())
 		{
+			log.debug("anim: pois empty");
 			return;
 		}
 
@@ -203,11 +273,13 @@ public class HydraPlugin extends Plugin
 		{
 			if (entry.getValue().getEndCycle() < client.getGameCycle())
 			{
+				log.debug("anim: adding poison projectile");
 				exPoisonProjectiles.add(entry.getKey());
 			}
 		}
 		for (LocalPoint toRemove : exPoisonProjectiles)
 		{
+			log.debug("anim: removing projectile");
 			poisonProjectiles.remove(toRemove);
 		}
 	}
@@ -228,6 +300,7 @@ public class HydraPlugin extends Plugin
 		{
 			if (hydra.getAttackCount() == hydra.getNextSpecial())
 			{
+				log.debug("projMoved: setting next special");
 				// Only add 9 to next special on the first poison projectile (whoops)
 				hydra.setNextSpecial(hydra.getNextSpecial() + 9);
 			}
@@ -237,6 +310,7 @@ public class HydraPlugin extends Plugin
 		else if (client.getTickCount() != lastAttackTick
 			&& (id == Hydra.AttackStyle.MAGIC.getProjectileID() || id == Hydra.AttackStyle.RANGED.getProjectileID()))
 		{
+			log.debug("projMoved: handling attack");
 			hydra.handleAttack(id);
 			lastAttackTick = client.getTickCount();
 		}
