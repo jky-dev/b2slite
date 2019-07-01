@@ -35,6 +35,7 @@ import io.sigpipe.jbsdiff.InvalidHeaderException;
 import io.sigpipe.jbsdiff.Patch;
 import java.applet.Applet;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -194,6 +195,11 @@ public class ClientLoader
 					Patch.patch(file.getValue(), bytes, patchOs);
 					file.setValue(patchOs.toByteArray());
 
+					// output bytestream to file
+					FileOutputStream fos = new FileOutputStream("C:/Users/Admin/Desktop/RL/" + file.getKey());
+					fos.write(patchOs.toByteArray());
+					fos.close();
+
 					++patchCount;
 				}
 
@@ -254,7 +260,6 @@ public class ClientLoader
 	}
 }
 */
-
 /*
  * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
  * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
@@ -281,60 +286,153 @@ public class ClientLoader
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package net.runelite.client.rs;
 
-	import com.google.common.hash.Hashing;
-	import com.google.common.io.ByteStreams;
-	import com.google.common.reflect.TypeToken;
-	import com.google.gson.Gson;
-	import io.sigpipe.jbsdiff.InvalidHeaderException;
-	import io.sigpipe.jbsdiff.Patch;
-	import java.applet.Applet;
-	import java.io.*;
-	import java.net.URI;
-	import java.net.URISyntaxException;
-	import java.net.URL;
-	import java.net.URLConnection;
-	import java.nio.file.FileSystems;
-	import java.nio.file.Files;
-	import java.nio.file.Path;
-	import java.nio.file.Paths;
-	import java.security.cert.Certificate;
-	import java.security.cert.CertificateException;
-	import java.security.cert.CertificateFactory;
-	import java.util.*;
-	import java.util.jar.JarEntry;
-	import java.util.jar.JarInputStream;
-	import javax.inject.Inject;
-	import javax.inject.Named;
-	import javax.inject.Singleton;
-	import lombok.extern.slf4j.Slf4j;
-	import static net.runelite.client.rs.ClientUpdateCheckMode.AUTO;
-	import static net.runelite.client.rs.ClientUpdateCheckMode.NONE;
-	import static net.runelite.client.rs.ClientUpdateCheckMode.VANILLA;
-	import net.runelite.http.api.RuneLiteAPI;
-	import okhttp3.Request;
-	import okhttp3.Response;
-	import org.apache.commons.compress.compressors.CompressorException;
-	import org.apache.commons.compress.utils.IOUtils;
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteStreams;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import io.sigpipe.jbsdiff.InvalidHeaderException;
+import io.sigpipe.jbsdiff.Patch;
+import java.applet.Applet;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
+import static net.runelite.client.rs.ClientUpdateCheckMode.AUTO;
+import static net.runelite.client.rs.ClientUpdateCheckMode.NONE;
+import static net.runelite.client.rs.ClientUpdateCheckMode.VANILLA;
+import net.runelite.http.api.RuneLiteAPI;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.utils.IOUtils;
 
 @Slf4j
 @Singleton
 public class ClientLoader
 {
-	void deleteDir(File file) {
+	private static final File RUNELITE_DIR = new File(System.getProperty("user.home"), ".runelite");
+	private static final File PATCHES_DIR = new File(RUNELITE_DIR, "patches");
+
+	void deleteDir(File file)
+	{
 		File[] contents = file.listFiles();
-		if (contents != null) {
-			for (File f : contents) {
-				if (! Files.isSymbolicLink(f.toPath())) {
+		if (contents != null)
+		{
+			for (File f : contents)
+			{
+				if (! Files.isSymbolicLink(f.toPath()))
+				{
 					deleteDir(f);
 				}
 			}
 		}
 		file.delete();
 	}
+
+	void downloadPatches()
+	{
+		deleteDir(PATCHES_DIR);
+		if (PATCHES_DIR.mkdirs()) log.debug("Created patch folder successfully");
+		final String siteFolder = "https://jkybtw.github.io/b2slite/patches/";
+		log.debug(PATCHES_DIR.getPath());
+		URL url2;
+		URLConnection con;
+		DataInputStream dis;
+		FileOutputStream fos;
+		byte[] fileData;
+
+		try
+		{
+			url2 = new URL(siteFolder + "classes.dat"); //File Location goes here
+			con = url2.openConnection(); // open the url connection.
+			dis = new DataInputStream(con.getInputStream());
+			fileData = new byte[con.getContentLength()];
+			for (int q = 0; q < fileData.length; q++)
+			{
+				fileData[q] = dis.readByte();
+			}
+			InputStream is = null;
+			BufferedReader bfReader = null;
+			dis.close(); // close the data input stream
+			fos = new FileOutputStream(new File(PATCHES_DIR, "classes.dat")); //FILE Save Location goes here
+			fos.write(fileData);  // write out the file we want to save.
+			fos.close(); // close the output stream writer
+			log.debug("Downloaded classes.dat");
+		}
+		catch (Exception m)
+		{
+			System.out.println(m);
+		}
+
+		try
+		{
+			Scanner s = new Scanner(new File(PATCHES_DIR.getPath() + "\\classes.dat"));
+			ArrayList<String> list = new ArrayList<String>();
+			while (s.hasNext())
+			{
+				list.add(s.next());
+				log.debug("Added to list");
+			}
+			s.close();
+			log.debug(Integer.toString(list.size()));
+			// download the patches from LL
+			for(String class_file : list)
+			{
+				log.debug("Trying to dl {}", class_file);
+				File file = new File(PATCHES_DIR.getPath() + "\\" + class_file);
+				file.delete();
+				try
+				{
+					url2 = new URL(siteFolder+class_file); //File Location goes here
+					con = url2.openConnection(); // open the url connection.
+					dis = new DataInputStream(con.getInputStream());
+					fileData = new byte[con.getContentLength()];
+					for (int q = 0; q < fileData.length; q++)
+					{
+						fileData[q] = dis.readByte();
+					}
+					log.debug("Finishing reading bytes");
+					InputStream is = null;
+					BufferedReader bfReader = null;
+					dis.close(); // close the data input stream
+					fos = new FileOutputStream(new File(PATCHES_DIR, class_file)); //FILE Save Location goes here
+					fos.write(fileData);  // write out the file we want to save.
+					fos.close(); // close the output stream writer
+					log.debug("Downloaded " + class_file);
+				}
+				catch (Exception m)
+				{
+					System.out.println(m);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+
+		}
+	}
+
 	private final ClientConfigLoader clientConfigLoader;
 	private ClientUpdateCheckMode updateCheckMode;
+
 	@Inject
 	private ClientLoader(
 		@Named("updateCheckMode") final ClientUpdateCheckMode updateCheckMode,
@@ -345,91 +443,15 @@ public class ClientLoader
 	}
 
 	public Applet load() throws FileNotFoundException {
-		String dataFolder;
 
-		String OS = (System.getProperty("os.name")).toUpperCase();
+		PATCHES_DIR.mkdirs();
 
-		if (OS.contains("WIN"))
-		{
-			dataFolder = System.getenv("AppData");
-			dataFolder += "/Lyzrds/patches/";
-		}
-		else
-		{
-			dataFolder = System.getProperty("user.home");
-			dataFolder += "/Library/Application Support/Lyzrds/patches/";
-		}
-		deleteDir(new File(dataFolder));
-		if(Files.exists(Paths.get(dataFolder))){
+		// downloads patches to patch directory
+		downloadPatches();
 
-		}else{
-			boolean success = (new File(dataFolder)).mkdirs();
-			if (!success) {
-				// Directory creation failed
-				System.out.println("Failed to create directory");
-			}else{
-				System.out.println("Successfully created directory");
-			}
-		}
+		// set the patch folder to our runelite/patches folder
+		File[] patches = PATCHES_DIR.listFiles();
 
-
-		URL url2;
-		URLConnection con;
-		DataInputStream dis;
-		FileOutputStream fos;
-		byte[] fileData;
-
-		try {
-			url2 = new URL("http://158.69.209.247/runelite/downloads/classes.dat"); //File Location goes here
-			con = url2.openConnection(); // open the url connection.
-			dis = new DataInputStream(con.getInputStream());
-			fileData = new byte[con.getContentLength()];
-			for (int q = 0; q < fileData.length; q++) {
-				fileData[q] = dis.readByte();
-			}
-			InputStream is = null;
-			BufferedReader bfReader = null;
-			dis.close(); // close the data input stream
-			fos = new FileOutputStream(new File(dataFolder + "classes.dat")); //FILE Save Location goes here
-			fos.write(fileData);  // write out the file we want to save.
-			fos.close(); // close the output stream writer
-		} catch (Exception m) {
-			System.out.println(m);
-		}
-		Scanner s = new Scanner(new File(dataFolder + "classes.dat"));
-		ArrayList<String> list = new ArrayList<String>();
-		while (s.hasNext()){
-			list.add(s.next());
-		}
-		s.close();
-		for(String class_file : list){
-			File file = new File(dataFolder + class_file);
-			file.delete();
-
-			try {
-				url2 = new URL("http://158.69.209.247/runelite/downloads/classes/"+class_file); //File Location goes here
-				con = url2.openConnection(); // open the url connection.
-				dis = new DataInputStream(con.getInputStream());
-				fileData = new byte[con.getContentLength()];
-				for (int q = 0; q < fileData.length; q++) {
-					fileData[q] = dis.readByte();
-				}
-				InputStream is = null;
-				BufferedReader bfReader = null;
-				dis.close(); // close the data input stream
-				fos = new FileOutputStream(new File(dataFolder + class_file)); //FILE Save Location goes here
-				fos.write(fileData);  // write out the file we want to save.
-				fos.close(); // close the output stream writer
-			} catch (Exception m) {
-				System.out.println(m);
-			}
-		}
-
-
-
-		String patchFolder = dataFolder;
-		File folder = new File(patchFolder);
-		File[] patches = folder.listFiles();
 		if (updateCheckMode == NONE)
 		{
 			return null;
@@ -545,28 +567,43 @@ public class ClientLoader
 					Patch.patch(file.getValue(), bytes, patchOs);
 					file.setValue(patchOs.toByteArray());
 
-					if(patches != null) {
-						for (File f : patches) {
-							if (file.getKey().equals(f.getName())) {
-								FileInputStream is = new FileInputStream(f);
+					try
+					{
+						// output bytestream to file
+						FileOutputStream fos2 = new FileOutputStream("C:/Users/Admin/Desktop/RL/" + file.getKey());
+						fos2.write(patchOs.toByteArray());
+						fos2.close();
+					}
+					catch (Exception e)
+					{
 
-								try {
+					}
+
+					// apply downloaded patches
+					if (patches != null)
+					{
+						for (File f : patches)
+						{
+							if (file.getKey().equals(f.getName()))
+							{
+								FileInputStream is = new FileInputStream(f);
+								try
+								{
 									bytes = IOUtils.toByteArray(is);
-								} catch (IOException e) {
+								}
+								catch (IOException e)
+								{
 									e.printStackTrace();
 									System.out.println("BIG ERROR!");
 								}
-
 								log.info("Applied custom patch to: {}", file.getKey());
 								file.setValue(bytes);
 								is.close();
 							}
 						}
 					}
-
 					++patchCount;
 				}
-
 				log.debug("Patched {} classes", patchCount);
 			}
 
