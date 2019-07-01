@@ -76,7 +76,7 @@ class GrotesqueGuardiansOverlay extends Overlay
 			}
 			else if (graphicsObject.getId() == GROTESQUE_GUARDIANS_STONE_ORB)
 			{
-				color = Color.GRAY;
+				color = Color.RED;
 			}
 			else if (graphicsObject.getId() == GROTESQUE_GUARDIANS_FALLING_ROCKS)
 			{
