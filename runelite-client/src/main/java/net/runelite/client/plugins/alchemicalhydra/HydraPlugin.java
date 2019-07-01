@@ -39,6 +39,7 @@ import net.runelite.api.GameState;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Projectile;
+import net.runelite.api.ProjectileID;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
@@ -178,23 +179,26 @@ public class HydraPlugin extends Plugin
 //			return;
 //		}
 		if (!inHydraInstance) return;
-		log.debug("spawned {}", event.getNpc().getId());
 //		hydra = new Hydra(event.getNpc());
 //		addOverlays();
-		log.debug("npc spawned now switching");
+		log.debug("npc {} spawned now switching", event.getNpc().getId());
 		switch (event.getNpc().getId())
 		{
 			case NpcID.ALCHEMICAL_HYDRA:
+				log.debug("phase 1");
 				hydra = new Hydra(event.getNpc());
 				inHydraInstance = true;
 				break;
 			case NpcID.ALCHEMICAL_HYDRA_8619:
+				log.debug("phase 2");
 				hydra.changePhase(HydraPhase.TWO);
 				break;
 			case NpcID.ALCHEMICAL_HYDRA_8620:
+				log.debug("phase 3");
 				hydra.changePhase(HydraPhase.THREE);
 				break;
 			case NpcID.ALCHEMICAL_HYDRA_8621:
+				log.debug("phase 4");
 				hydra.changePhase(HydraPhase.FOUR);
 				break;
 		}
@@ -295,6 +299,7 @@ public class HydraPlugin extends Plugin
 
 		Projectile projectile = event.getProjectile();
 		int id = projectile.getId();
+		log.debug("got projectile {}", id);
 
 		if (hydra.getPhase().getSpecProjectileId() != 0 && hydra.getPhase().getSpecProjectileId() == id)
 		{
@@ -304,8 +309,7 @@ public class HydraPlugin extends Plugin
 				// Only add 9 to next special on the first poison projectile (whoops)
 				hydra.setNextSpecial(hydra.getNextSpecial() + 9);
 			}
-
-			poisonProjectiles.put(event.getPosition(), projectile);
+			if (id == ProjectileID.HYDRA_POISON) poisonProjectiles.put(event.getPosition(), projectile);
 		}
 		else if (client.getTickCount() != lastAttackTick
 			&& (id == Hydra.AttackStyle.MAGIC.getProjectileID() || id == Hydra.AttackStyle.RANGED.getProjectileID()))
