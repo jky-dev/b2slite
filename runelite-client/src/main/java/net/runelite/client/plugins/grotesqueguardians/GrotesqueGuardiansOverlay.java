@@ -24,6 +24,7 @@
  */
 package net.runelite.client.plugins.grotesqueguardians;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -31,6 +32,7 @@ import java.awt.Polygon;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GraphicsObject;
+import net.runelite.api.NPCComposition;
 import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.ui.overlay.Overlay;
@@ -41,17 +43,20 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 
 class GrotesqueGuardiansOverlay extends Overlay
 {
-	private static final int GROTESQUE_GUARDIANS_REGION_ID = 6727;
 	private final Client client;
+	private GrotesqueGuardiansPlugin plugin;
+	private GrotesqueGuardiansConfig config;
 	private static final int GROTESQUE_GUARDIANS_LIGHTNING_START = 1416;
 	private static final int GROTESQUE_GUARDIANS_LIGHTNING_END = 1431;
 	private static final int GROTESQUE_GUARDIANS_FALLING_ROCKS = 1436;
 	private static final int GROTESQUE_GUARDIANS_STONE_ORB = 160;
 
 	@Inject
-	private GrotesqueGuardiansOverlay(Client client)
+	private GrotesqueGuardiansOverlay(Client client, GrotesqueGuardiansConfig config, GrotesqueGuardiansPlugin plugin)
 	{
 		this.client = client;
+		this.config = config;
+		this.plugin = plugin;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		setPriority(OverlayPriority.LOW);
@@ -60,9 +65,23 @@ class GrotesqueGuardiansOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!client.isInInstancedRegion() || client.getMapRegions()[0] != GROTESQUE_GUARDIANS_REGION_ID)
+		if (!plugin.isInGGArea())
 		{
 			return null;
+		}
+
+		if (plugin.isHideAttackOption() && config.showDuskTile())
+		{
+			int size = 1;
+			NPCComposition composition = plugin.getDusk().getTransformedComposition();
+			if (composition != null)
+			{
+				size = composition.getSize();
+			}
+			LocalPoint lp = plugin.getDusk().getLocalLocation();
+			Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
+
+			renderPoly(graphics, Color.CYAN, tilePoly, 2);
 		}
 
 		// TODO: Awaiting GraphicsObjectDespawn event to be tracked to make this more efficient.
@@ -90,11 +109,32 @@ class GrotesqueGuardiansOverlay extends Overlay
 			LocalPoint lp = graphicsObject.getLocation();
 			Polygon poly = Perspective.getCanvasTilePoly(client, lp);
 
+
 			if (poly != null)
 			{
-				OverlayUtil.renderPolygon(graphics, poly, color);
+				if (graphicsObject.getId() == GROTESQUE_GUARDIANS_STONE_ORB)
+				{
+					poly = Perspective.getCanvasTileAreaPoly(client, lp, 3);
+					renderPoly(graphics, Color.RED, poly, 0);
+				}
+				else
+				{
+					OverlayUtil.renderPolygon(graphics, poly, color);
+				}
 			}
 		}
 		return null;
+	}
+
+	private void renderPoly(Graphics2D graphics, Color color, Polygon polygon, int size)
+	{
+		if (polygon != null)
+		{
+			graphics.setColor(color);
+			graphics.setStroke(new BasicStroke(size));
+			graphics.draw(polygon);
+			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 50));
+			if (size == 0) graphics.fill(polygon);
+		}
 	}
 }
