@@ -26,20 +26,36 @@ package net.runelite.client.plugins.playerindicators;
 
 import com.google.inject.Provides;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.nio.Buffer;
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ClanMemberRank;
 import static net.runelite.api.ClanMemberRank.UNRANKED;
 import net.runelite.api.Client;
 import static net.runelite.api.MenuAction.*;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.Player;
+import net.runelite.api.SkullIcon;
+import net.runelite.api.SpriteID;
+import net.runelite.api.events.ConfigChanged;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.api.events.PlayerDespawned;
+import net.runelite.api.events.PlayerSpawned;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ClanManager;
+import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.infobox.InfoBox;
+import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ColorUtil;
 
 @PluginDescriptor(
@@ -47,6 +63,7 @@ import net.runelite.client.util.ColorUtil;
 	description = "Highlight players on-screen and/or on the minimap",
 	tags = {"highlight", "minimap", "overlay", "players"}
 )
+@Slf4j
 public class PlayerIndicatorsPlugin extends Plugin
 {
 	@Inject
@@ -65,10 +82,27 @@ public class PlayerIndicatorsPlugin extends Plugin
 	private PlayerIndicatorsMinimapOverlay playerIndicatorsMinimapOverlay;
 
 	@Inject
+	private PlayerFriendFoeOverlay playerFriendFoeOverlay;
+
+	@Inject
 	private Client client;
 
 	@Inject
 	private ClanManager clanManager;
+
+	@Inject
+	private SpriteManager spriteManager;
+
+	@Inject
+	private InfoBoxManager infoBoxManager;
+
+	@Inject
+	private ClientThread clientThread;
+
+	@Getter
+	private int friends, foes, friendsSkulled, foesSkulled;
+
+	List<PlayerCounter> playerCounterList;
 
 	@Provides
 	PlayerIndicatorsConfig provideConfig(ConfigManager configManager)
@@ -82,6 +116,10 @@ public class PlayerIndicatorsPlugin extends Plugin
 		overlayManager.add(playerIndicatorsOverlay);
 		overlayManager.add(playerIndicatorsTileOverlay);
 		overlayManager.add(playerIndicatorsMinimapOverlay);
+		overlayManager.add(playerFriendFoeOverlay);
+		friends = friendsSkulled = foes = foesSkulled = 0;
+		playerCounterList = new ArrayList<>();
+		checkPlayers();
 	}
 
 	@Override
@@ -90,6 +128,8 @@ public class PlayerIndicatorsPlugin extends Plugin
 		overlayManager.remove(playerIndicatorsOverlay);
 		overlayManager.remove(playerIndicatorsTileOverlay);
 		overlayManager.remove(playerIndicatorsMinimapOverlay);
+		overlayManager.remove(playerFriendFoeOverlay);
+		friends = friendsSkulled = foes = foesSkulled = 0;
 	}
 
 	@Subscribe
@@ -181,5 +221,110 @@ public class PlayerIndicatorsPlugin extends Plugin
 				client.setMenuEntries(menuEntries);
 			}
 		}
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		if (event.getGroup().equals("playerindicators")) checkPlayers();
+	}
+
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged event)
+	{
+		//checkPlayers();
+	}
+
+	@Subscribe
+	public void onPlayerSpawned(PlayerSpawned event)
+	{
+		checkPlayers();
+	}
+
+	@Subscribe
+	public void onPlayerDespawned(PlayerDespawned event)
+	{
+		checkPlayers();
+	}
+
+	private void checkPlayers()
+	{
+		friends = friendsSkulled = foes = foesSkulled = 0;
+
+		for (Player player : client.getPlayers())
+		{
+			if (player == null) continue;
+
+			if (player.isFriend() || player.isClanMember() ||
+				player == client.getLocalPlayer())
+			{
+				if (player == client.getLocalPlayer() && config.includeSelf() == PlayerIncludeSelf.NO) continue;
+
+				friends++;
+				if (player.getSkullIcon() != null && player.getSkullIcon().equals(SkullIcon.SKULL))
+				{
+					friendsSkulled++;
+				}
+			}
+			else
+			{
+				foes++;
+				if (player.getSkullIcon() != null && player.getSkullIcon().equals(SkullIcon.SKULL))
+				{
+					foesSkulled++;
+				}
+			}
+		}
+
+		clientThread.invoke(() -> updateCounters());
+	}
+
+	private void updateCounters()
+	{
+		removeAllInfoBox();
+
+		if (!config.showInfoBox()) return;
+
+		if (!config.showFriendsOrFoes()) return;
+
+		if (friends > 0)
+		{
+			addInfoBox(SpriteID.TAB_FRIENDS, friends);
+		}
+		if (foes > 0)
+		{
+			addInfoBox(SpriteID.TAB_IGNORES, foes);
+		}
+		if (friendsSkulled > 0)
+		{
+			addInfoBox(SpriteID.PLAYER_KILLER_SKULL, friendsSkulled);
+		}
+		if (foesSkulled > 0)
+		{
+			addInfoBox(SpriteID.FIGHT_PITS_WINNER_SKULL_RED, foesSkulled);
+		}
+	}
+
+	private void addInfoBox(int id, int count)
+	{
+		final BufferedImage img = spriteManager.getSprite(id, 0);
+		PlayerCounter counter = new PlayerCounter(img, this, count);
+		infoBoxManager.addInfoBox(counter);
+		playerCounterList.add(counter);
+	}
+
+	private void removeAllInfoBox()
+	{
+		if (playerCounterList == null) return;
+
+		for (PlayerCounter counter : playerCounterList)
+		{
+			if (counter != null)
+			{
+				infoBoxManager.removeInfoBox(counter);
+			}
+		}
+
+		playerCounterList.clear();
 	}
 }

@@ -196,4 +196,37 @@ public interface PlayerIndicatorsConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		position = 15,
+		keyName = "friendsFoesOverlay",
+		name = "Show friends/foes counter",
+		description = "Adds an overlay showing how many friends (or clan members) vs others there are"
+	)
+	default boolean showFriendsOrFoes()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 16,
+		keyName = "useInfoBox",
+		name = "Show counter as InfoBox",
+		description = "Shows as infobox"
+	)
+	default boolean showInfoBox()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 17,
+		keyName = "includeSelf",
+		name = "Include self in counter",
+		description = "Includes yourself as a friend"
+	)
+	default PlayerIncludeSelf includeSelf()
+	{
+		return PlayerIncludeSelf.NO;
+	}
 }
