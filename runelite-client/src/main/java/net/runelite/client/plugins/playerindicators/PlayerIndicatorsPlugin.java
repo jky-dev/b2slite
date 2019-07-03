@@ -61,7 +61,7 @@ import net.runelite.client.util.ColorUtil;
 @PluginDescriptor(
 	name = "Player Indicators",
 	description = "Highlight players on-screen and/or on the minimap",
-	tags = {"highlight", "minimap", "overlay", "players"}
+	tags = {"highlight", "minimap", "overlay", "players", "friend", "enemy", "counter"}
 )
 @Slf4j
 public class PlayerIndicatorsPlugin extends Plugin
@@ -287,21 +287,28 @@ public class PlayerIndicatorsPlugin extends Plugin
 
 		if (!config.showFriendsOrFoes()) return;
 
-		if (friends > 0)
+		if (config.showCounterType() != PlayerShowCounterType.SKULLED)
 		{
-			addInfoBox(SpriteID.TAB_FRIENDS, friends);
+			if (friends > 0)
+			{
+				addInfoBox(SpriteID.TAB_FRIENDS, friends);
+			}
+			if (foes > 0)
+			{
+				addInfoBox(SpriteID.TAB_IGNORES, foes);
+			}
 		}
-		if (foes > 0)
+
+		if (config.showCounterType() != PlayerShowCounterType.ALL)
 		{
-			addInfoBox(SpriteID.TAB_IGNORES, foes);
-		}
-		if (friendsSkulled > 0)
-		{
-			addInfoBox(SpriteID.PLAYER_KILLER_SKULL, friendsSkulled);
-		}
-		if (foesSkulled > 0)
-		{
-			addInfoBox(SpriteID.FIGHT_PITS_WINNER_SKULL_RED, foesSkulled);
+			if (friendsSkulled > 0)
+			{
+				addInfoBox(SpriteID.PLAYER_KILLER_SKULL, friendsSkulled);
+			}
+			if (foesSkulled > 0)
+			{
+				addInfoBox(SpriteID.FIGHT_PITS_WINNER_SKULL_RED, foesSkulled);
+			}
 		}
 	}
 

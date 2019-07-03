@@ -60,38 +60,44 @@ class PlayerFriendFoeOverlay extends Overlay
 
 		if (plugin.getFoes() > 0 || plugin.getFriends() > 0)
 		{
-			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("Friends / Enemies")
-				.color(Color.GREEN)
-				.build());
-
-			if (plugin.getFriends() > 0 || plugin.getFoes() > 0)
+			if (config.showCounterType() != PlayerShowCounterType.SKULLED)
 			{
-				panelComponent.getChildren().add(LineComponent.builder()
-					.left(Integer.toString(plugin.getFriends()))
-					.leftColor(Color.GREEN)
-					.right(Integer.toString(plugin.getFoes()))
-					.rightColor(Color.RED)
+				panelComponent.getChildren().add(TitleComponent.builder()
+					.text("Friends / Enemies")
+					.color(Color.GREEN)
 					.build());
+
+				if (plugin.getFriends() > 0 || plugin.getFoes() > 0)
+				{
+					panelComponent.getChildren().add(LineComponent.builder()
+						.left(Integer.toString(plugin.getFriends()))
+						.leftColor(Color.GREEN)
+						.right(Integer.toString(plugin.getFoes()))
+						.rightColor(Color.RED)
+						.build());
+				}
 			}
 		}
 
 		// cant seem to get skulls of other players - would need to unblock
 		if (plugin.getFoesSkulled() > 0 || plugin.getFriendsSkulled() > 0)
 		{
-			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("Skulled")
-				.color(Color.GREEN)
-				.build());
-
-			if (plugin.getFriendsSkulled() > 0 || plugin.getFoesSkulled() > 0)
+			if (config.showCounterType() != PlayerShowCounterType.ALL)
 			{
-				panelComponent.getChildren().add(LineComponent.builder()
-					.left(Integer.toString(plugin.getFriendsSkulled()))
-					.leftColor(Color.GREEN)
-					.right(Integer.toString(plugin.getFoesSkulled()))
-					.rightColor(Color.RED)
+				panelComponent.getChildren().add(TitleComponent.builder()
+					.text("Skulled")
+					.color(Color.GREEN)
 					.build());
+
+				if (plugin.getFriendsSkulled() > 0 || plugin.getFoesSkulled() > 0)
+				{
+					panelComponent.getChildren().add(LineComponent.builder()
+						.left(Integer.toString(plugin.getFriendsSkulled()))
+						.leftColor(Color.GREEN)
+						.right(Integer.toString(plugin.getFoesSkulled()))
+						.rightColor(Color.RED)
+						.build());
+				}
 			}
 		}
 

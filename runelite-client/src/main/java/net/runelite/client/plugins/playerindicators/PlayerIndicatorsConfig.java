@@ -221,6 +221,17 @@ public interface PlayerIndicatorsConfig extends Config
 
 	@ConfigItem(
 		position = 17,
+		keyName = "showType",
+		name = "Show type",
+		description = "Shows normal/skulled/both"
+	)
+	default PlayerShowCounterType showCounterType()
+	{
+		return PlayerShowCounterType.ALL;
+	}
+
+	@ConfigItem(
+		position = 18,
 		keyName = "includeSelf",
 		name = "Include self in counter",
 		description = "Includes yourself as a friend"
