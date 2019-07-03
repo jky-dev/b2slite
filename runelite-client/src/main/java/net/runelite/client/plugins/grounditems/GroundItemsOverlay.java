@@ -256,7 +256,7 @@ public class GroundItemsOverlay extends Overlay
 				}
 			}
 
-			if (item.getTicks() > 0 && config.showTimer())
+			if (item.getTicks() > 0 && config.showTimer() && !client.isInInstancedRegion())
 			{
 				itemStringBuilder
 					.append(" - ")
