@@ -48,6 +48,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigDescriptor;
 import net.runelite.client.plugins.Plugin;
@@ -57,6 +58,7 @@ import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconButton;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.LinkBrowser;
+import net.runelite.client.util.Text;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 
 class PluginListItem extends JPanel
@@ -91,6 +93,8 @@ class PluginListItem extends JPanel
 	@Getter
 	private final String description;
 
+	JLabel nameLabel;
+
 	private final List<String> keywords = new ArrayList<>();
 
 	private final IconButton pinButton = new IconButton(OFF_STAR);
@@ -99,8 +103,13 @@ class PluginListItem extends JPanel
 
 	private boolean isPluginEnabled = false;
 
+	private final List<JMenuItem> popupMenuItems = new ArrayList<>();
+
 	@Getter
 	private boolean isPinned = false;
+
+	@Getter
+	private boolean isHidden = false;
 
 	static
 	{
@@ -162,13 +171,18 @@ class PluginListItem extends JPanel
 		Collections.addAll(keywords, description.toLowerCase().split(" "));
 		Collections.addAll(keywords, tags);
 
-		final List<JMenuItem> popupMenuItems = new ArrayList<>();
-
 		setLayout(new BorderLayout(3, 0));
 		setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH, 20));
 
-		JLabel nameLabel = new JLabel(name);
-		nameLabel.setForeground(Color.WHITE);
+		nameLabel = new JLabel(name);
+		if (isHidden)
+		{
+			nameLabel.setForeground(Color.GRAY);
+		}
+		else
+		{
+			nameLabel.setForeground(Color.WHITE);
+		}
 
 		if (!description.isEmpty())
 		{
@@ -212,12 +226,81 @@ class PluginListItem extends JPanel
 		}
 
 		popupMenuItems.add(wikiLinkMenuItem(name));
+		addCustomMenuItems();
 		addLabelPopupMenu(nameLabel, popupMenuItems);
 		add(nameLabel, BorderLayout.CENTER);
 
 		toggleButton.setPreferredSize(new Dimension(25, 0));
 		attachToggleButtonListener(toggleButton);
 		buttonPanel.add(toggleButton);
+	}
+
+	public void updateLabel()
+	{
+		popupMenuItems.remove(popupMenuItems.size() - 1);
+		popupMenuItems.remove(popupMenuItems.size() - 1);
+
+		addCustomMenuItems();
+
+		if (isHidden)
+		{
+			nameLabel.setForeground(Color.GRAY);
+		}
+		else
+		{
+			nameLabel.setForeground(Color.WHITE);
+		}
+
+		addLabelPopupMenu(nameLabel, popupMenuItems);
+	}
+
+	private void addCustomMenuItems()
+	{
+		if (isHidden)
+		{
+			final JMenuItem configMenuItem = new JMenuItem("View");
+			configMenuItem.addActionListener(e -> {
+				isHidden = false;
+				configPanel.getHiddenList().remove(this);
+				configPanel.saveHiddenPlugins();
+				configPanel.refreshPluginList();
+				updateLabel();
+			});
+			popupMenuItems.add(configMenuItem);
+		}
+		else
+		{
+			final JMenuItem configMenuItem = new JMenuItem("Hide");
+			configMenuItem.addActionListener(e -> {
+				isHidden = true;
+				configPanel.getHiddenList().add(this);
+				configPanel.saveHiddenPlugins();
+				configPanel.refreshPluginList();
+				updateLabel();
+			});
+			popupMenuItems.add(configMenuItem);
+		}
+
+		if (configPanel.getShowHiddenList())
+		{
+			final JMenuItem configMenuItem = new JMenuItem("Hide hidden plugins");
+			configMenuItem.addActionListener(e -> {
+				configPanel.setShowHiddenList(false);
+				configPanel.switchViewPluginMode();
+				updateLabel();
+			});
+			popupMenuItems.add(configMenuItem);
+		}
+		else
+		{
+			final JMenuItem configMenuItem = new JMenuItem("View all plugins");
+			configMenuItem.addActionListener(e -> {
+				configPanel.setShowHiddenList(true);
+				configPanel.switchViewPluginMode();
+				updateLabel();
+			});
+			popupMenuItems.add(configMenuItem);
+		}
 	}
 
 	private void attachToggleButtonListener(IconButton button)
@@ -258,6 +341,11 @@ class PluginListItem extends JPanel
 	{
 		isPluginEnabled = enabled;
 		updateToggleButton(toggleButton);
+	}
+
+	void setHidden(boolean hidden)
+	{
+		isHidden = hidden;
 	}
 
 	void setPinned(boolean pinned)
@@ -316,6 +404,7 @@ class PluginListItem extends JPanel
 	 */
 	static void addLabelPopupMenu(final JLabel label, final Collection<JMenuItem> menuItems)
 	{
+		final Color lastForeground = label.getForeground();
 		final JPopupMenu menu = new JPopupMenu();
 		menu.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -326,8 +415,6 @@ class PluginListItem extends JPanel
 
 		label.addMouseListener(new MouseAdapter()
 		{
-			private Color lastForeground;
-
 			@Override
 			public void mouseClicked(MouseEvent mouseEvent)
 			{
@@ -340,7 +427,6 @@ class PluginListItem extends JPanel
 			@Override
 			public void mouseEntered(MouseEvent mouseEvent)
 			{
-				lastForeground = label.getForeground();
 				label.setForeground(ColorScheme.BRAND_ORANGE);
 			}
 

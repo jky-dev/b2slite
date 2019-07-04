@@ -41,7 +41,9 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
@@ -66,6 +68,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.config.ChatColorConfig;
 import net.runelite.client.config.Config;
@@ -104,6 +108,7 @@ public class ConfigPanel extends PluginPanel
 
 	private static final String RUNELITE_GROUP_NAME = RuneLiteConfig.class.getAnnotation(ConfigGroup.class).value();
 	private static final String PINNED_PLUGINS_CONFIG_KEY = "pinnedPlugins";
+	private static final String HIDDEN_PLUGINS_CONFIG_KEY = "hiddenPlugins";
 	private static final String RUNELITE_PLUGIN = "RuneLite";
 	private static final String CHAT_COLOR_PLUGIN = "Chat Color";
 
@@ -113,6 +118,11 @@ public class ConfigPanel extends PluginPanel
 	private final RuneLiteConfig runeLiteConfig;
 	private final ChatColorConfig chatColorConfig;
 	private final List<PluginListItem> pluginList = new ArrayList<>();
+
+	@Getter
+	private final List<PluginListItem> hiddenList = new ArrayList<>();
+
+	private boolean showHiddenList;
 
 	private final IconTextField searchBar = new IconTextField();
 	private final JPanel topPanel;
@@ -185,13 +195,17 @@ public class ConfigPanel extends PluginPanel
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scrollPane, BorderLayout.CENTER);
 
+		showHiddenList = loadShowHiddenList();
+
 		initializePluginList();
 		refreshPluginList();
 	}
 
 	private void initializePluginList()
 	{
+		log.debug("Initializing plugin list");
 		final List<String> pinnedPlugins = getPinnedPluginNames();
+		final List<String> hiddenPlugins = getHiddenPluginNames();
 
 		// populate pluginList with all non-hidden plugins
 		pluginManager.getPlugins().stream()
@@ -204,7 +218,15 @@ public class ConfigPanel extends PluginPanel
 
 				final PluginListItem listItem = new PluginListItem(this, plugin, descriptor, config, configDescriptor);
 				listItem.setPinned(pinnedPlugins.contains(listItem.getName()));
-				pluginList.add(listItem);
+				listItem.setHidden(hiddenPlugins.contains(listItem.getName()));
+				if (listItem.isHidden())
+				{
+					hiddenList.add(listItem);
+				}
+				else
+				{
+					pluginList.add(listItem);
+				}
 			});
 
 		// add special entries for core client configurations
@@ -223,8 +245,26 @@ public class ConfigPanel extends PluginPanel
 		pluginList.sort(Comparator.comparing(PluginListItem::getName));
 	}
 
+	void switchViewPluginMode()
+	{
+		if (showHiddenList)
+		{
+			pluginList.addAll(hiddenList);
+			refreshPluginList();
+		}
+		else
+		{
+			for (PluginListItem item : hiddenList)
+			{
+				pluginList.remove(item);
+			}
+			refreshPluginList();
+		}
+	}
+
 	void refreshPluginList()
 	{
+		log.debug("refreshingPluginList");
 		// update enabled / disabled status of all items
 		pluginList.forEach(listItem ->
 		{
@@ -232,8 +272,25 @@ public class ConfigPanel extends PluginPanel
 			if (plugin != null)
 			{
 				listItem.setPluginEnabled(pluginManager.isPluginEnabled(plugin));
+				listItem.updateLabel();
 			}
 		});
+
+		if (!showHiddenList)
+		{
+			for (PluginListItem item : hiddenList)
+			{
+				pluginList.remove(item);
+			}
+		}
+		String debug = "";
+		for (PluginListItem item : hiddenList)
+		{
+			debug += item.getName() + ", ";
+		}
+		log.debug("hidden list : {}", debug);
+
+		pluginList.sort(Comparator.comparing(PluginListItem::getName));
 
 		if (showingPluginList)
 		{
@@ -665,6 +722,54 @@ public class ConfigPanel extends PluginPanel
 			.collect(Collectors.joining(","));
 
 		configManager.setConfiguration(RUNELITE_GROUP_NAME, PINNED_PLUGINS_CONFIG_KEY, value);
+	}
+
+	private List<String> getHiddenPluginNames()
+	{
+		final String config = configManager.getConfiguration(RUNELITE_GROUP_NAME, HIDDEN_PLUGINS_CONFIG_KEY);
+
+		if (config == null)
+		{
+			return Collections.emptyList();
+		}
+
+		return Text.fromCSV(config);
+	}
+
+	void saveHiddenPlugins()
+	{
+		final String value = hiddenList.stream()
+			.filter(PluginListItem::isHidden)
+			.map(PluginListItem::getName)
+			.collect(Collectors.joining(","));
+
+		configManager.setConfiguration(RUNELITE_GROUP_NAME, HIDDEN_PLUGINS_CONFIG_KEY, value);
+	}
+
+	public void setShowHiddenList(boolean x)
+	{
+		showHiddenList = x;
+		final String value = Boolean.toString(showHiddenList);
+		log.debug("value {}", value);
+
+		configManager.setConfiguration(RUNELITE_GROUP_NAME, "showHiddenList", value);
+	}
+
+	public boolean getShowHiddenList() {
+		return showHiddenList;
+	}
+
+	public boolean loadShowHiddenList()
+	{
+		final String config = configManager.getConfiguration(RUNELITE_GROUP_NAME, "showHiddenList");
+
+		if (config == null)
+		{
+			log.debug("get hidden list null");
+			return false;
+		}
+		log.debug("get hidden list {}", config);
+		return Boolean.getBoolean(config);
 	}
 
 	void openConfigurationPanel(String configGroup)

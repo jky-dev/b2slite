@@ -29,6 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import net.runelite.api.MenuAction;
+import net.runelite.api.events.ConfigChanged;
 import net.runelite.client.config.ChatColorConfig;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.RuneLiteConfig;
@@ -44,6 +45,7 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.Text;
 
 @PluginDescriptor(
 	name = "Configuration",
