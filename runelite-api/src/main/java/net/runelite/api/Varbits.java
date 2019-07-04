@@ -502,7 +502,9 @@ public enum Varbits
 	EXPLORER_RING_RUNENERGY(4553),
 
 	// SPELLBOOK
-	SPELLBOOK(4070);
+	SPELLBOOK(4070),
+
+	WINTERTODT_TIMER(7980);
 
 	/**
 	 * The raw varbit ID.
