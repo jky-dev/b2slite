@@ -130,6 +130,7 @@ public class PlayerIndicatorsPlugin extends Plugin
 		overlayManager.remove(playerIndicatorsMinimapOverlay);
 		overlayManager.remove(playerFriendFoeOverlay);
 		friends = friendsSkulled = foes = foesSkulled = 0;
+		removeAllInfoBox();
 	}
 
 	@Subscribe
