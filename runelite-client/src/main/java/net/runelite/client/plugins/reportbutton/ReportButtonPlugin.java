@@ -62,7 +62,9 @@ public class ReportButtonPlugin extends Plugin
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MMM. dd, yyyy");
 
 	private Instant loginTime;
+	private Instant totalGamingTime;
 	private boolean ready;
+	private boolean readyGaming;
 
 	@Inject
 	private Client client;
@@ -105,6 +107,10 @@ public class ReportButtonPlugin extends Plugin
 
 		switch (state)
 		{
+			case LOGIN_SCREEN:
+			case LOGIN_SCREEN_AUTHENTICATOR:
+				readyGaming = true;
+				break;
 			case LOGGING_IN:
 			case HOPPING:
 			case CONNECTION_LOST:
@@ -115,6 +121,11 @@ public class ReportButtonPlugin extends Plugin
 				{
 					loginTime = Instant.now();
 					ready = false;
+				}
+				if (readyGaming)
+				{
+					totalGamingTime = Instant.now();
+					readyGaming = false;
 				}
 				break;
 		}
@@ -159,6 +170,9 @@ public class ReportButtonPlugin extends Plugin
 			case DATE:
 				reportButton.setText(getDate());
 				break;
+			case GAMING_TIME:
+				reportButton.setText(getTotalGamingTime());
+				break;
 			case OFF:
 				reportButton.setText("Report");
 				break;
@@ -173,6 +187,18 @@ public class ReportButtonPlugin extends Plugin
 		}
 
 		Duration duration = Duration.between(loginTime, Instant.now());
+		LocalTime time = LocalTime.ofSecondOfDay(duration.getSeconds());
+		return time.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+	}
+
+	private String getTotalGamingTime()
+	{
+		if (totalGamingTime == null)
+		{
+			return "Report";
+		}
+
+		Duration duration = Duration.between(totalGamingTime, Instant.now());
 		LocalTime time = LocalTime.ofSecondOfDay(duration.getSeconds());
 		return time.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 	}

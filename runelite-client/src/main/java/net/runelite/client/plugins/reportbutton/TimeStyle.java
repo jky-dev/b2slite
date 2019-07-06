@@ -31,7 +31,8 @@ public enum TimeStyle
 	LOGIN_TIME("Login Timer"),
 	UTC("UTC Time"),
 	JAGEX("Jagex HQ Time"),
-	LOCAL_TIME("Local Time");
+	LOCAL_TIME("Local Time"),
+	GAMING_TIME("Gaming Session");
 
 	private final String name;
 
