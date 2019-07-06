@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Cameron <https://github.com/noremac201>
+ * Copyright (c) 2019, jkybtw <https://github.com/jkybtw>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,29 +22,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.reportbutton;
+package net.runelite.client.plugins.reminders;
 
-public enum TimeStyle
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+
+@ConfigGroup("reminders")
+public interface RemindersConfig extends Config
 {
-	OFF("Off"),
-	DATE("Date"),
-	LOGIN_TIME("Login Timer"),
-	UTC("UTC Time"),
-	JAGEX("Jagex HQ Time"),
-	LOCAL_TIME("Local Time"),
-	GAMING_TIME("Gaming Session");
-
-	private final String name;
-
-	TimeStyle(String name)
+	@ConfigItem(
+			keyName = "hydration reminder",
+			name = "Hydration Reminder",
+			description = "Reminds you to take a break every hour",
+			position = 1
+	)
+	default boolean hydrationReminder()
 	{
-		this.name = name;
+		return true;
 	}
 
-	@Override
-	public String toString()
+	@ConfigItem(
+			keyName = "reminder",
+			name = "Custom Reminder",
+			description = "Your custom reminder",
+			position = 2
+	)
+	default String customReminder()
 	{
-		return name;
+		return "";
 	}
 
+	@ConfigItem(
+			keyName = "reminderTime",
+			name = "Reminder Time",
+			description = "Time in minutes for your custom reminder",
+			position = 3
+	)
+	default int customReminderTime()
+	{
+		return 0;
+	}
 }

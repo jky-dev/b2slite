@@ -24,16 +24,58 @@
  */
 package net.runelite.client.plugins.playerindicators;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import net.runelite.client.ui.overlay.infobox.Counter;
 
-class PlayerCounter extends Counter
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.client.ui.overlay.infobox.InfoBox;
+
+@Slf4j
+class PlayerCounter extends InfoBox
 {
-	private final PlayerIndicatorsPlugin plugin;
+	private final PlayerCounterType type;
+	private PlayerIndicatorsConfig config;
+	private PlayerIndicatorsPlugin plugin;
 
-	PlayerCounter(BufferedImage image, PlayerIndicatorsPlugin plugin, int amount)
+	PlayerCounter(BufferedImage image, PlayerIndicatorsPlugin plugin, PlayerCounterType type, PlayerIndicatorsConfig config)
 	{
-		super(image, plugin, amount);
+		super(image, plugin);
+		this.config = config;
 		this.plugin = plugin;
+		this.type = type;
+	}
+
+	@Override
+	public String getText()
+	{
+		if (type == PlayerCounterType.ENEMY) return Integer.toString(plugin.getFoes());
+		if (type == PlayerCounterType.ENEMYSKULLED) return Integer.toString(plugin.getFoesSkulled());
+		if (type == PlayerCounterType.FRIEND) return Integer.toString(plugin.getFriends());
+		if (type == PlayerCounterType.FRIENDSKULLED) return Integer.toString(plugin.getFriendsSkulled());
+		return null;
+	}
+
+	@Override
+	public Color getTextColor() {
+		return Color.WHITE;
+	}
+
+	@Override
+	public boolean render()
+	{
+		if (config.showFriendsOrFoes() && config.showInfoBox())
+		{
+			if (config.showCounterType() != PlayerShowCounterType.SKULLED)
+			{
+				if (this.type == PlayerCounterType.FRIEND && plugin.getFriends() > 0) return true;
+				if (this.type == PlayerCounterType.ENEMY && plugin.getFoes() > 0) return true;
+			}
+			if (config.showCounterType() != PlayerShowCounterType.ALL)
+			{
+				if (this.type == PlayerCounterType.FRIENDSKULLED && plugin.getFriendsSkulled() > 0) return true;
+				if (this.type == PlayerCounterType.ENEMYSKULLED && plugin.getFoesSkulled() > 0) return true;
+			}
+		}
+		return false;
 	}
 }

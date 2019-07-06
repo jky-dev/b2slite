@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Cameron <https://github.com/noremac201>
+ * Copyright (c) 2019, Jordan Atwood <nightfirecat@protonmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,29 +22,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.reportbutton;
+package net.runelite.client.plugins.playerindicators;
 
-public enum TimeStyle
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
+public enum PlayerCounterType
 {
-	OFF("Off"),
-	DATE("Date"),
-	LOGIN_TIME("Login Timer"),
-	UTC("UTC Time"),
-	JAGEX("Jagex HQ Time"),
-	LOCAL_TIME("Local Time"),
-	GAMING_TIME("Gaming Session");
+	FRIEND("Friend"),
+	ENEMY("Enemy"),
+	FRIENDSKULLED("Friends skulled"),
+	ENEMYSKULLED("Enemies skulled");
 
 	private final String name;
-
-	TimeStyle(String name)
-	{
-		this.name = name;
-	}
 
 	@Override
 	public String toString()
 	{
 		return name;
 	}
-
 }
