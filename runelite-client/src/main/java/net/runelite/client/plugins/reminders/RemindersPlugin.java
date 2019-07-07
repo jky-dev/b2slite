@@ -26,6 +26,7 @@ package net.runelite.client.plugins.reminders;
 
 import com.google.inject.Provides;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -50,14 +51,12 @@ import java.time.temporal.ChronoUnit;
 	tags = {"gaming", "session", "gamer", "reminder", "custom", "hydration", "rest"},
     enabledByDefault = false
 )
+@Slf4j
 public class RemindersPlugin extends Plugin
 {
 
 	private Instant loginTime;
 	private boolean ready;
-
-	@Getter
-	private String gamingSessionTime = "";
 
 	@Inject
 	private Client client;
@@ -77,12 +76,27 @@ public class RemindersPlugin extends Plugin
 	@Override
 	public void startUp()
 	{
-	    clientThread.invoke(this::updateReportButtonTime);
+		switch (client.getGameState())
+		{
+			case LOGIN_SCREEN:
+			case LOGIN_SCREEN_AUTHENTICATOR:
+			case LOGGING_IN:
+				ready = true;
+				break;
+			case LOGGED_IN:
+				if (ready)
+				{
+					loginTime = Instant.now();
+					ready = false;
+				}
+				break;
+		}
 	}
 
 	@Override
 	public void shutDown()
 	{
+		loginTime = null;
 	}
 
 	@Subscribe
@@ -94,6 +108,7 @@ public class RemindersPlugin extends Plugin
 		{
 			case LOGIN_SCREEN:
 			case LOGIN_SCREEN_AUTHENTICATOR:
+			case LOGGING_IN:
 				ready = true;
 				break;
 			case LOGGED_IN:
@@ -107,47 +122,21 @@ public class RemindersPlugin extends Plugin
 	}
 
 	@Schedule(
-		period = 500,
-		unit = ChronoUnit.MILLIS
+		period = 1,
+		unit = ChronoUnit.MINUTES
 	)
-    public void update() { updateReportButtonTime(); }
-
-    @Schedule(
-        period = 1,
-        unit = ChronoUnit.MINUTES
-    )
-    public void checkReminder() { reminders(); }
-
-	private void updateReportButtonTime()
-	{
-		if (client.getGameState() != GameState.LOGGED_IN)
-		{
-			return;
-		}
-
-		gamingSessionTime = getLoginTime();
-	}
-
-	private String getLoginTime()
-	{
-		if (loginTime == null)
-		{
-			return "unknown";
-		}
-
-		Duration duration = Duration.between(loginTime, Instant.now());
-		LocalTime time = LocalTime.ofSecondOfDay(duration.getSeconds());
-		return time.format(DateTimeFormatter.ofPattern("H:mm:ss"));
-	}
-
-	private void reminders()
+	public void reminders()
     {
-        if (config.customReminderTime() == 0) return;
-        double minutes = Math.floor((Duration.between(loginTime, Instant.now()).getSeconds())/60);
-        if (minutes % config.customReminderTime() == 0 && minutes > 0 && !config.customReminder().isEmpty())
-        {
-            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "<col=ef1020>" + config.customReminder() + "</col>", "");
-        }
+    	double minutes = Math.floor((Duration.between(loginTime, Instant.now()).getSeconds())/60);
+		log.debug("mins: {}", minutes);
+		if (config.customReminderTime() != 0)
+		{
+			if (minutes % config.customReminderTime() == 0 && minutes > 0 && !config.customReminder().isEmpty())
+			{
+				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "<col=ef1020>" + config.customReminder() + "</col>", "");
+			}
+		}
+
         if (minutes % 60 == 0 && config.hydrationReminder() && minutes > 0)
         {
             int hours = (int)minutes / 60;
@@ -161,6 +150,5 @@ public class RemindersPlugin extends Plugin
             }
             client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "<col=ef1020>Remember to drink water and stand up for a bit :)</col>", "");
         }
-
     }
 }
