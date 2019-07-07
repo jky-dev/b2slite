@@ -119,6 +119,7 @@ public class RaidsThievingPlugin extends Plugin
 	@Subscribe
 	public void onGameObjectSpawned(GameObjectSpawned event)
 	{
+		if (client.getVar(Varbits.IN_RAID) != 1) return;
 		GameObject obj = event.getGameObject();
 		WorldPoint loc = obj.getWorldLocation();
 		InstancePoint absLoc = InstancePoint.buildFromPoint(loc, client);
@@ -193,6 +194,7 @@ public class RaidsThievingPlugin extends Plugin
 	@Subscribe
 	public void onGraphicsObjectCreated(GraphicsObjectCreated event)
 	{
+		if (client.getVar(Varbits.IN_RAID) != 1) return;
 		GraphicsObject obj = event.getGraphicsObject();
 		if (obj.getId() == 184)
 		{
@@ -244,7 +246,6 @@ public class RaidsThievingPlugin extends Plugin
 		}
 		return total;
 	}
-
 
 	private boolean checkForBats()
 	{
