@@ -127,10 +127,17 @@ public interface TheatreConfig extends Config
 		name = "Hide Attack options for Nylocas",
 		description = ""
 	)
-
 	default boolean NyloMenu() {
 		return true;
 	}
+
+	@ConfigItem(
+		position = 10,
+		keyName = "nyloRagger",
+		name = "Highlight Nylo's attacking players",
+		description = ""
+	)
+	default boolean nyloRagger() { return true; }
 
 	@ConfigItem(
 		position = 10,

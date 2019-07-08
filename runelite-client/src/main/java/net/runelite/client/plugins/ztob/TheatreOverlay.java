@@ -132,18 +132,30 @@ public class TheatreOverlay extends Overlay {
 				}
 			}
 
-			if (config.NyloBlasts())
+			if (config.NyloBlasts() || config.nyloRagger())
 			{
-				final Map<NPC, Integer> npcMap = plugin.getNylocas_Map();
+				final Map<NPC, Nylo> npcMap = plugin.getNylocas_Map();
 				for (NPC npc : npcMap.keySet())
 				{
-					int ticksLeft = npcMap.get(npc);
-					if (ticksLeft > -1) {
-						if (ticksLeft <= 6) {
+					int ticksLeft = npcMap.get(npc).getTicks();
+					if (ticksLeft > -1)
+					{
+						if (ticksLeft <= 6 && config.NyloBlasts())
+						{
 							Color color = new Color(255, 255, 0, 180);
 							int outlineWidth = 2;
 							int outlineAlpha = 150;
 							renderNpcOverlay(graphics, npc, color, outlineWidth, outlineAlpha, 15);
+						}
+						else
+						{
+							if (config.nyloRagger() && npcMap.get(npc).isRagger())
+							{
+								Color color = npcMap.get(npc).getColor();
+								int outlineWidth = 2;
+								int outlineAlpha = 150;
+								renderNpcOverlay(graphics, npc, color, outlineWidth, outlineAlpha, 15);
+							}
 						}
 					}
 				}
