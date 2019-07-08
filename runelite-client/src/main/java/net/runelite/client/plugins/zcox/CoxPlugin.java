@@ -269,13 +269,11 @@ public class CoxPlugin extends Plugin
 		Projectile projectile = event.getProjectile();
 		if (projectile.getId() == 1339)
 		{
-			log.debug("Mage Detected");
 			prayAgainstOlm = PrayAgainst.MAGIC;
 			lastPrayTime = System.currentTimeMillis();
 		}
 		if (projectile.getId() == 1340)
 		{
-			log.debug("Range Detected");
 			prayAgainstOlm = PrayAgainst.RANGED;
 			lastPrayTime = System.currentTimeMillis();
 		}
