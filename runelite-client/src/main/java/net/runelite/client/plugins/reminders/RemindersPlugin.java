@@ -62,9 +62,6 @@ public class RemindersPlugin extends Plugin
 	private Client client;
 
 	@Inject
-	private ClientThread clientThread;
-
-	@Inject
 	private RemindersConfig config;
 
 	@Provides
@@ -127,7 +124,8 @@ public class RemindersPlugin extends Plugin
 	)
 	public void reminders()
     {
-    	double minutes = Math.floor((Duration.between(loginTime, Instant.now()).getSeconds())/60);
+    	if (loginTime == null) return;
+    	int minutes = (int)Math.floor((Duration.between(loginTime, Instant.now()).getSeconds())/60);
 		log.debug("mins: {}", minutes);
 		if (config.customReminderTime() != 0)
 		{
@@ -139,16 +137,16 @@ public class RemindersPlugin extends Plugin
 
         if (minutes % 60 == 0 && config.hydrationReminder() && minutes > 0)
         {
-            int hours = (int)minutes / 60;
+            int hours = minutes / 60;
             if (hours == 1)
             {
-                client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "<col=ef1020>You have been gaming for 1 hour.</col>", "");
+                client.addChatMessage(ChatMessageType.BROADCAST, "", "You have been gaming for 1 hour.", "");
             }
             else
             {
-                client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "<col=ef1020>You have been gaming for " + hours + " hours.</col>", "");
+                client.addChatMessage(ChatMessageType.BROADCAST, "", "You have been gaming for " + hours + " hours.", "");
             }
-            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "<col=ef1020>Remember to drink water and stand up for a bit :)</col>", "");
+            client.addChatMessage(ChatMessageType.BROADCAST, "", "Remember to drink water and stand up for a bit :)", "");
         }
     }
 }
