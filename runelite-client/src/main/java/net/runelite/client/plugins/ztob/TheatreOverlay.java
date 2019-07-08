@@ -168,7 +168,7 @@ public class TheatreOverlay extends Overlay {
 			{
 				for (Projectile projectile : plugin.getSotetseg_MageProjectiles())
 				{
-					String text = "Mage " + (int)(projectile.getRemainingCycles() / 30);
+					String text = "Mage " + (int)((projectile.getRemainingCycles() / 30) + 1);
 					int x = (int) projectile.getX();
 					int y = (int) projectile.getY();
 					LocalPoint projectilePoint = new LocalPoint(x, y);
@@ -181,7 +181,7 @@ public class TheatreOverlay extends Overlay {
 
 				for (Projectile projectile : plugin.getSotetseg_RangeProjectiles())
 				{
-					String text = "Range " + (int)(projectile.getRemainingCycles() / 30);
+					String text = "Range " + (int)((projectile.getRemainingCycles() / 30) + 1);
 					int x = (int) projectile.getX();
 					int y = (int) projectile.getY();
 					LocalPoint projectilePoint = new LocalPoint(x, y);
