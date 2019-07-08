@@ -8,10 +8,8 @@
 
 package net.runelite.client.plugins.ztob;
 
-import com.google.errorprone.annotations.Var;
 import com.google.inject.Provides;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,6 +20,8 @@ import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.GraphicsObject;
@@ -30,15 +30,18 @@ import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
+import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.Projectile;
 import net.runelite.api.Tile;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.GraphicsObjectCreated;
 import net.runelite.api.events.GroundObjectSpawned;
+import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
@@ -48,7 +51,6 @@ import net.runelite.api.kit.KitType;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -59,7 +61,7 @@ import net.runelite.client.util.Text;
 	description = "All-in-one plugin for Theatre of Blood",
 	tags = {"ToB", "theatre", "blood"}
 )
-
+@Slf4j
 public class TheatrePlugin extends Plugin {
 	private static final int GRAPHICSOBJECT_ID_MAIDEN = 1579;
 	private static final int NPCID_NYLOCAS_PILLAR = 8358;
@@ -143,7 +145,7 @@ public class TheatrePlugin extends Plugin {
 	private Map<NPC, Integer> Nylocas_Pillars = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	private Map<NPC, Integer> Nylocas_Map = new HashMap<>();
+	private Map<NPC, Nylo> Nylocas_Map = new HashMap<>();
 
 
 	@Getter(AccessLevel.PACKAGE)
@@ -167,10 +169,14 @@ public class TheatrePlugin extends Plugin {
 	@Getter(AccessLevel.PACKAGE)
 	private boolean runXarpus;
 
-	private int Xarpus_previousAnimation;
+	@Getter
+	private boolean xarpus_stare = false;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean Xarpus_Stare;
+	private int xarpus_orientation = -1;
+
+	@Getter
+	@Setter
+	private boolean xarpus_set_to_eight = false;
 
 	@Getter(AccessLevel.PACKAGE)
 	private final Map<GroundObject, Integer> Xarpus_Exhumeds = new HashMap<>();
@@ -259,7 +265,8 @@ public class TheatrePlugin extends Plugin {
 	}
 
 	@Override
-	protected void startUp() {
+	protected void startUp()
+	{
 		overlayManager.add(overlay);
 		overlayManager.add(xarpusOverlay);
 		overlayManager.add(verzikNyloOverlay);
@@ -268,7 +275,8 @@ public class TheatrePlugin extends Plugin {
 	}
 
 	@Override
-	protected void shutDown() {
+	protected void shutDown()
+	{
 		overlayManager.remove(overlay);
 		overlayManager.remove(xarpusOverlay);
 		overlayManager.remove(xarpusOverlay);
@@ -277,8 +285,10 @@ public class TheatrePlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onMenuEntryAdded(MenuEntryAdded event) {
-		if (client.getGameState() != GameState.LOGGED_IN || !config.NyloMenu() || !runNylocas) {
+	public void onMenuEntryAdded(MenuEntryAdded event)
+	{
+		if (client.getGameState() != GameState.LOGGED_IN || !config.NyloMenu() || !runNylocas)
+		{
 			return;
 		}
 
@@ -286,9 +296,11 @@ public class TheatrePlugin extends Plugin {
 
 		int attackType = 0; //0=idk 1= melee 2= range 3= mage
 
-		for (KitType kitType : KitType.values()) {
+		for (KitType kitType : KitType.values())
+		{
 			int itemId = client.getLocalPlayer().getPlayerComposition().getEquipmentId(kitType);
-			switch (itemId) {
+			switch (itemId)
+			{
 				case ItemID.DRAGON_CLAWS:
 				case ItemID.SCYTHE_OF_VITUR:
 				case ItemID.SCYTHE_OF_VITUR_UNCHARGED:
@@ -346,17 +358,20 @@ public class TheatrePlugin extends Plugin {
 					attackType = 3;
 					break;
 			}
-			if (attackType != 0) {
+			if (attackType != 0)
+			{
 				break;
 			}
 
 		}
 
-		if (!pOptionToReplace.equals("ATTACK")) {
+		if (!pOptionToReplace.equals("ATTACK"))
+		{
 			return;
 		}
 		int Id = 0;
-		if (BossNylo != null) {
+		if (BossNylo != null)
+		{
 			Id = BossNylo.getId();
 		}
 		String target = Text.removeTags(event.getTarget()).toLowerCase();
@@ -366,8 +381,8 @@ public class TheatrePlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onNpcSpawned(NpcSpawned npcSpawned) {
-
+	public void onNpcSpawned(NpcSpawned npcSpawned)
+	{
 		NPC npc = npcSpawned.getNpc();
 		switch (npc.getId()) {
 			case NPC_ID_TORNADO:
@@ -399,7 +414,8 @@ public class TheatrePlugin extends Plugin {
 				break;
 			case NPCID_NYLOCAS_PILLAR:
 				runNylocas = true;
-				if (!Nylocas_Pillars.keySet().contains(npc)) {
+				if (!Nylocas_Pillars.keySet().contains(npc))
+				{
 					Nylocas_Pillars.put(npc, 100);
 				}
 				break;
@@ -415,8 +431,9 @@ public class TheatrePlugin extends Plugin {
 			case 8351:
 			case 8352:
 			case 8353:
-				if (runNylocas) {
-					Nylocas_Map.put(npc, 52);
+				if (runNylocas)
+				{
+					Nylocas_Map.put(npc, new Nylo(npc));
 				}
 				break;
 			case NpcID.SOTETSEG:
@@ -427,13 +444,14 @@ public class TheatrePlugin extends Plugin {
 			case NpcID.XARPUS:
 			case NpcID.XARPUS_8339:
 			case NpcID.XARPUS_8340:
+				Xarpus_TicksUntilShoot = 4;
 			case NpcID.XARPUS_8341:
 				runXarpus = true;
 				exhumecount = 15;
 				Xarpus_NPC = npc;
-				Xarpus_Stare = false;
-				Xarpus_TicksUntilShoot = 9;
-				Xarpus_previousAnimation = -1;
+				xarpus_set_to_eight = false;
+				xarpus_stare = false;
+				xarpus_orientation = -1;
 				break;
 			case NpcID.VERZIK_VITUR_8369:
 			case NpcID.VERZIK_VITUR_8370:
@@ -454,9 +472,11 @@ public class TheatrePlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onNpcDespawned(NpcDespawned npcDespawned) {
+	public void onNpcDespawned(NpcDespawned npcDespawned)
+	{
 		NPC npc = npcDespawned.getNpc();
-		switch (npc.getId()) {
+		switch (npc.getId())
+		{
 			case NpcID.THE_MAIDEN_OF_SUGADINTI:
 			case NpcID.THE_MAIDEN_OF_SUGADINTI_8361:
 			case NpcID.THE_MAIDEN_OF_SUGADINTI_8362:
@@ -475,7 +495,8 @@ public class TheatrePlugin extends Plugin {
 				bloatTimer = 0;
 				break;
 			case NPCID_NYLOCAS_PILLAR:
-				if (Nylocas_Pillars.keySet().contains(npc)) {
+				if (Nylocas_Pillars.keySet().contains(npc))
+				{
 					Nylocas_Pillars.remove(npc);
 				}
 				break;
@@ -491,14 +512,16 @@ public class TheatrePlugin extends Plugin {
 			case 8351:
 			case 8352:
 			case 8353:
-				if (Nylocas_Map.keySet().contains(npc)) {
+				if (Nylocas_Map.keySet().contains(npc))
+				{
 					Nylocas_Map.remove(npc);
 				}
 				break;
 			case NpcID.SOTETSEG:
 			case NpcID.SOTETSEG_8388:
 				RedTiles.clear();
-				if (client.getPlane() != 3) {
+				if (client.getPlane() != 3)
+				{
 					runSotetseg = false;
 				}
 				break;
@@ -508,11 +531,12 @@ public class TheatrePlugin extends Plugin {
 			case NpcID.XARPUS_8341:
 				runXarpus = false;
 				Xarpus_NPC = null;
-				Xarpus_Stare = false;
 				Xarpus_TicksUntilShoot = 9;
-				Xarpus_previousAnimation = -1;
 				Xarpus_Exhumeds.clear();
 				exhumecount = 0;
+				xarpus_stare = false;
+				xarpus_set_to_eight = false;
+				xarpus_orientation = -1;
 				break;
 			case NpcID.VERZIK_VITUR_8369:
 			case NpcID.VERZIK_VITUR_8370:
@@ -526,20 +550,25 @@ public class TheatrePlugin extends Plugin {
 				Verzik_NPC = null;
 				break;
 		}
-
 	}
 
 	@Subscribe
-	public void onGroundObjectSpawned(GroundObjectSpawned event) {
-		if (runSotetseg) {
+	public void onGroundObjectSpawned(GroundObjectSpawned event)
+	{
+		if (runSotetseg)
+		{
 			GroundObject o = event.getGroundObject();
-			if (o.getId() == GROUNDOBJECT_ID_BLACKMAZE) {
+			if (o.getId() == GROUNDOBJECT_ID_BLACKMAZE)
+			{
 				Tile t = event.getTile();
 				WorldPoint p = t.getWorldLocation();
-				if (t.getPlane() == 0) {
+				if (t.getPlane() == 0)
+				{
 					if (!BlackTilesOverworld.contains(p))
 						BlackTilesOverworld.add(p);
-				} else {
+				}
+				else
+				{
 					if (!BlackTilesUnderworld.contains(p))
 						BlackTilesUnderworld.add(p);
 				}
@@ -559,24 +588,25 @@ public class TheatrePlugin extends Plugin {
 			}
 		}
 
-		if (runXarpus) {
+		if (runXarpus)
+		{
 			GroundObject o = event.getGroundObject();
-			if (o.getId() == GROUNDOBJECT_ID_EXHUMED) {
-
+			if (o.getId() == GROUNDOBJECT_ID_EXHUMED)
+			{
 				xarpusExhumedsTimer.put(o, 11);
-
 				Xarpus_Exhumeds.put(o, 11);
-
 			}
-
 		}
 	}
 
 	@Subscribe
-	public void onProjectileMoved(ProjectileMoved event) {
-		if (runVerzik) {
+	public void onProjectileMoved(ProjectileMoved event)
+	{
+		if (runVerzik)
+		{
 			Projectile projectile = event.getProjectile();
-			if (projectile.getId() == PROJECTILE_ID_P2RANGE) {
+			if (projectile.getId() == PROJECTILE_ID_P2RANGE)
+			{
 				WorldPoint p = WorldPoint.fromLocal(client, event.getPosition());
 				Verzik_RangeProjectiles.put(projectile, p);
 			}
@@ -584,7 +614,7 @@ public class TheatrePlugin extends Plugin {
 		if (runSotetseg)
 		{
 			Projectile projectile = event.getProjectile();
-			if (projectile.getId() == 1606) {
+			if (projectile.getId() == 1606 || projectile.getId() == 1604) {
 				Sotetseg_MageProjectiles.add(projectile);
 			}
 			if (projectile.getId() == 1607) {
@@ -736,26 +766,33 @@ public class TheatrePlugin extends Plugin {
 			}
 		}
 
-		if (runNylocas) {
-			for (Iterator<NPC> it = Nylocas_Map.keySet().iterator(); it.hasNext(); ) {
+		if (runNylocas)
+		{
+			for (Iterator<NPC> it = Nylocas_Map.keySet().iterator(); it.hasNext(); )
+			{
 				NPC npc = it.next();
-				int ticksLeft = Nylocas_Map.get(npc);
+				int ticksLeft = Nylocas_Map.get(npc).getTicks();
 
-				if (ticksLeft < 0) {
+				if (ticksLeft < 0)
+				{
 					it.remove();
 					continue;
 				}
-				Nylocas_Map.replace(npc, ticksLeft - 1);
+				Nylocas_Map.get(npc).updateTick();
 			}
 
-			for (NPC pillar : Nylocas_Pillars.keySet()) {
+			for (NPC pillar : Nylocas_Pillars.keySet())
+			{
 				int healthPercent = pillar.getHealthRatio();
-				if (healthPercent > -1) {
+				if (healthPercent > -1)
+				{
 					Nylocas_Pillars.replace(pillar, healthPercent);
 				}
 			}
-			for (NPC npc : client.getNpcs()) {
-				if (npc.getId() == 8358) {
+			for (NPC npc : client.getNpcs())
+			{
+				if (npc.getId() == 8358)
+				{
 					runNylocas = true;
 					break;
 				}
@@ -764,10 +801,13 @@ public class TheatrePlugin extends Plugin {
 			}
 		}
 
-		if (runSotetseg) {
+		if (runSotetseg)
+		{
 			boolean sotetsegFighting = false;
-			for (NPC npc : client.getNpcs()) {
-				if (npc.getId() == NpcID.SOTETSEG_8388) {
+			for (NPC npc : client.getNpcs())
+			{
+				if (npc.getId() == NpcID.SOTETSEG_8388)
+				{
 					BlackTilesUnderworld.clear();
 					BlackTilesOverworld.clear();
 					RedTilesOverworld.clear();
@@ -779,88 +819,108 @@ public class TheatrePlugin extends Plugin {
 				}
 			}
 
-			if (!getSotetseg_MageProjectiles().isEmpty()) {
-				for (Iterator<Projectile> it = Sotetseg_MageProjectiles.iterator(); it.hasNext(); ) {
+			if (!getSotetseg_MageProjectiles().isEmpty())
+			{
+				for (Iterator<Projectile> it = Sotetseg_MageProjectiles.iterator(); it.hasNext();)
+				{
 					Projectile projectile = it.next();
-					if (projectile.getRemainingCycles() < 1) {
+					if (projectile.getRemainingCycles() < 1)
+					{
 						it.remove();
 					}
 				}
 			}
 
-			if (!getSotetseg_RangeProjectiles().isEmpty()) {
-				for (Iterator<Projectile> it = Sotetseg_RangeProjectiles.iterator(); it.hasNext(); ) {
+			if (!getSotetseg_RangeProjectiles().isEmpty())
+			{
+				for (Iterator<Projectile> it = Sotetseg_RangeProjectiles.iterator(); it.hasNext();)
+				{
 					Projectile projectile = it.next();
-					if (projectile.getRemainingCycles() < 1) {
+					if (projectile.getRemainingCycles() < 1)
+					{
 						it.remove();
 					}
 				}
 			}
 
-			if (!sotetsegFighting) {
-				if (!BlackTilesUnderworld.isEmpty() && !RedTilesUnderworld.isEmpty() && GridPath.isEmpty()) {
+			if (!sotetsegFighting)
+			{
+				if (!BlackTilesUnderworld.isEmpty() && !RedTilesUnderworld.isEmpty() && GridPath.isEmpty())
+				{
 					int minX = 99999;
 					int minY = 99999;
-					for (WorldPoint p : BlackTilesUnderworld) {
+					for (WorldPoint p : BlackTilesUnderworld)
+					{
 						int x = p.getX();
 						int y = p.getY();
-						if (x < minX) {
+						if (x < minX)
+						{
 							minX = x;
 						}
-						if (y < minY) {
+						if (y < minY)
+						{
 							minY = y;
 						}
 					}
 
-
 					boolean messageSent = false;
-					for (WorldPoint p : RedTilesUnderworld) {
+					for (WorldPoint p : RedTilesUnderworld)
+					{
 						WorldPoint pN = new WorldPoint(p.getX(), p.getY() + 1, p.getPlane());
 						WorldPoint pS = new WorldPoint(p.getX(), p.getY() - 1, p.getPlane());
 						WorldPoint pE = new WorldPoint(p.getX() + 1, p.getY(), p.getPlane());
 						WorldPoint pW = new WorldPoint(p.getX() - 1, p.getY(), p.getPlane());
 
 						if (!((RedTilesUnderworld.contains(pN) && RedTilesUnderworld.contains(pS)) ||
-							(RedTilesUnderworld.contains(pE) && RedTilesUnderworld.contains(pW)))) {
+							(RedTilesUnderworld.contains(pE) && RedTilesUnderworld.contains(pW))))
+						{
 							GridPath.add(new Point(p.getX() - minX, p.getY() - minY));
-							if (!messageSent) {
+							if (!messageSent)
+							{
 								//client.addChatMessage(ChatMessageType.SERVER, "", "Maze path acquired.", null);
 								messageSent = true;
 							}
 						}
-
 					}
 				}
 
-				if (!BlackTilesOverworld.isEmpty() && !GridPath.isEmpty() && RedTilesOverworld.isEmpty()) {
+				if (!BlackTilesOverworld.isEmpty() && !GridPath.isEmpty() && RedTilesOverworld.isEmpty())
+				{
 					int minX = 99999;
 					int minY = 99999;
-					for (WorldPoint p : BlackTilesOverworld) {
+					for (WorldPoint p : BlackTilesOverworld)
+					{
 						int x = p.getX();
 						int y = p.getY();
-						if (x < minX) {
+						if (x < minX)
+						{
 							minX = x;
 						}
-						if (y < minY) {
+						if (y < minY)
+						{
 							minY = y;
 						}
 					}
-					for (Point p : GridPath) {
+					for (Point p : GridPath)
+					{
 						RedTilesOverworld.add(new WorldPoint(minX + p.getX(), minY + p.getY(), 0));
 					}
 				}
 			}
 		}
 
-		if (runXarpus) {
+		if (runXarpus)
+		{
 			int size = xarpusExhumedsTimer.size();
-			for (Map.Entry<GroundObject, Integer> exhumes : xarpusExhumedsTimer.entrySet()) {
-				if (size > 0) {
+			for (Map.Entry<GroundObject, Integer> exhumes : xarpusExhumedsTimer.entrySet())
+			{
+				if (size > 0)
+				{
 					exhumes.setValue(exhumes.getValue() - 1);
 				}
-
 			}
-			for (Iterator<GroundObject> it = Xarpus_Exhumeds.keySet().iterator(); it.hasNext(); ) {
+			for (Iterator<GroundObject> it = Xarpus_Exhumeds.keySet().iterator(); it.hasNext();)
+			{
 				GroundObject key = it.next();
 				Xarpus_Exhumeds.replace(key, Xarpus_Exhumeds.get(key) - 1);
 				if (Xarpus_Exhumeds.get(key) < 0) {
@@ -868,37 +928,65 @@ public class TheatrePlugin extends Plugin {
 					exhumecount--;
 				}
 			}
-			if ((Xarpus_NPC.getComposition().getOverheadIcon() != null)) {
-				Xarpus_Stare = true;
+			if (!xarpus_stare)
+			{
+				if (getXarpus_NPC().getOverheadText() != null)
+					xarpus_stare = true;
 			}
-			if (Xarpus_Stare) {
-				//dont hit xarpus if it looking at u
-			} else if (Xarpus_NPC.getId() == NpcID.XARPUS_8340) {
+			if (Xarpus_NPC.getId() == NpcID.XARPUS_8340)
+			{
 				Xarpus_TicksUntilShoot--;
-				//if (Xarpus_NPC.getAnimation() == ANIMATION_ID_XARPUS && Xarpus_previousAnimation != ANIMATION_ID_XARPUS)
-				//{
-				//Xarpus_TicksUntilShoot = 3;
-				//}
-				//Xarpus_previousAnimation = Xarpus_NPC.getAnimation();
+				if (Xarpus_NPC.getOrientation() != xarpus_orientation)
+				{
+					xarpus_orientation = Xarpus_NPC.getOrientation();
+					if (xarpus_stare)
+					{
+						Xarpus_TicksUntilShoot = 8;
+					}
+					else
+					{
+						Xarpus_TicksUntilShoot = 4;
+					}
+				}
+				else
+				{
+					if (Xarpus_TicksUntilShoot < 1)
+					{
+						if (xarpus_stare)
+						{
+							Xarpus_TicksUntilShoot = 8;
+						}
+						else
+						{
+							Xarpus_TicksUntilShoot = 4;
+						}
+					}
+				}
 			}
 		}
 
-		if (runVerzik) {
+		if (runVerzik)
+		{
 			crabList.clear();
-			for (NPC npc : client.getNpcs()) {
-
-				if (npc.getName().toLowerCase().contains("nylo")) {
+			for (NPC npc : client.getNpcs())
+			{
+				if (npc.getName().toLowerCase().contains("nylo"))
+				{
 					crabList.add(npc);
 				}
 			}
 
-			if (Verzik_NPC.getAnimation() == 8117) {
+			if (Verzik_NPC.getAnimation() == 8117)
+			{
 				redCrabsTimer = redCrabsTimer - 1;
 			}
-			if (!Verzik_RangeProjectiles.isEmpty()) {
-				for (Iterator<Projectile> it = Verzik_RangeProjectiles.keySet().iterator(); it.hasNext(); ) {
+			if (!Verzik_RangeProjectiles.isEmpty())
+			{
+				for (Iterator<Projectile> it = Verzik_RangeProjectiles.keySet().iterator(); it.hasNext();)
+				{
 					Projectile projectile = it.next();
-					if (projectile.getRemainingCycles() < 1) {
+					if (projectile.getRemainingCycles() < 1)
+					{
 						it.remove();
 					}
 				}
@@ -907,15 +995,18 @@ public class TheatrePlugin extends Plugin {
 			Verzik_YellowBall = null;
 			Verzik_YellowTiles.clear();
 
-			for (Projectile projectile : client.getProjectiles()) {
-				if (projectile.getId() == PROJECTILE_ID_YELLOW) {
+			for (Projectile projectile : client.getProjectiles())
+			{
+				if (projectile.getId() == PROJECTILE_ID_YELLOW)
+				{
 					Verzik_YellowBall = projectile;
 					break;
 				}
 			}
-			for (GraphicsObject o : client.getGraphicsObjects()) {
-				if (o.getId() == GRAPHICSOBJECT_ID_YELLOW) {
-
+			for (GraphicsObject o : client.getGraphicsObjects())
+			{
+				if (o.getId() == GRAPHICSOBJECT_ID_YELLOW)
+				{
 					Verzik_YellowTiles.add(WorldPoint.fromLocal(client, o.getLocation()));
 				}
 			}
@@ -923,8 +1014,10 @@ public class TheatrePlugin extends Plugin {
 			if (Verzik_NPC.getId() == VERZIK_ID_P3)
 			{
 				boolean isGreenBall = false;
-				for (Projectile projectile : client.getProjectiles()) {
-					if (projectile.getId() == PROJECTILE_ID_P3_GREEN) {
+				for (Projectile projectile : client.getProjectiles())
+				{
+					if (projectile.getId() == PROJECTILE_ID_P3_GREEN)
+					{
 						isGreenBall = projectile.getRemainingCycles() > 210;
 						break;
 					}
@@ -932,45 +1025,62 @@ public class TheatrePlugin extends Plugin {
 
 				P3_TicksUntilAttack--;
 
-				switch (Verzik_NPC.getAnimation()) {
+				switch (Verzik_NPC.getAnimation())
+				{
 					case ANIMATION_ID_P3_MAGE:
-						if (P3_TicksUntilAttack < 2) {
+						if (P3_TicksUntilAttack < 2)
+						{
 							P3_attacksLeft--;
-							if (tornadosActive) {
+							if (tornadosActive)
+							{
 								P3_TicksUntilAttack = 5;
-							} else {
+							}
+							else
+							{
 								P3_TicksUntilAttack = 7;
 							}
-							if (P3_attacksLeft < 1) {
+							if (P3_attacksLeft < 1)
+							{
 								P3_TicksUntilAttack = 24;
 							}
 						}
 						break;
 					case ANIMATION_ID_P3_RANGE:
-						if (P3_TicksUntilAttack < 2) {
+						if (P3_TicksUntilAttack < 2)
+						{
 							P3_attacksLeft--;
-							if (tornadosActive) {
+							if (tornadosActive)
+							{
 								P3_TicksUntilAttack = 5;
-							} else {
+							}
+							else
+							{
 								P3_TicksUntilAttack = 7;
 							}
-							if (P3_attacksLeft < 1) {
+							if (P3_attacksLeft < 1)
+							{
 								P3_TicksUntilAttack = 30;
 							}
-							if (isGreenBall) {
+							if (isGreenBall)
+							{
 								P3_TicksUntilAttack = 12;
 							}
 						}
 						break;
 					case ANIMATION_ID_P3_MELEE:
-						if (P3_TicksUntilAttack < 2) {
+						if (P3_TicksUntilAttack < 2)
+						{
 							P3_attacksLeft--;
-							if (tornadosActive) {
+							if (tornadosActive)
+							{
 								P3_TicksUntilAttack = 5;
-							} else {
+							}
+							else
+							{
 								P3_TicksUntilAttack = 7;
 							}
-							if (P3_attacksLeft < 1) {
+							if (P3_attacksLeft < 1)
+							{
 								P3_TicksUntilAttack = 24;
 							}
 						}
@@ -1057,23 +1167,50 @@ public class TheatrePlugin extends Plugin {
 		}
 	}
 
-	private int searchIndex(MenuEntry[] entries, String option, String target, boolean strict) {
-		for (int i = entries.length - 1; i >= 0; i--) {
+	private int searchIndex(MenuEntry[] entries, String option, String target, boolean strict)
+	{
+		for (int i = entries.length - 1; i >= 0; i--)
+		{
 			MenuEntry entry = entries[i];
 			String entryOption = Text.removeTags(entry.getOption()).toLowerCase();
 			String entryTarget = Text.removeTags(entry.getTarget()).toLowerCase();
 
-			if (strict) {
-				if (entryOption.equals(option) && entryTarget.equals(target)) {
+			if (strict)
+			{
+				if (entryOption.equals(option) && entryTarget.equals(target))
+				{
 					return i;
 				}
-			} else {
-				if (entryOption.contains(option.toLowerCase()) && entryTarget.equals(target)) {
+			}
+			else
+			{
+				if (entryOption.contains(option.toLowerCase()) && entryTarget.equals(target))
+				{
 					return i;
 				}
 			}
 		}
-
 		return -1;
+	}
+
+	@Subscribe
+	public void onChatMessage(ChatMessage msg)
+	{
+		if (msg.getMessage().contains("Xarpus begins to stare intently"))
+		{
+			xarpus_stare = true;
+		}
+	}
+
+	@Subscribe
+	public void onInteractingChanged(InteractingChanged event)
+	{
+		if (!runNylocas) return;
+		if (event.getSource() == null) return;
+		if (event.getSource() instanceof Player) return;
+		if (event.getSource() instanceof NPC)
+		{
+			if (event.getTarget() instanceof Player) Nylocas_Map.get(event.getSource()).setRagger(true);
+		}
 	}
 }

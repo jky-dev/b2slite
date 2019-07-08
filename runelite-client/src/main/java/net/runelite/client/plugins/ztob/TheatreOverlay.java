@@ -168,7 +168,7 @@ public class TheatreOverlay extends Overlay {
 			{
 				for (Projectile projectile : plugin.getSotetseg_MageProjectiles())
 				{
-					String text = "Mage";
+					String text = "Mage " + (int)(projectile.getRemainingCycles() / 30);
 					int x = (int) projectile.getX();
 					int y = (int) projectile.getY();
 					LocalPoint projectilePoint = new LocalPoint(x, y);
@@ -181,7 +181,7 @@ public class TheatreOverlay extends Overlay {
 
 				for (Projectile projectile : plugin.getSotetseg_RangeProjectiles())
 				{
-					String text = "Range";
+					String text = "Range " + (int)(projectile.getRemainingCycles() / 30);
 					int x = (int) projectile.getX();
 					int y = (int) projectile.getY();
 					LocalPoint projectilePoint = new LocalPoint(x, y);
@@ -228,13 +228,9 @@ public class TheatreOverlay extends Overlay {
 		{
 			NPC boss = plugin.getXarpus_NPC();
 
-			if (boss.getId() == NpcID.XARPUS_8340 && !plugin.isXarpus_Stare() && config.XarpusTick())
+			if (boss.getId() == NpcID.XARPUS_8340 && config.XarpusTick())
 			{
 				int tick = plugin.getXarpus_TicksUntilShoot();
-				if (tick < 1)
-				{
-					tick = tick % 4 + 4;
-				}
 				final String ticksLeftStr = String.valueOf(tick);
 				Point canvasPoint = boss.getCanvasTextLocation(graphics, ticksLeftStr, 130);
 				renderTextLocation(graphics, ticksLeftStr, 12, Font.BOLD, Color.WHITE, canvasPoint);
@@ -331,9 +327,7 @@ public class TheatreOverlay extends Overlay {
 					renderTextLocation(graphics, ticksLeftStr, 15, Font.BOLD, Color.WHITE, canvasPoint);
 				}
 			}
-
 		}
-
 		return null;
 	}
 

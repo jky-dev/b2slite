@@ -26,8 +26,10 @@ public class TheatreReminderOverlay extends Overlay {
 		this.plugin = plugin;
 		this.config = config;
 	}
+
 	@Override
-	public Dimension render(Graphics2D graphics) {
+	public Dimension render(Graphics2D graphics)
+	{
 		if (plugin.isInTobLobby() && !plugin.isCorrectSpellbook() && config.ancientsReminder())
 		{
 			panelComponent.getChildren().clear();

@@ -32,14 +32,12 @@ public class VerzikNyloOverlay extends Overlay {
 
 	public Dimension render(Graphics2D graphics)
 	{
-
 		if (plugin.isRunVerzik())
 		{
 			if (config.NyloTargetOverlay())
 			{
 				if (plugin.getCrabList().size() > 0)
 				{
-
 					for (NPC npc : plugin.getCrabList())
 					{
 						if (npc.isDead())
@@ -49,23 +47,14 @@ public class VerzikNyloOverlay extends Overlay {
 						String renderText = "";
 						if (npc.getInteracting() != null)
 						{
-
 							renderText = npc.getInteracting().getName();
 							Point point = npc.getCanvasTextLocation(graphics, npc.getInteracting().getName(), 0);
-
-
 							if (npc.getInteracting().getName().toLowerCase().equals(client.getLocalPlayer().getName().toLowerCase()))
 							{
 								point = npc.getCanvasTextLocation(graphics, client.getLocalPlayer().getName(), 0);
-								renderText = "YOU NIGGA RUN!";
-
+								renderText = "YOU!";
 							}
-							else if (npc.getInteracting().getName().toLowerCase().equals("afyy"))
-							{
-								point = npc.getCanvasTextLocation(graphics, "Ricecup", 0);
-								renderText = "Ricecup";
-							}
-							if (renderText.equals("YOU NIGGA RUN!"))
+							if (renderText.equals("YOU!"))
 							{
 								renderTextLocation(graphics, renderText, 12, Font.BOLD, Color.RED, point);
 							}
@@ -80,7 +69,6 @@ public class VerzikNyloOverlay extends Overlay {
 
 			}
 		}
-
 		return null;
 	}
 
