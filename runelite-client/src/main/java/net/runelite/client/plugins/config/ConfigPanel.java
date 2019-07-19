@@ -35,8 +35,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,6 +90,7 @@ import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.ComboBoxListRenderer;
 import net.runelite.client.ui.components.IconButton;
 import net.runelite.client.ui.components.IconTextField;
+import net.runelite.client.ui.components.colorpicker.ColorPickerManager;
 import net.runelite.client.ui.components.colorpicker.RuneliteColorPicker;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.ImageUtil;
@@ -117,6 +116,7 @@ public class ConfigPanel extends PluginPanel
 	private final ScheduledExecutorService executorService;
 	private final RuneLiteConfig runeLiteConfig;
 	private final ChatColorConfig chatColorConfig;
+	private final ColorPickerManager colorPickerManager;
 	private final List<PluginListItem> pluginList = new ArrayList<>();
 
 	@Getter
@@ -140,7 +140,7 @@ public class ConfigPanel extends PluginPanel
 	}
 
 	ConfigPanel(PluginManager pluginManager, ConfigManager configManager, ScheduledExecutorService executorService,
-		RuneLiteConfig runeLiteConfig, ChatColorConfig chatColorConfig)
+		RuneLiteConfig runeLiteConfig, ChatColorConfig chatColorConfig, ColorPickerManager colorPickerManager)
 	{
 		super(false);
 		this.pluginManager = pluginManager;
@@ -148,6 +148,7 @@ public class ConfigPanel extends PluginPanel
 		this.executorService = executorService;
 		this.runeLiteConfig = runeLiteConfig;
 		this.chatColorConfig = chatColorConfig;
+		this.colorPickerManager = colorPickerManager;
 
 		searchBar.setIcon(IconTextField.Icon.SEARCH);
 		searchBar.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH - 20, 30));
@@ -478,23 +479,18 @@ public class ConfigPanel extends PluginPanel
 					@Override
 					public void mouseClicked(MouseEvent e)
 					{
-						RuneliteColorPicker colorPicker = new RuneliteColorPicker(SwingUtilities.windowForComponent(ConfigPanel.this),
-							colorPickerBtn.getBackground(), cid.getItem().name(), cid.getAlpha() == null);
+						RuneliteColorPicker colorPicker = colorPickerManager.create(
+							SwingUtilities.windowForComponent(ConfigPanel.this),
+							colorPickerBtn.getBackground(),
+							cid.getItem().name(),
+							cid.getAlpha() == null);
 						colorPicker.setLocation(getLocationOnScreen());
 						colorPicker.setOnColorChange(c ->
 						{
 							colorPickerBtn.setBackground(c);
 							colorPickerBtn.setText(ColorUtil.toHexColor(c).toUpperCase());
 						});
-
-						colorPicker.addWindowListener(new WindowAdapter()
-						{
-							@Override
-							public void windowClosing(WindowEvent e)
-							{
-								changeConfiguration(listItem, config, colorPicker, cd, cid);
-							}
-						});
+						colorPicker.setOnClose(c -> changeConfiguration(listItem, config, colorPicker, cd, cid));
 						colorPicker.setVisible(true);
 					}
 				});

@@ -406,10 +406,14 @@ class PluginListItem extends JPanel
 	{
 		final Color lastForeground = label.getForeground();
 		final JPopupMenu menu = new JPopupMenu();
+		final Color labelForeground = label.getForeground();
 		menu.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		for (final JMenuItem menuItem : menuItems)
 		{
+			// Some machines register mouseEntered through a popup menu, and do not register mouseExited when a popup
+			// menu item is clicked, so reset the label's color when we click one of these options.
+			menuItem.addActionListener(e -> label.setForeground(labelForeground));
 			menu.add(menuItem);
 		}
 
