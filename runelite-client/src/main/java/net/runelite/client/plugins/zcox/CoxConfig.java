@@ -129,4 +129,26 @@ public interface CoxConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		position = 9,
+		keyName = "ShamanSplash",
+		name = "Show Shaman splashes",
+		description = ""
+	)
+	default boolean showShamanSplash()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 10,
+		keyName = "VasaRocks",
+		name = "Show Vasa's rocks",
+		description = ""
+	)
+	default boolean showVasaRocks()
+	{
+		return true;
+	}
+
 }

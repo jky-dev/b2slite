@@ -72,7 +72,7 @@ class OlmPrayAgainstOverlay extends Overlay
 		if (System.currentTimeMillis() < (plugin.getLastPrayTime() + 120000))
 		{
 			InfoBoxComponent prayComponent = new InfoBoxComponent();
-			Image prayImg = scaleImg(getPrayerImage(plugin.prayAgainstOlm));
+			BufferedImage prayImg = getPrayerImage(plugin.prayAgainstOlm);
 			prayComponent.setImage(prayImg);
 			prayComponent.setColor(Color.WHITE);
 			prayComponent.setPreferredSize(new Dimension(40, 40));

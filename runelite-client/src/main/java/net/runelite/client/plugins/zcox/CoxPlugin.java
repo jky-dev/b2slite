@@ -28,6 +28,8 @@ package net.runelite.client.plugins.zcox;
 
 import com.google.inject.Provides;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -41,6 +43,7 @@ import net.runelite.api.MessageNode;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Projectile;
+import net.runelite.api.ProjectileID;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
@@ -91,6 +94,8 @@ public class CoxPlugin extends Plugin
 	private NPC hand;
 	@Inject
 	private OverlayManager overlayManager;
+	@Inject
+	private CoxSceneOverlay coxSceneOverlay;
 	@Inject
 	private OlmCrippleTimerOverlay olmCrippleTimerOverlay;
 	@Setter
@@ -160,6 +165,12 @@ public class CoxPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	private List<WorldPoint> Olm_PSN = new ArrayList<>();
 
+	@Getter
+	private HashMap<Projectile, WorldPoint> shamanAOE = new HashMap<>();
+
+	@Getter
+	private HashMap<Projectile, WorldPoint> vasaAOE = new HashMap<>();
+
 	@Inject
 	private ChatMessageManager chatMessageManager;
 
@@ -181,6 +192,7 @@ public class CoxPlugin extends Plugin
 		overlayManager.add(overlay);
 		overlayManager.add(olmCrippleTimerOverlay);
 		overlayManager.add(prayAgainstOverlay);
+		overlayManager.add(coxSceneOverlay);
 	}
 
 	@Override
@@ -189,6 +201,9 @@ public class CoxPlugin extends Plugin
 		overlayManager.remove(overlay);
 		overlayManager.remove(olmCrippleTimerOverlay);
 		overlayManager.remove(prayAgainstOverlay);
+		overlayManager.remove(coxSceneOverlay);
+		vasaAOE.clear();
+		shamanAOE.clear();
 		HandCripple = false;
 		timer = 45;
 		hand = null;
@@ -276,6 +291,22 @@ public class CoxPlugin extends Plugin
 		{
 			prayAgainstOlm = PrayAgainst.RANGED;
 			lastPrayTime = System.currentTimeMillis();
+		}
+		if (config.showShamanSplash())
+		{
+			if (projectile.getId() == ProjectileID.LIZARDMAN_SHAMAN_AOE)
+			{
+				WorldPoint p = WorldPoint.fromLocal(client, event.getPosition());
+				shamanAOE.put(projectile, p);
+			}
+		}
+		if (config.showVasaRocks())
+		{
+			if (projectile.getId() == ProjectileID.VASA_RANGED_AOE)
+			{
+				WorldPoint p = WorldPoint.fromLocal(client, event.getPosition());
+				vasaAOE.put(projectile, p);
+			}
 		}
 	}
 
@@ -374,7 +405,6 @@ public class CoxPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
-
 		if (client.getVar(Varbits.IN_RAID) == 0)
 		{
 			runOlm = false;
@@ -385,10 +415,33 @@ public class CoxPlugin extends Plugin
 			OlmPhase = 0;
 			sleepcount = 0;
 			Olm_Heal.clear();
+			vasaAOE.clear();
+			shamanAOE.clear();
+			return;
 		}
-		else
-		{
 
+		if (!shamanAOE.isEmpty())
+		{
+			for (Iterator<Projectile> it = shamanAOE.keySet().iterator(); it.hasNext();)
+			{
+				Projectile projectile = it.next();
+				if (projectile.getRemainingCycles() < 1)
+				{
+					it.remove();
+				}
+			}
+		}
+
+		if (!vasaAOE.isEmpty())
+		{
+			for (Iterator<Projectile> it = vasaAOE.keySet().iterator(); it.hasNext();)
+			{
+				Projectile projectile = it.next();
+				if (projectile.getRemainingCycles() < 1)
+				{
+					it.remove();
+				}
+			}
 		}
 
 		if (HandCripple)
@@ -528,6 +581,4 @@ public class CoxPlugin extends Plugin
 
 		}
 	}
-
-
 }
