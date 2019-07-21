@@ -22,6 +22,9 @@ b2sLite is a fork of the open source OSRS client RuneLite.
 * Inventory Price Checker overlay
 * Window snapping with custom window chrome
 * Additional chat notifications for PM's
+* Custom reminders
+
+## Join our discord community [here](https://discord.gg/qSupxuM)!
 
 ![](https://runelite.net/img/logo.png)
 # runelite [![Travis](https://img.shields.io/travis/runelite/runelite.svg)](https://travis-ci.org/runelite/runelite) [![Discord](https://img.shields.io/discord/301497432909414422.svg)](https://discord.gg/mePCs8U)
