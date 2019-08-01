@@ -360,25 +360,13 @@ public interface GroundItemsConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "showTimer",
-		name = "Show ground item timer",
-		description = "Shows how many ticks left until disappearing. BETA",
+		keyName = "groundItemTimers",
+		name = "Show despawn timers",
+		description = "Shows despawn timers for items you've dropped and received as loot",
 		position = 28
 	)
-	default boolean showTimer()
+	default boolean groundItemTimers()
 	{
 		return false;
 	}
-
-	@ConfigItem(
-		keyName = "removeTake",
-		name = "Remove take option",
-		description = "Remove option to take item off ground",
-		position = 29
-	)
-	default boolean removeTake()
-	{
-		return false;
-	}
-
 }

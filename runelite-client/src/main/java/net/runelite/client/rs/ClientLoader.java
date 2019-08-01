@@ -47,11 +47,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import static net.runelite.client.rs.ClientUpdateCheckMode.AUTO;
@@ -63,22 +61,27 @@ import okhttp3.Response;
 import org.apache.commons.compress.compressors.CompressorException;
 
 @Slf4j
-@Singleton
-public class ClientLoader
+public class ClientLoader implements Supplier<Applet>
 {
-	private final ClientConfigLoader clientConfigLoader;
 	private ClientUpdateCheckMode updateCheckMode;
+	private Applet client = null;
 
-	@Inject
-	private ClientLoader(
-		@Named("updateCheckMode") final ClientUpdateCheckMode updateCheckMode,
-		final ClientConfigLoader clientConfigLoader)
+	public ClientLoader(ClientUpdateCheckMode updateCheckMode)
 	{
 		this.updateCheckMode = updateCheckMode;
-		this.clientConfigLoader = clientConfigLoader;
 	}
 
-	public Applet load()
+	@Override
+	public synchronized Applet get()
+	{
+		if (client == null)
+		{
+			client = doLoad();
+		}
+		return client;
+	}
+
+	private Applet doLoad()
 	{
 		if (updateCheckMode == NONE)
 		{
@@ -87,7 +90,7 @@ public class ClientLoader
 
 		try
 		{
-			RSConfig config = clientConfigLoader.fetch();
+			RSConfig config = ClientConfigLoader.fetch();
 
 			Map<String, byte[]> zipFile = new HashMap<>();
 			{
@@ -289,6 +292,7 @@ public class ClientLoader
 
 package net.runelite.client.rs;
 
+import com.google.common.base.Supplier;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteStreams;
 import com.google.common.reflect.TypeToken;
@@ -325,8 +329,7 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.utils.IOUtils;
 
 @Slf4j
-@Singleton
-public class ClientLoader
+public class ClientLoader implements Supplier<Applet>
 {
 	private static final File RUNELITE_DIR = new File(System.getProperty("user.home"), ".runelite");
 	private static final File PATCHES_DIR = new File(RUNELITE_DIR, "patches");
@@ -430,20 +433,26 @@ public class ClientLoader
 		}
 	}
 
-	private final ClientConfigLoader clientConfigLoader;
 	private ClientUpdateCheckMode updateCheckMode;
+	private Applet client = null;
 
-	@Inject
-	private ClientLoader(
-		@Named("updateCheckMode") final ClientUpdateCheckMode updateCheckMode,
-		final ClientConfigLoader clientConfigLoader)
+	public ClientLoader(ClientUpdateCheckMode updateCheckMode)
 	{
 		this.updateCheckMode = updateCheckMode;
-		this.clientConfigLoader = clientConfigLoader;
 	}
 
-	public Applet load() throws FileNotFoundException {
+	@Override
+	public synchronized Applet get()
+	{
+		if (client == null)
+		{
+			client = doLoad();
+		}
+		return client;
+	}
 
+	private Applet doLoad()
+	{
 		PATCHES_DIR.mkdirs();
 
 		// downloads patches to patch directory
@@ -459,7 +468,7 @@ public class ClientLoader
 
 		try
 		{
-			RSConfig config = clientConfigLoader.fetch();
+			RSConfig config = ClientConfigLoader.fetch();
 
 			Map<String, byte[]> zipFile = new HashMap<>();
 			{

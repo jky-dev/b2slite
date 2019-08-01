@@ -90,11 +90,15 @@ class ItemPricesOverlay extends Overlay
 		final MenuAction action = MenuAction.of(menuEntry.getType());
 		final int widgetId = menuEntry.getParam1();
 		final int groupId = WidgetInfo.TO_GROUP(widgetId);
+
 		// Tooltip action type handling
 		switch (action)
 		{
-			case ITEM_USE_ON_WIDGET: // high alchemy
-				if (!menuEntry.getTarget().contains("High Level Alchemy") || !config.showAlchProfit()) return null;
+			case ITEM_USE_ON_WIDGET:
+				if (!menuEntry.getTarget().contains("High Level Alchemy") || !config.showAlchProfit())
+				{
+					break;
+				}
 			case WIDGET_DEFAULT:
 			case ITEM_USE:
 			case ITEM_FIRST_OPTION:
