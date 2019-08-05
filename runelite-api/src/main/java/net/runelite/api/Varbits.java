@@ -505,7 +505,17 @@ public enum Varbits
 	// SPELLBOOK
 	SPELLBOOK(4070),
 
-	WINTERTODT_TIMER(7980);
+	WINTERTODT_TIMER(7980),
+
+	/**
+	 * 1 is true, 0 is false.
+	 */
+	GAUNTLET_FINAL_ROOM_ENTERED(9177),
+
+	/**
+	 * 1 is true, 0 is false.
+	 */
+	GAUNTLET_ENTERED(9178);
 
 	/**
 	 * The raw varbit ID.
