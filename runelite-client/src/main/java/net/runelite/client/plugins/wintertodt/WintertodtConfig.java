@@ -70,4 +70,15 @@ public interface WintertodtConfig extends Config
 	{
 		return 5;
 	}
+
+	@ConfigItem(
+		position = 4,
+		keyName = "aoe",
+		name = "Show Wintertodt AOE",
+		description = "Shows AOE in Wintertodt"
+	)
+	default boolean showAOE()
+	{
+		return true;
+	}
 }

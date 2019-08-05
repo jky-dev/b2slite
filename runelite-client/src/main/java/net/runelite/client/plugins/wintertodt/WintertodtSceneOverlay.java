@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.zcox;
+package net.runelite.client.plugins.wintertodt;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -31,28 +31,24 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import javax.inject.Inject;
 import net.runelite.api.Client;
-import net.runelite.api.GraphicsObject;
-import net.runelite.api.NPCComposition;
 import net.runelite.api.Perspective;
-import net.runelite.api.Projectile;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.client.plugins.grotesqueguardians.GrotesqueGuardiansConfig;
-import net.runelite.client.plugins.grotesqueguardians.GrotesqueGuardiansPlugin;
+import net.runelite.client.plugins.zcox.CoxConfig;
+import net.runelite.client.plugins.zcox.CoxPlugin;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.OverlayUtil;
 
-class CoxSceneOverlay extends Overlay
+class WintertodtSceneOverlay extends Overlay
 {
 	private final Client client;
-	private CoxPlugin plugin;
-	private CoxConfig config;
+	private WintertodtPlugin plugin;
+	private WintertodtConfig config;
 
 	@Inject
-	private CoxSceneOverlay(Client client, CoxConfig config, CoxPlugin plugin)
+	private WintertodtSceneOverlay(Client client, WintertodtConfig config, WintertodtPlugin plugin)
 	{
 		this.client = client;
 		this.config = config;
@@ -65,9 +61,9 @@ class CoxSceneOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (config.showShamanSplash())
+		if (config.showAOE())
 		{
-			for (WorldPoint p : plugin.getShamanAOE().values())
+			for (WorldPoint p : plugin.getWintertodtSnowfall().values())
 			{
 				WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
 				if (p.distanceTo(playerLocation) >= 32) {
@@ -77,24 +73,7 @@ class CoxSceneOverlay extends Overlay
 				if (lp == null) {
 					continue;
 				}
-				Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 5);
-				renderPoly(graphics, Color.RED, poly, 0);
-			}
-		}
-
-		if (config.showVasaRocks())
-		{
-			for (WorldPoint p : plugin.getVasaAOE().values())
-			{
-				WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
-				if (p.distanceTo(playerLocation) >= 32) {
-					continue;
-				}
-				LocalPoint lp = LocalPoint.fromWorld(client, p);
-				if (lp == null) {
-					continue;
-				}
-				Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 3);
+				Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 1);
 				renderPoly(graphics, Color.RED, poly, 0);
 			}
 		}

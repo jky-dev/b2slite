@@ -28,6 +28,9 @@ package net.runelite.client.plugins.wintertodt;
 import com.google.inject.Provides;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -50,18 +53,27 @@ import static net.runelite.api.AnimationID.WOODCUTTING_RUNE;
 import static net.runelite.api.AnimationID.WOODCUTTING_STEEL;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.GameObject;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import static net.runelite.api.ItemID.BRUMA_KINDLING;
 import static net.runelite.api.ItemID.BRUMA_ROOT;
 import net.runelite.api.MessageNode;
+import net.runelite.api.NullObjectID;
+import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
+import net.runelite.api.Projectile;
+import net.runelite.api.ProjectileID;
 import net.runelite.api.Varbits;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.ProjectileMoved;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.Notifier;
 import net.runelite.client.chat.ChatMessageManager;
@@ -95,6 +107,9 @@ public class WintertodtPlugin extends Plugin
 	private WintertodtOverlay overlay;
 
 	@Inject
+	private WintertodtSceneOverlay sceneOverlay;
+
+	@Inject
 	private WintertodtConfig config;
 
 	@Inject
@@ -118,6 +133,9 @@ public class WintertodtPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	private boolean isInWintertodt;
 
+	@Getter
+	private HashMap<GameObject, WorldPoint> wintertodtSnowfall = new HashMap<>();
+
 	private Instant lastActionTime;
 
 	private int previousTimerValue;
@@ -133,12 +151,14 @@ public class WintertodtPlugin extends Plugin
 	{
 		reset();
 		overlayManager.add(overlay);
+		overlayManager.add(sceneOverlay);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
 		overlayManager.remove(overlay);
+		overlayManager.remove(sceneOverlay);
 		reset();
 	}
 
@@ -150,6 +170,7 @@ public class WintertodtPlugin extends Plugin
 		numKindling = 0;
 		currentActivity = WintertodtActivity.IDLE;
 		lastActionTime = null;
+		wintertodtSnowfall.clear();
 	}
 
 	private boolean isInWintertodtRegion()
@@ -185,6 +206,36 @@ public class WintertodtPlugin extends Plugin
 		isInWintertodt = true;
 
 		checkActionTimeout();
+	}
+
+	@Subscribe
+	public void onGameObjectSpawned(GameObjectSpawned event)
+	{
+		if (!isInWintertodt) return;
+
+		final GameObject gameObject = event.getGameObject();
+
+		switch (gameObject.getId())
+		{
+			case NullObjectID.NULL_26690:
+				wintertodtSnowfall.put(gameObject, gameObject.getWorldLocation());
+				break;
+		}
+	}
+
+	@Subscribe
+	public void onGameObjectDespawned(GameObjectDespawned event)
+	{
+		if (!isInWintertodt) return;
+
+		final GameObject gameObject = event.getGameObject();
+
+		switch (gameObject.getId())
+		{
+			case NullObjectID.NULL_26690:
+				wintertodtSnowfall.remove(gameObject);
+				break;
+		}
 	}
 
 	@Subscribe
