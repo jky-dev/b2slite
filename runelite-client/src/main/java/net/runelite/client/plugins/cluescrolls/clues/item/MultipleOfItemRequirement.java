@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019 Hydrox6 <ikada@protonmail.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,69 +22,53 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package net.runelite.client.plugins.cluescrolls.clues.item;
 
-/**
- * An enumeration of possible inventory types.
- */
-public enum InventoryID
+import net.runelite.api.Client;
+import net.runelite.api.Item;
+import net.runelite.api.ItemComposition;
+
+public class MultipleOfItemRequirement implements ItemRequirement
 {
-	/**
-	 * Standard player inventory.
-	 */
-	INVENTORY(93),
-	/**
-	 * Equipment inventory.
-	 */
-	EQUIPMENT(94),
-	/**
-	 * Bank inventory.
-	 */
-	BANK(95),
-	/**
-	 * A puzzle box inventory.
-	 */
-	PUZZLE_BOX(140),
-	/**
-	 * Barrows reward chest inventory.
-	 */
-	BARROWS_REWARD(141),
-	/**
-	 * Monkey madness puzzle box inventory.
-	 */
-	MONKEY_MADNESS_PUZZLE_BOX(221),
-	/**
-	 * Kingdom Of Miscellania reward inventory.
-	 */
-	KINGDOM_OF_MISCELLANIA(390),
-	/**
-	 * Chambers of Xeric chest inventory.
-	 */
-	CHAMBERS_OF_XERIC_CHEST(581),
-	/**
-	 * Theater of Blood reward chest inventory (Raids 2)
-	 */
-	THEATRE_OF_BLOOD_CHEST(612),
+	private int itemId;
+	private int quantity;
 
-	/**
-	 * Seed vault located inside the Farming Guild
-	 */
-	SEED_VAULT(626);
-
-	private final int id;
-
-	InventoryID(int id)
+	public MultipleOfItemRequirement(int itemId, int quantity)
 	{
-		this.id = id;
+		this.itemId = itemId;
+		this.quantity = quantity;
 	}
 
-	/**
-	 * Gets the raw inventory type ID.
-	 *
-	 * @return inventory type
-	 */
-	public int getId()
+	@Override
+	public boolean fulfilledBy(int itemId)
 	{
-		return id;
+		return itemId == this.itemId && this.quantity == 1;
+	}
+
+	@Override
+	public boolean fulfilledBy(Item[] items)
+	{
+		for (Item item : items)
+		{
+			if (item.getId() == itemId && item.getQuantity() >= quantity)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public String getCollectiveName(Client client)
+	{
+		ItemComposition definition = client.getItemDefinition(itemId);
+
+		if (definition == null)
+		{
+			return "N/A";
+		}
+
+		return definition.getName() + " x" + this.quantity;
 	}
 }

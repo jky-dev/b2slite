@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Lotto <https://github.com/devLotto>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,69 +22,58 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package net.runelite.client.plugins.cluescrolls.clues.item;
 
-/**
- * An enumeration of possible inventory types.
- */
-public enum InventoryID
+import net.runelite.api.Client;
+import net.runelite.api.Item;
+
+public class AllRequirementsCollection implements ItemRequirement
 {
-	/**
-	 * Standard player inventory.
-	 */
-	INVENTORY(93),
-	/**
-	 * Equipment inventory.
-	 */
-	EQUIPMENT(94),
-	/**
-	 * Bank inventory.
-	 */
-	BANK(95),
-	/**
-	 * A puzzle box inventory.
-	 */
-	PUZZLE_BOX(140),
-	/**
-	 * Barrows reward chest inventory.
-	 */
-	BARROWS_REWARD(141),
-	/**
-	 * Monkey madness puzzle box inventory.
-	 */
-	MONKEY_MADNESS_PUZZLE_BOX(221),
-	/**
-	 * Kingdom Of Miscellania reward inventory.
-	 */
-	KINGDOM_OF_MISCELLANIA(390),
-	/**
-	 * Chambers of Xeric chest inventory.
-	 */
-	CHAMBERS_OF_XERIC_CHEST(581),
-	/**
-	 * Theater of Blood reward chest inventory (Raids 2)
-	 */
-	THEATRE_OF_BLOOD_CHEST(612),
+	private String name;
+	private ItemRequirement[] requirements;
 
-	/**
-	 * Seed vault located inside the Farming Guild
-	 */
-	SEED_VAULT(626);
-
-	private final int id;
-
-	InventoryID(int id)
+	public AllRequirementsCollection(String name, ItemRequirement... requirements)
 	{
-		this.id = id;
+		this.name = name;
+		this.requirements = requirements;
 	}
 
-	/**
-	 * Gets the raw inventory type ID.
-	 *
-	 * @return inventory type
-	 */
-	public int getId()
+	public AllRequirementsCollection(ItemRequirement... requirements)
 	{
-		return id;
+		this("N/A", requirements);
+	}
+
+	@Override
+	public boolean fulfilledBy(int itemId)
+	{
+		for (ItemRequirement requirement : requirements)
+		{
+			if (requirement.fulfilledBy(itemId))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean fulfilledBy(Item[] items)
+	{
+		for (ItemRequirement requirement : requirements)
+		{
+			if (!requirement.fulfilledBy(items))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public String getCollectiveName(Client client)
+	{
+		return name;
 	}
 }
