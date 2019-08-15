@@ -73,9 +73,6 @@ public class ChatNotificationsPlugin extends Plugin
 	@Inject
 	private Notifier notifier;
 
-	@Inject
-	private RuneLiteProperties runeLiteProperties;
-
 	//Custom Highlights
 	private Pattern usernameMatcher = null;
 	private String usernameReplacer = "";
@@ -163,7 +160,7 @@ public class ChatNotificationsPlugin extends Plugin
 				break;
 			case CONSOLE:
 				// Don't notify for notification messages
-				if (chatMessage.getName().equals(runeLiteProperties.getTitle()))
+				if (chatMessage.getName().equals(RuneLiteProperties.getTitle()))
 				{
 					return;
 				}

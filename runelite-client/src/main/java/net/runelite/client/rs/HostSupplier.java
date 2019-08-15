@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019 Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,37 +22,56 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package net.runelite.client.rs;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.List;
+import java.util.Queue;
+import java.util.Random;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.http.api.worlds.WorldClient;
 
-/**
- * An enumeration of integer local variables.
- */
-@AllArgsConstructor
-@Getter
-public enum VarClientInt
+@Slf4j
+class HostSupplier implements Supplier<String>
 {
-	TOOLTIP_TIMEOUT(1),
+	private final Random random = new Random(System.nanoTime());
+	private Queue<String> hosts = new ArrayDeque<>();
 
-	/**
-	 * 0 = no tooltip displayed
-	 * 1 = tooltip displaying
-	 */
-	TOOLTIP_VISIBLE(2),
+	@Override
+	public String get()
+	{
+		if (!hosts.isEmpty())
+		{
+			return hosts.poll();
+		}
 
-	/**
-	 * Current message layer mode
-	 * @see net.runelite.api.vars.InputType
-	 */
-	INPUT_TYPE(5),
+		try
+		{
+			List<String> newHosts = new WorldClient()
+				.lookupWorlds()
+				.getWorlds()
+				.stream()
+				.map(i -> i.getAddress())
+				.collect(Collectors.toList());
 
-	MEMBERSHIP_STATUS(103),
+			Collections.shuffle(newHosts, random);
 
-	INVENTORY_TAB(171),
+			hosts.addAll(newHosts.subList(0, 16));
+		}
+		catch (IOException e)
+		{
+			log.warn("Unable to retrieve world list", e);
+		}
 
-	WORLD_MAP_SEARCH_FOCUSED(190);
+		while (hosts.size() < 2)
+		{
+			hosts.add("oldschool" + (random.nextInt(50) + 1) + ".runescape.COM");
+		}
 
-	private final int index;
+		return hosts.poll();
+	}
 }

@@ -49,7 +49,6 @@ import net.runelite.discord.DiscordUser;
 public class DiscordService implements AutoCloseable
 {
 	private final EventBus eventBus;
-	private final RuneLiteProperties runeLiteProperties;
 	private final ScheduledExecutorService executorService;
 	private final DiscordRPC discordRPC;
 
@@ -62,12 +61,10 @@ public class DiscordService implements AutoCloseable
 	@Inject
 	private DiscordService(
 		final EventBus eventBus,
-		final RuneLiteProperties runeLiteProperties,
 		final ScheduledExecutorService executorService)
 	{
 
 		this.eventBus = eventBus;
-		this.runeLiteProperties = runeLiteProperties;
 		this.executorService = executorService;
 
 		DiscordRPC discordRPC = null;
