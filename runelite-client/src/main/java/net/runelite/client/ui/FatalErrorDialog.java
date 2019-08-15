@@ -83,7 +83,7 @@ public class FatalErrorDialog extends JDialog
 
 		try
 		{
-			BufferedImage logo = ImageIO.read(SplashScreen.class.getResourceAsStream("runelite_transparent.png"));
+			BufferedImage logo = ImageIO.read(SplashScreen.class.getResourceAsStream("b2sLite.png"));
 			setIconImage(logo);
 
 			JLabel runelite = new JLabel();
@@ -116,7 +116,7 @@ public class FatalErrorDialog extends JDialog
 		leftPane.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 		leftPane.setLayout(new BorderLayout());
 
-		JLabel title = new JLabel("There was a fatal error starting RuneLite");
+		JLabel title = new JLabel("There was a fatal error starting b2sLite");
 		title.setForeground(Color.WHITE);
 		title.setFont(font.deriveFont(16.f));
 		title.setBorder(new EmptyBorder(10, 10, 10, 10));
