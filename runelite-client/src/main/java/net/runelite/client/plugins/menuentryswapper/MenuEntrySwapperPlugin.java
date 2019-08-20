@@ -27,6 +27,7 @@ package net.runelite.client.plugins.menuentryswapper;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
+import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.Getter;
@@ -72,6 +73,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private static final String MENU_TARGET = "Shift-click";
 
 	private static final String CONFIG_GROUP = "shiftclick";
+	private static final String SWAPPER_GROUP = "menuentryswapper";
 	private static final String ITEM_KEY_PREFIX = "item_";
 
 	private static final WidgetMenuOption FIXED_INVENTORY_TAB_CONFIGURE = new WidgetMenuOption(CONFIGURE,
@@ -136,6 +138,21 @@ public class MenuEntrySwapperPlugin extends Plugin
 		return configManager.getConfig(MenuEntrySwapperConfig.class);
 	}
 
+	Set<String> buy1 = new HashSet<>();
+	Set<String> buy5 = new HashSet<>();
+	Set<String> buy10 = new HashSet<>();
+	Set<String> buy50 = new HashSet<>();
+
+	Set<String> withdraw5 = new HashSet<>();
+	Set<String> withdraw10 = new HashSet<>();
+	Set<String> withdrawX = new HashSet<>();
+	Set<String> withdrawAll = new HashSet<>();
+
+	Set<String> customSwap = new HashSet<>();
+
+	String withdrawAmount = "withdraw-1";
+	String depositAmount = "deposit-1";
+
 	@Override
 	public void startUp()
 	{
@@ -143,18 +160,38 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			enableCustomization();
 		}
+
+		buy1.addAll(Text.fromCSV(config.buy1()));
+		buy5.addAll(Text.fromCSV(config.buy5()));
+		buy10.addAll(Text.fromCSV(config.buy10()));
+		buy50.addAll(Text.fromCSV(config.buy50()));
+		withdraw5.addAll(Text.fromCSV(config.withdraw5()));
+		withdraw10.addAll(Text.fromCSV(config.withdraw10()));
+		withdrawX.addAll(Text.fromCSV(config.withdrawX()));
+		withdrawAll.addAll(Text.fromCSV(config.withdrawAll()));
+		customSwap.addAll(Text.fromCSV(config.customSwap()));
+		withdrawAmount = "withdraw-" + Integer.toString(config.xAmount());
+		depositAmount = "deposit-" + Integer.toString(config.xAmount());
 	}
 
 	@Override
 	public void shutDown()
 	{
 		disableCustomization();
+		buy1.clear();
+		buy5.clear();
+		buy10.clear();
+		buy50.clear();
+		withdraw5.clear();
+		withdraw10.clear();
+		withdrawX.clear();
+		withdrawAll.clear();
 	}
 
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event)
 	{
-		if (!CONFIG_GROUP.equals(event.getGroup()))
+		if (!(CONFIG_GROUP.equals(event.getGroup()) || SWAPPER_GROUP.equals(event.getGroup())))
 		{
 			return;
 		}
@@ -173,6 +210,56 @@ public class MenuEntrySwapperPlugin extends Plugin
 		else if (event.getKey().startsWith(ITEM_KEY_PREFIX))
 		{
 			clientThread.invoke(this::resetItemCompositionCache);
+		}
+		else if (event.getKey().equals("buy1"))
+		{
+			buy1.clear();
+			buy1.addAll(Text.fromCSV(config.buy1()));
+		}
+		else if (event.getKey().equals("buy5"))
+		{
+			buy5.clear();
+			buy5.addAll(Text.fromCSV(config.buy5()));
+		}
+		else if (event.getKey().equals("buy10"))
+		{
+			buy10.clear();
+			buy10.addAll(Text.fromCSV(config.buy10()));
+		}
+		else if (event.getKey().equals("buy50"))
+		{
+			buy50.clear();
+			buy50.addAll(Text.fromCSV(config.buy50()));
+		}
+		else if (event.getKey().equals("withdraw5"))
+		{
+			withdraw5.clear();
+			withdraw5.addAll(Text.fromCSV(config.withdraw5()));
+		}
+		else if (event.getKey().equals("withdraw10"))
+		{
+			withdraw10.clear();
+			withdraw10.addAll(Text.fromCSV(config.withdraw10()));
+		}
+		else if (event.getKey().equals("withdrawX"))
+		{
+			withdrawX.clear();
+			withdrawX.addAll(Text.fromCSV(config.withdrawX()));
+		}
+		else if (event.getKey().equals("withdrawAll"))
+		{
+			withdrawAll.clear();
+			withdrawAll.addAll(Text.fromCSV(config.withdrawAll()));
+		}
+		else if (event.getKey().equals("xAmount"))
+		{
+			withdrawAmount = "withdraw-" + Integer.toString(config.xAmount());
+			depositAmount = "deposit-" + Integer.toString(config.xAmount());
+		}
+		else if (event.getKey().equals("customSwap"))
+		{
+			customSwap.clear();
+			customSwap.addAll(Text.fromCSV(config.customSwap()));
 		}
 	}
 
@@ -726,10 +813,59 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 			for (String string : swaps)
 			{
+				string = string.trim();
 				if (option.equals(string.split(":")[0].split("\\|")[0].toLowerCase()) && target.contains(string.split(":")[0].split("\\|")[1].toLowerCase()))
 				{
-					swap(string.split(":")[1].split("\\|")[0].toLowerCase(), option, string.split(":")[1].split("\\|")[1].toLowerCase(), true);
+					swap(string.split(":")[1].split("\\|")[0].toLowerCase(), option, string.split(":")[1].split("\\|")[1].toLowerCase(), false);
 				}
+			}
+		}
+
+		if (config.enableValueSwap() && option.equals("value"))
+		{
+			if (buy1.contains(target))
+			{
+				swap("buy 1", option, target, true);
+				swap("sell 1", option, target, true);
+			}
+			else if (buy5.contains(target))
+			{
+				swap("buy 5", option, target, true);
+				swap("sell 5", option, target, true);
+			}
+			else if (buy10.contains(target))
+			{
+				swap("buy 10", option, target, true);
+				swap("sell 10", option, target, true);
+			}
+			else if (buy50.contains(target))
+			{
+				swap("buy 50", option, target, true);
+				swap("sell 50", option, target, true);
+			}
+		}
+
+		if (config.enableBankingSwap() && (option.equals("withdraw-1") || option.equals("deposit-1")))
+		{
+			if (withdraw5.contains(target))
+			{
+				swap("withdraw-5", option, target, true);
+				swap("deposit-5", option, target, true);
+			}
+			else if (withdraw10.contains(target))
+			{
+				swap("withdraw-5", option, target, true);
+				swap("deposit-5", option, target, true);
+			}
+			else if (withdrawX.contains(target))
+			{
+				swap(withdrawAmount, option, target, true);
+				swap(depositAmount, option, target, true);
+			}
+			else if (withdrawAll.contains(target))
+			{
+				swap("withdraw-all", option, target, true);
+				swap("deposit-all", option, target, true);
 			}
 		}
 	}

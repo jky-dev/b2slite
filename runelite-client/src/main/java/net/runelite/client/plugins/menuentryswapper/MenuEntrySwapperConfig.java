@@ -462,4 +462,93 @@ public interface MenuEntrySwapperConfig extends Config
 		position = 38
 	)
 	default String customSwap() { return ""; }
+
+	@ConfigItem(
+		keyName = "valueSwap",
+		name = "Store Value Swap",
+		description = "Enable swapping value with buy/sell, items separated by commas",
+		position = 39
+	)
+	default boolean enableValueSwap() { return false; }
+
+	@ConfigItem(
+		keyName = "buy1",
+		name = "Buy/Sell 1",
+		description = "Swap Value with Buy 1",
+		position = 40
+	)
+	default String buy1() { return ""; }
+
+	@ConfigItem(
+		keyName = "buy5",
+		name = "Buy/Sell 5",
+		description = "Swap Value with Buy 5",
+		position = 41
+	)
+	default String buy5() { return ""; }
+
+	@ConfigItem(
+		keyName = "buy10",
+		name = "Buy/Sell 10",
+		description = "Swap Value with Buy 10",
+		position = 42
+	)
+	default String buy10() { return ""; }
+
+	@ConfigItem(
+		keyName = "buy50",
+		name = "Buy/Sell 50",
+		description = "Swap Value with Buy 50",
+		position = 43
+	)
+	default String buy50() { return ""; }
+
+	@ConfigItem(
+		keyName = "bankingSwap",
+		name = "Bank Swap",
+		description = "Enable swapping Withdraw/Deposit in banks, items separated by commas",
+		position = 44
+	)
+	default boolean enableBankingSwap() { return false; }
+
+	@ConfigItem(
+		keyName = "withdraw5",
+		name = "Withdraw/Deposit 5",
+		description = "Swap withdraw-1 with withdraw-5 / deposit-1 with deposit-5",
+		position = 45
+	)
+	default String withdraw5() { return ""; }
+
+	@ConfigItem(
+		keyName = "withdraw10",
+		name = "Withdraw/Deposit 10",
+		description = "Swap withdraw-1 with withdraw-10 / deposit-1 with deposit-10",
+		position = 46
+	)
+	default String withdraw10() { return ""; }
+
+	@ConfigItem(
+		keyName = "xAmount",
+		name = "X Amount",
+		description = "Select X amount for swapping",
+		position = 47
+	)
+	default int xAmount() { return 1; }
+
+	@ConfigItem(
+		keyName = "withdrawX",
+		name = "Withdraw/Deposit X",
+		description = "Swap Withdraw-1 with Withdraw-X where X is the amount set above",
+		position = 48
+	)
+	default String withdrawX() { return ""; }
+
+	@ConfigItem(
+		keyName = "withdrawAll",
+		name = "Withdraw/Deposit All",
+		description = "Swap Withdraw-1 with Withdraw-All",
+		position = 49
+	)
+	default String withdrawAll() { return ""; }
+
 }
