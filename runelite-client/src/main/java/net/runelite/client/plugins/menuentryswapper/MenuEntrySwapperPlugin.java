@@ -149,6 +149,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 	Set<String> withdrawAll = new HashSet<>();
 
 	Set<String> customSwap = new HashSet<>();
+	Set<String> dropItems = new HashSet<>();
 
 	String withdrawAmount = "withdraw-1";
 	String depositAmount = "deposit-1";
@@ -170,6 +171,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		withdrawX.addAll(Text.fromCSV(config.withdrawX()));
 		withdrawAll.addAll(Text.fromCSV(config.withdrawAll()));
 		customSwap.addAll(Text.fromCSV(config.customSwap()));
+		dropItems.addAll(Text.fromCSV(config.dropItems()));
 		withdrawAmount = "withdraw-" + Integer.toString(config.xAmount());
 		depositAmount = "deposit-" + Integer.toString(config.xAmount());
 	}
@@ -186,6 +188,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		withdraw10.clear();
 		withdrawX.clear();
 		withdrawAll.clear();
+		dropItems.clear();
 	}
 
 	@Subscribe
@@ -260,6 +263,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			customSwap.clear();
 			customSwap.addAll(Text.fromCSV(config.customSwap()));
+		}
+		else if (event.getKey().equals("drop"))
+		{
+			dropItems.clear();
+			dropItems.addAll(Text.fromCSV(config.dropItems()));
 		}
 	}
 
@@ -866,6 +874,14 @@ public class MenuEntrySwapperPlugin extends Plugin
 			{
 				swap("withdraw-all", option, target, true);
 				swap("deposit-all", option, target, true);
+			}
+		}
+
+		if (!config.dropItems().isEmpty() && option.equals("use"))
+		{
+			if (dropItems.contains(target))
+			{
+				swap("drop", option, target, true);
 			}
 		}
 	}

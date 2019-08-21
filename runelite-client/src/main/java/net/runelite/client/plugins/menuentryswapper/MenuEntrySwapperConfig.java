@@ -551,4 +551,11 @@ public interface MenuEntrySwapperConfig extends Config
 	)
 	default String withdrawAll() { return ""; }
 
+	@ConfigItem(
+		keyName = "drop",
+		name = "Drop",
+		description = "Swap use with drop for left click dropping",
+		position = 50
+	)
+	default String dropItems() { return ""; }
 }
