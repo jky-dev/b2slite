@@ -54,6 +54,7 @@ public interface Actor extends Renderable
 	 *
 	 * @return the name
 	 */
+	@Nullable
 	String getName();
 
 	/**
