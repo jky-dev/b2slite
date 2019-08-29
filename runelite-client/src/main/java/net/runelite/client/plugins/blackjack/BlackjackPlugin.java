@@ -34,9 +34,10 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.Varbits;
+import net.runelite.api.Skill;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -68,6 +69,7 @@ public class BlackjackPlugin extends Plugin
 	private BlackjackConfig config;
 
 	private boolean pickpocketOnAggro;
+	private boolean lowHp = false;
 
 	@Provides
 	BlackjackConfig getConfig(ConfigManager configManager)
@@ -101,13 +103,39 @@ public class BlackjackPlugin extends Plugin
 
 		String option = Text.removeTags(event.getOption().toLowerCase());
 		String target = Text.removeTags(event.getTarget().toLowerCase());
+
 		if (nextKnockOutTick >= client.getTickCount())
 		{
 			swap("pickpocket", option, target, false);
+			if (client.getBoostedSkillLevel(Skill.HITPOINTS) <= config.talk())
+			{
+				lowHp = true;
+			}
+		}
+
+		if (!lowHp)
+		{
+			swap("knock-out", option, target, false);
 		}
 		else
 		{
-			swap("knock-out", option, target, false);
+			swap("talk-to", option, target, false);
+		}
+
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick event)
+	{
+		if (client.getGameState() != GameState.LOGGED_IN ||
+			client.getLocalPlayer().getWorldLocation().getRegionID() != POLLNIVNEACH_REGION)
+		{
+			return;
+		}
+
+		if (client.getBoostedSkillLevel(Skill.HITPOINTS) > config.talk())
+		{
+			lowHp = false;
 		}
 	}
 

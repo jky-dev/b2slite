@@ -53,4 +53,15 @@ public interface BlackjackConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		keyName = "talkto",
+		name = "Talk-to below HP",
+		description = "Swap to Talk when low HP (works best without auto switch pick pocket)",
+		position = 2
+	)
+	default int talk()
+	{
+		return 0;
+	}
 }
