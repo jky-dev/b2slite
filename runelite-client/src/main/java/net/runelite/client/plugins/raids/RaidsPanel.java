@@ -86,9 +86,9 @@ public class RaidsPanel extends PluginPanel
 				try
 				{
 					//look for client.gameStateChanged(-1); in src files to find
-					Method m = client.getClass().getClassLoader().loadClass("cv").getDeclaredMethod("ei", int.class, short.class);					m.setAccessible(true);
+					Method m = client.getClass().getClassLoader().loadClass("dy").getDeclaredMethod("er", int.class, int.class);					m.setAccessible(true);
 					m.setAccessible(true);
-					m.invoke(null, 40, (byte)7);
+					m.invoke(null, 40, -481319800);
 
 					//TODO: Since this is mainly for raids i'd like to reload the raids scouting plugin after the dc is finished
 
