@@ -171,6 +171,9 @@ public class CoxPlugin extends Plugin
 	@Getter
 	private HashMap<Projectile, WorldPoint> vasaAOE = new HashMap<>();
 
+	@Getter
+	private HashMap<Projectile, WorldPoint> tektonAOE = new HashMap<>();
+
 	@Inject
 	private ChatMessageManager chatMessageManager;
 
@@ -204,6 +207,7 @@ public class CoxPlugin extends Plugin
 		overlayManager.remove(coxSceneOverlay);
 		vasaAOE.clear();
 		shamanAOE.clear();
+		tektonAOE.clear();
 		HandCripple = false;
 		timer = 45;
 		hand = null;
@@ -306,6 +310,14 @@ public class CoxPlugin extends Plugin
 			{
 				WorldPoint p = WorldPoint.fromLocal(client, event.getPosition());
 				vasaAOE.put(projectile, p);
+			}
+		}
+		if (config.showTektonRocks())
+		{
+			if (projectile.getId() == ProjectileID.TEKTON_METEOR_AOE)
+			{
+				WorldPoint p = WorldPoint.fromLocal(client, event.getPosition());
+				tektonAOE.put(projectile, p);
 			}
 		}
 	}
@@ -417,6 +429,7 @@ public class CoxPlugin extends Plugin
 			Olm_Heal.clear();
 			vasaAOE.clear();
 			shamanAOE.clear();
+			tektonAOE.clear();
 			return;
 		}
 
@@ -435,6 +448,18 @@ public class CoxPlugin extends Plugin
 		if (!vasaAOE.isEmpty())
 		{
 			for (Iterator<Projectile> it = vasaAOE.keySet().iterator(); it.hasNext();)
+			{
+				Projectile projectile = it.next();
+				if (projectile.getRemainingCycles() < 1)
+				{
+					it.remove();
+				}
+			}
+		}
+
+		if (!tektonAOE.isEmpty())
+		{
+			for (Iterator<Projectile> it = tektonAOE.keySet().iterator(); it.hasNext();)
 			{
 				Projectile projectile = it.next();
 				if (projectile.getRemainingCycles() < 1)

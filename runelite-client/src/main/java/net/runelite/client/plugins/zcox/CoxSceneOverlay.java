@@ -98,6 +98,23 @@ class CoxSceneOverlay extends Overlay
 				renderPoly(graphics, Color.RED, poly, 0);
 			}
 		}
+
+		if (config.showTektonRocks())
+		{
+			for (WorldPoint p : plugin.getTektonAOE().values())
+			{
+				WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
+				if (p.distanceTo(playerLocation) >= 32) {
+					continue;
+				}
+				LocalPoint lp = LocalPoint.fromWorld(client, p);
+				if (lp == null) {
+					continue;
+				}
+				Polygon poly = Perspective.getCanvasTileAreaPoly(client, lp, 3);
+				renderPoly(graphics, Color.RED, poly, 0);
+			}
+		}
 		return null;
 	}
 

@@ -151,4 +151,15 @@ public interface CoxConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		position = 11,
+		keyName = "tektonRocks",
+		name = "Show Tekton's rocks",
+		description = ""
+	)
+	default boolean showTektonRocks()
+	{
+		return true;
+	}
+
 }
