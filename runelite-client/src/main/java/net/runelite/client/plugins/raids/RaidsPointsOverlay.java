@@ -26,6 +26,7 @@ package net.runelite.client.plugins.raids;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.inject.Inject;
@@ -49,9 +50,13 @@ public class RaidsPointsOverlay extends Overlay
 	@Inject
 	private RaidsPlugin plugin;
 
+	@Inject
+	private RaidsConfig config;
+
 	private final PanelComponent panel = new PanelComponent();
 
 	private static final NumberFormat UNIQUE_FORMAT = NumberFormat.getPercentInstance(Locale.ENGLISH);
+	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###.##");
 
 	static
 	{
@@ -80,6 +85,7 @@ public class RaidsPointsOverlay extends Overlay
 		int personalPoints = client.getVar(Varbits.PERSONAL_POINTS);
 		int partySize = client.getVar(Varbits.RAID_PARTY_SIZE);
 		double uniqueChance = totalPoints / 867500f;
+		double percentage = personalPoints / (totalPoints / 100.0);
 
 		panel.getChildren().clear();
 		panel.getChildren().add(LineComponent.builder()
@@ -93,7 +99,7 @@ public class RaidsPointsOverlay extends Overlay
 			.build());
 
 
-		if (partySize > 1)
+		if (partySize > 1 && config.showPartySize())
 		{
 			panel.getChildren().add(LineComponent.builder()
 				.left("Party size:")
@@ -101,21 +107,21 @@ public class RaidsPointsOverlay extends Overlay
 				.build());
 		}
 
-		panel.getChildren().add(LineComponent.builder()
-			.left("Unique:")
-			.right(UNIQUE_FORMAT.format(uniqueChance))
-			.build());
-		//TODO this is annoyingly bugged, personalpoints returns null for some reason
-/*
-		if (partySize > 1)
+		if (config.showUniquePercentage())
 		{
-				double personalChance = uniqueChance * (double)(personalPoints / totalPoints);
+			panel.getChildren().add(LineComponent.builder()
+				.left("Unique:")
+				.right(UNIQUE_FORMAT.format(uniqueChance))
+				.build());
+		}
 
-				panel.getChildren().add(LineComponent.builder()
-					.left("Personal:")
-					.right(UNIQUE_FORMAT.format(personalChance))
-					.build());
-		}*/
+		if (config.showContributionPercentage() && partySize > 1)
+		{
+			panel.getChildren().add(LineComponent.builder()
+				.left("Contribution:")
+				.right(DECIMAL_FORMAT.format(percentage))
+				.build());
+		}
 
 		return panel.render(graphics);
 	}

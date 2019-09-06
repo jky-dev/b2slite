@@ -45,7 +45,6 @@ public interface RaidsConfig extends Config
 		return new Stub();
 	}
 
-
 	@ConfigItem(
 		position = 1,
 		parent = "scouterConfig",
@@ -400,4 +399,28 @@ public interface RaidsConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		position = 30,
+		keyName = "showPartySize",
+		name = "Show Party Size",
+		description = "Shows party size in points overlay"
+	)
+	default boolean showPartySize() { return false; }
+
+	@ConfigItem(
+		position = 31,
+		keyName = "showUniquePercentage",
+		name = "Show Unique Percentage",
+		description = "Shows chance of receiving a unique drop"
+	)
+	default boolean showUniquePercentage() { return false; }
+
+	@ConfigItem(
+		position = 32,
+		keyName = "showContributionPercentage",
+		name = "Show Contribution Percentage",
+		description = "Shows your contribution percentage when not in solos"
+	)
+	default boolean showContributionPercentage() { return false; }
 }
