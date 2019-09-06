@@ -853,17 +853,21 @@ public class MenuEntrySwapperPlugin extends Plugin
 			}
 		}
 
-		if (config.enableBankingSwap() && (option.equals("withdraw-1") || option.equals("deposit-1")))
+		if (config.enableBankingSwap() && (option.equals("withdraw-1") || option.equals("deposit-1") || option.equals("store") || option.equals("donate")))
 		{
 			if (withdraw5.contains(target))
 			{
 				swap("withdraw-5", option, target, true);
 				swap("deposit-5", option, target, true);
+				swap("store-5", option, target, true);
+				swap("donate-5", option, target, true);
 			}
 			else if (withdraw10.contains(target))
 			{
-				swap("withdraw-5", option, target, true);
-				swap("deposit-5", option, target, true);
+				swap("withdraw-10", option, target, true);
+				swap("deposit-10", option, target, true);
+				swap("store-10", option, target, true);
+				swap("donate-10", option, target, true);
 			}
 			else if (withdrawX.contains(target))
 			{
@@ -874,6 +878,8 @@ public class MenuEntrySwapperPlugin extends Plugin
 			{
 				swap("withdraw-all", option, target, true);
 				swap("deposit-all", option, target, true);
+				swap("store-all", option, target, true);
+				swap("donate-all", option, target, true);
 			}
 		}
 
