@@ -67,18 +67,21 @@ public class RaidRoom
 	@AllArgsConstructor
 	public enum Boss
 	{
-		TEKTON("Tekton"),
-		MUTTADILES("Muttadiles"),
-		GUARDIANS("Guardians"),
-		VESPULA("Vespula"),
-		SHAMANS("Shamans"),
-		VASA("Vasa"),
-		VANGUARDS("Vanguards"),
-		MYSTICS("Mystics"),
-		UNKNOWN("Unknown");
+		TEKTON("Tekton", "Tek"),
+		MUTTADILES("Muttadiles", "Mutt"),
+		GUARDIANS("Guardians", "Guard"),
+		VESPULA("Vespula", "Vesp"),
+		SHAMANS("Shamans", "Sham"),
+		VASA("Vasa", "Vas"),
+		VANGUARDS("Vanguards", "Vang"),
+		MYSTICS("Mystics", "Myst"),
+		UNKNOWN("Unknown", "Unk");
 
 		@Getter
 		private final String name;
+
+		@Getter
+		private final String shortName;
 
 		public static Boss fromString(String name)
 		{
@@ -97,14 +100,17 @@ public class RaidRoom
 	@AllArgsConstructor
 	public enum Puzzle
 	{
-		CRABS("Crabs"),
-		ICE_DEMON("Ice Demon"),
-		TIGHTROPE("Tightrope"),
-		THIEVING("Thieving"),
-		UNKNOWN("Unknown");
+		CRABS("Crabs", "Crabs"),
+		ICE_DEMON("Ice Demon", "Ice"),
+		TIGHTROPE("Tightrope", "Rope"),
+		THIEVING("Thieving", "Thv"),
+		UNKNOWN("Unknown", "Unk");
 
 		@Getter
 		private final String name;
+
+		@Getter
+		private final String shortName;
 
 		public static Puzzle fromString(String name)
 		{

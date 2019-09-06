@@ -165,6 +165,9 @@ public class RaidsPlugin extends Plugin
 	@Inject
 	private WSClient ws;
 
+	@Inject
+	private RaidsKeyboardListener raidsKeyboardListener;
+
 	@Getter
 	private final ArrayList<String> roomWhitelist = new ArrayList<>();
 
@@ -229,6 +232,7 @@ public class RaidsPlugin extends Plugin
 			.panel(panel)
 			.build();
 		clientToolbar.addNavigation(navButton);
+		keyManager.registerKeyListener(raidsKeyboardListener);
 	}
 
 	@Override
@@ -248,6 +252,7 @@ public class RaidsPlugin extends Plugin
 		{
 			widget.setHidden(false);
 		}
+		keyManager.unregisterKeyListener(raidsKeyboardListener);
 		reset();
 	}
 
