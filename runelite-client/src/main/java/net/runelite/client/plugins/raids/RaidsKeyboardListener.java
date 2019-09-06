@@ -63,7 +63,7 @@ public class RaidsKeyboardListener implements KeyListener
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
-		if (e.getKeyCode() == KeyEvent.VK_T && plugin.getRaid() != null)
+		if (e.getKeyCode() == KeyEvent.VK_T && plugin.isInRaidChambers())
 		{
 			String chatbox = client.getVar(VarClientStr.CHATBOX_TYPED_TEXT);
 			String pm = client.getVar(VarClientStr.INPUT_TEXT);
