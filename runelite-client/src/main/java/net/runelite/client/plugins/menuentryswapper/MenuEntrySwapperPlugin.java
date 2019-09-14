@@ -25,9 +25,11 @@
  */
 package net.runelite.client.plugins.menuentryswapper;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.Getter;
@@ -38,9 +40,9 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
+import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.ConfigChanged;
 import net.runelite.api.events.FocusChanged;
-import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.PostItemComposition;
@@ -131,6 +133,8 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 	@Setter
 	private boolean shiftModifier = false;
+
+	private final ArrayListMultimap<String, Integer> optionIndexes = ArrayListMultimap.create();
 
 	@Provides
 	MenuEntrySwapperConfig provideConfig(ConfigManager configManager)
@@ -446,22 +450,16 @@ public class MenuEntrySwapperPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
-	public void onMenuEntryAdded(MenuEntryAdded event)
+	private void swapMenuEntry(int index, MenuEntry menuEntry)
 	{
-		if (client.getGameState() != GameState.LOGGED_IN)
-		{
-			return;
-		}
-
-		final int eventId = event.getIdentifier();
-		final String option = Text.removeTags(event.getOption()).toLowerCase();
-		final String target = Text.removeTags(event.getTarget()).toLowerCase();
+		final int eventId = menuEntry.getIdentifier();
+		final String option = Text.removeTags(menuEntry.getOption()).toLowerCase();
+		final String target = Text.removeTags(menuEntry.getTarget()).toLowerCase();
 		final NPC hintArrowNpc = client.getHintArrowNpc();
 
 		if (hintArrowNpc != null
 			&& hintArrowNpc.getIndex() == eventId
-			&& NPC_MENU_TYPES.contains(MenuAction.of(event.getType())))
+			&& NPC_MENU_TYPES.contains(MenuAction.of(menuEntry.getType())))
 		{
 			return;
 		}
@@ -470,128 +468,128 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			if (config.swapPickpocket() && shouldSwapPickpocket(target))
 			{
-				swap("pickpocket", option, target, true);
+				swap("pickpocket", option, target, index);
 			}
 
 			if (config.swapAbyssTeleport() && target.contains("mage of zamorak"))
 			{
-				swap("teleport", option, target, true);
+				swap("teleport", option, target, index);
 			}
 
 			if (config.swapHardWoodGrove() && target.contains("rionasta"))
 			{
-				swap("send-parcel", option, target, true);
+				swap("send-parcel", option, target, index);
 			}
 
 			if (config.swapBank())
 			{
-				swap("bank", option, target, true);
+				swap("bank", option, target, index);
 			}
 
 			if (config.swapContract())
 			{
-				swap("contract", option, target, true);
+				swap("contract", option, target, index);
 			}
 
 			if (config.swapExchange())
 			{
-				swap("exchange", option, target, true);
+				swap("exchange", option, target, index);
 			}
 
 			if (config.swapDarkMage())
 			{
-				swap("repairs", option, target, true);
+				swap("repairs", option, target, index);
 			}
 
 			// make sure assignment swap is higher priority than trade swap for slayer masters
 			if (config.swapAssignment())
 			{
-				swap("assignment", option, target, true);
+				swap("assignment", option, target, index);
 			}
 
 			if (config.swapTrade())
 			{
-				swap("trade", option, target, true);
-				swap("trade-with", option, target, true);
-				swap("shop", option, target, true);
+				swap("trade", option, target, index);
+				swap("trade-with", option, target, index);
+				swap("shop", option, target, index);
 			}
 
 			if (config.claimSlime() && target.equals("robin"))
 			{
-				swap("claim-slime", option, target, true);
+				swap("claim-slime", option, target, index);
 			}
 
 			if (config.swapTravel())
 			{
-				swap("travel", option, target, true);
-				swap("pay-fare", option, target, true);
-				swap("charter", option, target, true);
-				swap("take-boat", option, target, true);
-				swap("fly", option, target, true);
-				swap("jatizso", option, target, true);
-				swap("neitiznot", option, target, true);
-				swap("rellekka", option, target, true);
-				swap("follow", option, target, true);
-				swap("transport", option, target, true);
+				swap("travel", option, target, index);
+				swap("pay-fare", option, target, index);
+				swap("charter", option, target, index);
+				swap("take-boat", option, target, index);
+				swap("fly", option, target, index);
+				swap("jatizso", option, target, index);
+				swap("neitiznot", option, target, index);
+				swap("rellekka", option, target, index);
+				swap("follow", option, target, index);
+				swap("transport", option, target, index);
 			}
 
 			if (config.swapPay())
 			{
-				swap("pay", option, target, true);
-				swap("pay (", option, target, false);
+				swap("pay", option, target, index);
+				swapContains("pay (", option, target, index);
 			}
 
 			if (config.swapDecant())
 			{
-				swap("decant", option, target, true);
+				swap("decant", option, target, index);
 			}
 
 			if (config.swapQuick())
 			{
-				swap("quick-travel", option, target, true);
+				swap("quick-travel", option, target, index);
 			}
 
 			if (config.swapEnchant())
 			{
-				swap("enchant", option, target, true);
+				swap("enchant", option, target, index);
 			}
 		}
 		else if (config.swapTravel() && option.equals("pass") && target.equals("energy barrier"))
 		{
-			swap("pay-toll(2-ecto)", option, target, true);
+			swap("pay-toll(2-ecto)", option, target, index);
 		}
 		else if (config.swapTravel() && option.equals("open") && target.equals("gate"))
 		{
-			swap("pay-toll(10gp)", option, target, true);
+			swap("pay-toll(10gp)", option, target, index);
 		}
 		else if (config.swapHardWoodGrove() && option.equals("open") && target.equals("hardwood grove doors"))
 		{
-			swap("quick-pay(100)", option, target, true);
+			swap("quick-pay(100)", option, target, index);
 		}
 		else if (config.swapTravel() && option.equals("inspect") && target.equals("trapdoor"))
 		{
-			swap("travel", option, target, true);
+			swap("travel", option, target, index);
 		}
 		else if (config.swapHarpoon() && option.equals("cage"))
 		{
-			swap("harpoon", option, target, true);
+			swap("harpoon", option, target, index);
 		}
 		else if (config.swapHarpoon() && (option.equals("big net") || option.equals("net")))
 		{
-			swap("harpoon", option, target, true);
+			swap("harpoon", option, target, index);
 		}
 		else if (config.swapHomePortal() != HouseMode.ENTER && option.equals("enter"))
 		{
 			switch (config.swapHomePortal())
 			{
 				case HOME:
-					swap("home", option, target, true);
+					swap("home", option, target, index);
 					break;
 				case BUILD_MODE:
-					swap("build mode", option, target, true);
+					swap("build mode", option, target, index);
 					break;
 				case FRIENDS_HOUSE:
-					swap("friend's house", option, target, true);
+					swap("friend's house", option, target, index);
 					break;
 			}
 		}
@@ -600,68 +598,68 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			if (config.swapFairyRing() == FairyRingMode.LAST_DESTINATION)
 			{
-				swap("last-destination", option, target, false);
+				swapContains("last-destination", option, target, index);
 			}
 			else if (config.swapFairyRing() == FairyRingMode.CONFIGURE)
 			{
-				swap("configure", option, target, false);
+				swapContains("configure", option, target, index);
 			}
 		}
 		else if (config.swapFairyRing() == FairyRingMode.ZANARIS && option.equals("tree"))
 		{
-			swap("zanaris", option, target, false);
+			swapContains("zanaris", option, target, index);
 		}
 		else if (config.swapBoxTrap() && (option.equals("check") || option.equals("dismantle")))
 		{
-			swap("reset", option, target, true);
+			swap("reset", option, target, index);
 		}
 		else if (config.swapBoxTrap() && option.equals("take"))
 		{
-			swap("lay", option, target, true);
+			swap("lay", option, target, index);
 		}
 		else if (config.swapChase() && option.equals("pick-up"))
 		{
-			swap("chase", option, target, true);
+			swap("chase", option, target, index);
 		}
 		else if (config.swapBirdhouseEmpty() && option.equals("interact") && target.contains("birdhouse"))
 		{
-			swap("empty", option, target, true);
+			swap("empty", option, target, index);
 		}
 		else if (config.swapQuick() && option.equals("enter"))
 		{
-			swap("quick-enter", option, target, true);
+			swap("quick-enter", option, target, index);
 		}
 		else if (config.swapQuick() && option.equals("ring"))
 		{
-			swap("quick-start", option, target, true);
+			swap("quick-start", option, target, index);
 		}
 		else if (config.swapQuick() && option.equals("pass"))
 		{
-			swap("quick-pass", option, target, true);
-			swap("quick pass", option, target, true);
+			swap("quick-pass", option, target, index);
+			swap("quick pass", option, target, index);
 		}
 		else if (config.swapQuick() && option.equals("open"))
 		{
-			swap("quick-open", option, target, true);
+			swap("quick-open", option, target, index);
 		}
 		else if (config.swapQuick() && option.equals("climb-down"))
 		{
-			swap("quick-start", option, target, true);
-			swap("pay", option, target, true);
+			swap("quick-start", option, target, index);
+			swap("pay", option, target, index);
 		}
 		else if (config.swapAdmire() && option.equals("admire"))
 		{
-			swap("teleport", option, target, true);
-			swap("spellbook", option, target, true);
-			swap("perks", option, target, true);
+			swap("teleport", option, target, index);
+			swap("spellbook", option, target, index);
+			swap("perks", option, target, index);
 		}
 		else if (config.swapPrivate() && option.equals("shared"))
 		{
-			swap("private", option, target, true);
+			swap("private", option, target, index);
 		}
 		else if (config.swapPick() && option.equals("pick"))
 		{
-			swap("pick-lots", option, target, true);
+			swap("pick-lots", option, target, index);
 		}
 		else if (config.shiftClickCustomization() && shiftModifier && !option.equals("use"))
 		{
@@ -669,7 +667,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 			if (customOption != null && customOption == -1)
 			{
-				swap("use", option, target, true);
+				swap("use", option, target, index);
 			}
 		}
 		// Put all item-related swapping after shift-click
@@ -682,16 +680,16 @@ public class MenuEntrySwapperPlugin extends Plugin
 					switch(config.swapArdy())
 					{
 						case FARM:
-							swap("farm teleport", option, target, true);
+							swap("farm teleport", option, target, index);
 							break;
 						case MONASTERY:
-							swap("monastery teleport", option, target, true);
+							swap("monastery teleport", option, target, index);
 							break;
 					}
 				}
 				if (config.swapMoryLegs() != MoryLegsMode.OFF)
 				{
-					swap(config.swapMoryLegs().toString().toLowerCase(), option, target, true);
+					swap(config.swapMoryLegs().toString().toLowerCase(), option, target, index);
 				}
 			}
 
@@ -702,10 +700,10 @@ public class MenuEntrySwapperPlugin extends Plugin
 					switch(config.swapArdy())
 					{
 						case FARM:
-							swap("ardougne farm", option, target, true);
+							swap("ardougne farm", option, target, index);
 							break;
 						case MONASTERY:
-							swap("kandarin monastery", option, target, true);
+							swap("kandarin monastery", option, target, index);
 							break;
 					}
 				}
@@ -714,16 +712,16 @@ public class MenuEntrySwapperPlugin extends Plugin
 					switch(config.swapMoryLegs())
 					{
 						case BURGH:
-							swap("burgh de rott", option, target, true);
+							swap("burgh de rott", option, target, index);
 							break;
 						case ECTO:
-							swap("ectofuntus pit", option, target, true);
+							swap("ectofuntus pit", option, target, index);
 							break;
 					}
 				}
 				if (config.swapDA() != DuelRingMode.OFF)
 				{
-					swap(config.swapDA().toString().toLowerCase(), option, target, true);
+					swap(config.swapDA().toString().toLowerCase(), option, target, index);
 				}
 				if (config.swapMaxCape() != MaxCapeMode.OFF)
 				{
@@ -731,54 +729,54 @@ public class MenuEntrySwapperPlugin extends Plugin
 					{
 						if (client.getLocalPlayer().getWorldLocation().getRegionID() == 11571)
 						{
-							swap("tele to poh", option, target, true);
+							swap("tele to poh", option, target, index);
 						}
 						else
 						{
-							swap("crafting guild", option, target, true);
+							swap("crafting guild", option, target, index);
 						}
 					}
 					else if (config.swapMaxCape() == MaxCapeMode.TELE_HOUSE)
 					{
-						swap("tele to poh", option, target, true);
+						swap("tele to poh", option, target, index);
 					}
 				}
 				if (config.swapGlory() != GloryMode.OFF)
 				{
-					swap(config.swapGlory().toString().toLowerCase(), option, target, true);
+					swap(config.swapGlory().toString().toLowerCase(), option, target, index);
 				}
 				if (config.swapXerics() != XericsTalismanMode.OFF)
 				{
-					swap(config.swapXerics().toString().toLowerCase(), option, target, true);
+					swap(config.swapXerics().toString().toLowerCase(), option, target, index);
 				}
 				if (config.swapGames() != GamesNecklaceMode.OFF)
 				{
-					swap(config.swapGames().toString().toLowerCase(), option, target, true);
+					swap(config.swapGames().toString().toLowerCase(), option, target, index);
 				}
 				if (config.swapDigsite() != DigsiteMode.OFF)
 				{
-					swap(config.swapDigsite().toString().toLowerCase(), option, target, true);
+					swap(config.swapDigsite().toString().toLowerCase(), option, target, index);
 				}
 				if (config.swapMemoirs() != MemoirsMode.OFF)
 				{
-					swap(config.swapMemoirs().toString().toLowerCase(), option, target, true);
+					swap(config.swapMemoirs().toString().toLowerCase(), option, target, index);
 				}
-				swap("warriors' guild", option, target, true);
+				swap("warriors' guild", option, target, index);
 			}
 
 			if (option.equals("wear") || (option.equals("remove") && config.swapTeleportFromEquipped()))
 			{
 				if (config.swapDesert() != DesertAmuletMode.OFF)
 				{
-					swap(config.swapDesert().toString().toLowerCase(), option, target, true);
+					swap(config.swapDesert().toString().toLowerCase(), option, target, index);
 				}
 				if (config.swapKaramGloves() != KaramGloveMode.OFF)
 				{
-					swap(config.swapKaramGloves().toString().toLowerCase(), option, target, true);
+					swap(config.swapKaramGloves().toString().toLowerCase(), option, target, index);
 				}
 				if (config.swapFishingCape() != FishingCapeMode.OFF)
 				{
-					swap(config.swapFishingCape().toString().toLowerCase(), option, target, true);
+					swap(config.swapFishingCape().toString().toLowerCase(), option, target, index);
 				}
 			}
 
@@ -786,33 +784,33 @@ public class MenuEntrySwapperPlugin extends Plugin
 			{
 				if (config.swapBlessing() != BlessingMode.OFF)
 				{
-					swap(config.swapBlessing().toString().toLowerCase(), option, target, true);
+					swap(config.swapBlessing().toString().toLowerCase(), option, target, index);
 				}
 			}
 
 			if (target.contains("construct. cape(t)"))
 			{
-				swap("tele to poh", option, target, true);
+				swap("tele to poh", option, target, index);
 			}
 			else
 			{
-				swap("teleport", option, target, true);
+				swap("teleport", option, target, index);
 			}
 
-			swap("lava maze", option, target, true);
+			swap("lava maze", option, target, index);
 
-			swap("rub", option, target, true);
+			swap("rub", option, target, index);
 		}
 		else if (option.equals("wield"))
 		{
 			if (config.swapTeleportItem())
 			{
-				swap("teleport", option, target, true);
+				swap("teleport", option, target, index);
 			}
 		}
 		else if (config.swapBones() && option.equals("bury"))
 		{
-			swap("use", option, target, true);
+			swap("use", option, target, index);
 		}
 
 		if (!config.customSwap().isEmpty())
@@ -824,7 +822,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 				string = string.trim();
 				if (option.equals(string.split(":")[0].split("\\|")[0].toLowerCase()) && target.contains(string.split(":")[0].split("\\|")[1].toLowerCase()))
 				{
-					swap(string.split(":")[1].split("\\|")[0].toLowerCase(), option, string.split(":")[1].split("\\|")[1].toLowerCase(), false);
+					swap(string.split(":")[1].split("\\|")[0].toLowerCase(), option, string.split(":")[1].split("\\|")[1].toLowerCase(), index);
 				}
 			}
 		}
@@ -833,23 +831,23 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			if (buy1.contains(target))
 			{
-				swap("buy 1", option, target, true);
-				swap("sell 1", option, target, true);
+				swap("buy 1", option, target, index);
+				swap("sell 1", option, target, index);
 			}
 			else if (buy5.contains(target))
 			{
-				swap("buy 5", option, target, true);
-				swap("sell 5", option, target, true);
+				swap("buy 5", option, target, index);
+				swap("sell 5", option, target, index);
 			}
 			else if (buy10.contains(target))
 			{
-				swap("buy 10", option, target, true);
-				swap("sell 10", option, target, true);
+				swap("buy 10", option, target, index);
+				swap("sell 10", option, target, index);
 			}
 			else if (buy50.contains(target))
 			{
-				swap("buy 50", option, target, true);
-				swap("sell 50", option, target, true);
+				swap("buy 50", option, target, index);
+				swap("sell 50", option, target, index);
 			}
 		}
 
@@ -857,29 +855,29 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			if (withdraw5.contains(target))
 			{
-				swap("withdraw-5", option, target, true);
-				swap("deposit-5", option, target, true);
-				swap("store-5", option, target, true);
-				swap("donate-5", option, target, true);
+				swap("withdraw-5", option, target, index);
+				swap("deposit-5", option, target, index);
+				swap("store-5", option, target, index);
+				swap("donate-5", option, target, index);
 			}
 			else if (withdraw10.contains(target))
 			{
-				swap("withdraw-10", option, target, true);
-				swap("deposit-10", option, target, true);
-				swap("store-10", option, target, true);
-				swap("donate-10", option, target, true);
+				swap("withdraw-10", option, target, index);
+				swap("deposit-10", option, target, index);
+				swap("store-10", option, target, index);
+				swap("donate-10", option, target, index);
 			}
 			else if (withdrawX.contains(target))
 			{
-				swap(withdrawAmount, option, target, true);
-				swap(depositAmount, option, target, true);
+				swap(withdrawAmount, option, target, index);
+				swap(depositAmount, option, target, index);
 			}
 			else if (withdrawAll.contains(target))
 			{
-				swap("withdraw-all", option, target, true);
-				swap("deposit-all", option, target, true);
-				swap("store-all", option, target, true);
-				swap("donate-all", option, target, true);
+				swap("withdraw-all", option, target, index);
+				swap("deposit-all", option, target, index);
+				swap("store-all", option, target, index);
+				swap("donate-all", option, target, index);
 			}
 		}
 
@@ -887,7 +885,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			if (dropItems.contains(target))
 			{
-				swap("drop", option, target, true);
+				swap("drop", option, target, index);
 			}
 		}
 	}
@@ -895,6 +893,35 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private static boolean shouldSwapPickpocket(String target)
 	{
 		return !target.startsWith("villager") && !target.startsWith("bandit") && !target.startsWith("menaphite thug");
+	}
+
+	@Subscribe
+	public void onClientTick(ClientTick clientTick)
+	{
+		// The menu is not rebuilt when it is open, so don't swap or else it will
+		// repeatedly swap entries
+		if (client.getGameState() != GameState.LOGGED_IN || client.isMenuOpen())
+		{
+			return;
+		}
+
+		MenuEntry[] menuEntries = client.getMenuEntries();
+
+		// Build option map for quick lookup in findIndex
+		int idx = 0;
+		optionIndexes.clear();
+		for (MenuEntry entry : menuEntries)
+		{
+			String option = Text.removeTags(entry.getOption()).toLowerCase();
+			optionIndexes.put(option, idx++);
+		}
+
+		// Perform swaps
+		idx = 0;
+		for (MenuEntry entry : menuEntries)
+		{
+			swapMenuEntry(idx++, entry);
+		}
 	}
 
 	@Subscribe
@@ -918,47 +945,85 @@ public class MenuEntrySwapperPlugin extends Plugin
 		}
 	}
 
-	private int searchIndex(MenuEntry[] entries, String option, String target, boolean strict)
+	private void swap(String optionA, String optionB, String target, int index)
 	{
-		for (int i = entries.length - 1; i >= 0; i--)
-		{
-			MenuEntry entry = entries[i];
-			String entryOption = Text.removeTags(entry.getOption()).toLowerCase();
-			String entryTarget = Text.removeTags(entry.getTarget()).toLowerCase();
+		swap(optionA, optionB, target, index, true);
+	}
 
-			if (strict)
+	private void swapContains(String optionA, String optionB, String target, int index)
+	{
+		swap(optionA, optionB, target, index, false);
+	}
+
+	private void swap(String optionA, String optionB, String target, int index, boolean strict)
+	{
+		MenuEntry[] menuEntries = client.getMenuEntries();
+
+		int thisIndex = findIndex(menuEntries, index, optionB, target, strict);
+		int optionIdx = findIndex(menuEntries, thisIndex, optionA, target, strict);
+
+		if (thisIndex >= 0 && optionIdx >= 0)
+		{
+			swap(optionIndexes, menuEntries, optionIdx, thisIndex);
+		}
+	}
+
+	private int findIndex(MenuEntry[] entries, int limit, String option, String target, boolean strict)
+	{
+		if (strict)
+		{
+			List<Integer> indexes = optionIndexes.get(option);
+
+			// We want the last index which matches the target, as that is what is top-most
+			// on the menu
+			for (int i = indexes.size() - 1; i >= 0; --i)
 			{
-				if (entryOption.equals(option) && entryTarget.equals(target))
+				int idx = indexes.get(i);
+				MenuEntry entry = entries[idx];
+				String entryTarget = Text.removeTags(entry.getTarget()).toLowerCase();
+
+				// Limit to the last index which is prior to the current entry
+				if (idx <= limit && entryTarget.equals(target))
 				{
-					return i;
+					return idx;
 				}
 			}
-			else
+		}
+		else
+		{
+			// Without strict matching we have to iterate all entries up to the current limit...
+			for (int i = limit; i >= 0; i--)
 			{
+				MenuEntry entry = entries[i];
+				String entryOption = Text.removeTags(entry.getOption()).toLowerCase();
+				String entryTarget = Text.removeTags(entry.getTarget()).toLowerCase();
+
 				if (entryOption.contains(option.toLowerCase()) && entryTarget.equals(target))
 				{
 					return i;
 				}
 			}
+
 		}
 
 		return -1;
 	}
 
-	private void swap(String optionA, String optionB, String target, boolean strict)
+	private void swap(ArrayListMultimap<String, Integer> optionIndexes, MenuEntry[] entries, int index1, int index2)
 	{
-		MenuEntry[] entries = client.getMenuEntries();
+		MenuEntry entry = entries[index1];
+		entries[index1] = entries[index2];
+		entries[index2] = entry;
 
-		int idxA = searchIndex(entries, optionA, target, strict);
-		int idxB = searchIndex(entries, optionB, target, strict);
+		client.setMenuEntries(entries);
 
-		if (idxA >= 0 && idxB >= 0)
+		// Rebuild option indexes
+		optionIndexes.clear();
+		int idx = 0;
+		for (MenuEntry menuEntry : entries)
 		{
-			MenuEntry entry = entries[idxA];
-			entries[idxA] = entries[idxB];
-			entries[idxB] = entry;
-
-			client.setMenuEntries(entries);
+			String option = Text.removeTags(menuEntry.getOption()).toLowerCase();
+			optionIndexes.put(option, idx++);
 		}
 	}
 
