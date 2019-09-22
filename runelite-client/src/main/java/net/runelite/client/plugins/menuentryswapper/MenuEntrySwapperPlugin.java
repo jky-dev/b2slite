@@ -166,16 +166,16 @@ public class MenuEntrySwapperPlugin extends Plugin
 			enableCustomization();
 		}
 
-		buy1.addAll(Text.fromCSV(config.buy1()));
-		buy5.addAll(Text.fromCSV(config.buy5()));
-		buy10.addAll(Text.fromCSV(config.buy10()));
-		buy50.addAll(Text.fromCSV(config.buy50()));
-		withdraw5.addAll(Text.fromCSV(config.withdraw5()));
-		withdraw10.addAll(Text.fromCSV(config.withdraw10()));
-		withdrawX.addAll(Text.fromCSV(config.withdrawX()));
-		withdrawAll.addAll(Text.fromCSV(config.withdrawAll()));
-		customSwap.addAll(Text.fromCSV(config.customSwap()));
-		dropItems.addAll(Text.fromCSV(config.dropItems()));
+		buy1.addAll(Text.fromCSV(config.buy1().toLowerCase()));
+		buy5.addAll(Text.fromCSV(config.buy5().toLowerCase()));
+		buy10.addAll(Text.fromCSV(config.buy10().toLowerCase()));
+		buy50.addAll(Text.fromCSV(config.buy50().toLowerCase()));
+		withdraw5.addAll(Text.fromCSV(config.withdraw5().toLowerCase()));
+		withdraw10.addAll(Text.fromCSV(config.withdraw10().toLowerCase()));
+		withdrawX.addAll(Text.fromCSV(config.withdrawX().toLowerCase()));
+		withdrawAll.addAll(Text.fromCSV(config.withdrawAll().toLowerCase()));
+		customSwap.addAll(Text.fromCSV(config.customSwap().toLowerCase()));
+		dropItems.addAll(Text.fromCSV(config.dropItems().toLowerCase()));
 		withdrawAmount = "withdraw-" + Integer.toString(config.xAmount());
 		depositAmount = "deposit-" + Integer.toString(config.xAmount());
 	}
