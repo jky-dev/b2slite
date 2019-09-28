@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Seth <http://github.com/sethtroll>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,55 +22,58 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.agility;
+package net.runelite.client.plugins.music;
 
-import java.time.Instant;
-import lombok.Getter;
-import lombok.Setter;
-import net.runelite.api.Client;
-import net.runelite.api.Experience;
-import net.runelite.api.Skill;
-import net.runelite.api.VarPlayer;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Range;
 
-@Getter
-@Setter
-class AgilitySession
+@ConfigGroup("music")
+public interface MusicConfig extends Config
 {
-	private final Courses course;
-	private Instant lastLapCompleted;
-	private int totalLaps;
-	private int lapsTillLevel;
-	private int lapsTillGoal;
-
-	AgilitySession(Courses course)
+	@ConfigItem(
+		keyName = "musicVolume",
+		name = "Music Volume",
+		description = "Overrides music volume in game with more granular control",
+		position = 1
+	)
+	@Range(
+		min = 0,
+		max = 255
+	)
+	default int getMusicVolume()
 	{
-		this.course = course;
+		return 0;
 	}
 
-	void incrementLapCount(Client client)
+	@ConfigItem(
+		keyName = "soundEffectVolume",
+		name = "Sound Effect Volume",
+		description = "Overrides the sound effect volume in game with more granular control",
+		position = 2
+	)
+	@Range(
+		min = 0,
+		max = 127
+	)
+	default int getSoundEffectVolume()
 	{
-		lastLapCompleted = Instant.now();
-		++totalLaps;
-
-		int currentExp = client.getSkillExperience(Skill.AGILITY);
-		int nextLevel = client.getRealSkillLevel(Skill.AGILITY) + 1;
-
-		int remainingXp;
-		do
-		{
-			remainingXp = nextLevel <= Experience.MAX_VIRT_LEVEL ? Experience.getXpForLevel(nextLevel) - currentExp : 0;
-			nextLevel++;
-		} while (remainingXp < 0);
-
-		lapsTillLevel = remainingXp > 0 ? (int) Math.ceil(remainingXp / course.getTotalXp()) : 0;
-		int goalRemainingXp = client.getVar(VarPlayer.AGILITY_GOAL_END) - currentExp;
-		lapsTillGoal = goalRemainingXp > 0 ? (int) Math.ceil(goalRemainingXp / course.getTotalXp()) : 0;
+		return 0;
 	}
 
-	void resetLapCount()
+	@ConfigItem(
+		keyName = "areaSoundEffectVolume",
+		name = "Area Sound Effect Volume",
+		description = "Overrides the area sound effect volume in game with more granular control",
+		position = 3
+	)
+	@Range(
+		min = 0,
+		max = 127
+	)
+	default int getAreaSoundEffectVolume()
 	{
-		totalLaps = 0;
-		lapsTillLevel = 0;
-		lapsTillGoal = 0;
+		return 0;
 	}
 }

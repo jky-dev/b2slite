@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Seth <http://github.com/sethtroll>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,55 +22,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.agility;
+package net.runelite.client.plugins.menuentryswapper;
 
-import java.time.Instant;
 import lombok.Getter;
-import lombok.Setter;
-import net.runelite.api.Client;
-import net.runelite.api.Experience;
-import net.runelite.api.Skill;
-import net.runelite.api.VarPlayer;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@Setter
-class AgilitySession
+@RequiredArgsConstructor
+public enum HouseAdvertisementMode
 {
-	private final Courses course;
-	private Instant lastLapCompleted;
-	private int totalLaps;
-	private int lapsTillLevel;
-	private int lapsTillGoal;
+	VIEW("View"),
+	ADD_HOUSE("Add-House"),
+	VISIT_LAST("Visit-Last");
 
-	AgilitySession(Courses course)
+	private final String name;
+
+	@Override
+	public String toString()
 	{
-		this.course = course;
-	}
-
-	void incrementLapCount(Client client)
-	{
-		lastLapCompleted = Instant.now();
-		++totalLaps;
-
-		int currentExp = client.getSkillExperience(Skill.AGILITY);
-		int nextLevel = client.getRealSkillLevel(Skill.AGILITY) + 1;
-
-		int remainingXp;
-		do
-		{
-			remainingXp = nextLevel <= Experience.MAX_VIRT_LEVEL ? Experience.getXpForLevel(nextLevel) - currentExp : 0;
-			nextLevel++;
-		} while (remainingXp < 0);
-
-		lapsTillLevel = remainingXp > 0 ? (int) Math.ceil(remainingXp / course.getTotalXp()) : 0;
-		int goalRemainingXp = client.getVar(VarPlayer.AGILITY_GOAL_END) - currentExp;
-		lapsTillGoal = goalRemainingXp > 0 ? (int) Math.ceil(goalRemainingXp / course.getTotalXp()) : 0;
-	}
-
-	void resetLapCount()
-	{
-		totalLaps = 0;
-		lapsTillLevel = 0;
-		lapsTillGoal = 0;
+		return name;
 	}
 }
