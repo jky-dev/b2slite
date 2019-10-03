@@ -32,6 +32,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -281,7 +282,7 @@ public class GauntletOverlay extends Overlay
 				{
 
 					// Don't use Convex Hull click box. As the room start to fill up, your FPS will dip.
-					Polygon polygon = object.getGameObject().getConvexHull();
+					Shape polygon = object.getGameObject().getConvexHull();
 
 					if (polygon == null)
 					{

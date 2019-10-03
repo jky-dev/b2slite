@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2017, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,73 +22,44 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package net.runelite.api.model;
 
-import java.util.List;
-import net.runelite.api.model.Vertex;
+import lombok.Value;
+import net.runelite.api.Perspective;
 
 /**
- * Represents the model of an object.
+ * Represents a point in a three-dimensional space.
  */
-public interface Model extends Renderable
+@Value
+public class Vertex
 {
-	List<Vertex> getVertices();
+	private final int x;
+	private final int y;
+	private final int z;
 
-	int getVerticesCount();
+	/**
+	 * Rotates the triangle by the given orientation.
+	 *
+	 * @param orientation passed orientation
+	 * @return new instance
+	 */
+	public Vertex rotate(int orientation)
+	{
+		// models are orientated north (1024) and there are 2048 angles total
+		orientation = (orientation + 1024) % 2048;
 
-	int[] getVerticesX();
+		if (orientation == 0)
+		{
+			return this;
+		}
 
-	int[] getVerticesY();
+		int sin = Perspective.SINE[orientation];
+		int cos = Perspective.COSINE[orientation];
 
-	int[] getVerticesZ();
-
-	int getTrianglesCount();
-
-	int[] getTrianglesX();
-
-	int[] getTrianglesY();
-
-	int[] getTrianglesZ();
-
-	int[] getFaceColors1();
-
-	int[] getFaceColors2();
-
-	int[] getFaceColors3();
-
-	byte[] getTriangleTransparencies();
-
-	int getSceneId();
-	void setSceneId(int sceneId);
-
-	int getBufferOffset();
-	void setBufferOffset(int bufferOffset);
-
-	int getUvBufferOffset();
-	void setUvBufferOffset(int bufferOffset);
-
-	int getModelHeight();
-
-	void calculateBoundsCylinder();
-
-	byte[] getFaceRenderPriorities();
-
-	int getRadius();
-
-	short[] getFaceTextures();
-
-	float[][] getFaceTextureUCoordinates();
-	float[][] getFaceTextureVCoordinates();
-
-	void calculateExtreme(int orientation);
-
-	int getCenterX();
-	int getCenterY();
-	int getCenterZ();
-	int getExtremeX();
-	int getExtremeY();
-	int getExtremeZ();
-
-	int getXYZMag();
-	boolean isClickable();
+		return new Vertex(
+			x * cos + z * sin >> 16,
+			y,
+			z * cos - x * sin >> 16
+		);
+	}
 }
