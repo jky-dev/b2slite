@@ -553,6 +553,15 @@ public class MenuEntrySwapperPlugin extends Plugin
 			{
 				swap("enchant", option, target, index);
 			}
+
+			if (config.swapStartMinigame())
+			{
+				swap("start-minigame", option, target, index);
+			}
+		}
+		else if (config.swapQuickLeave() && option.equals("leave tomb") && target.equals("tomb door"))
+		{
+			swap("quick-leave", option, target, index);
 		}
 		else if (config.swapTravel() && option.equals("pass") && target.equals("energy barrier"))
 		{
@@ -900,11 +909,43 @@ public class MenuEntrySwapperPlugin extends Plugin
 				swap("drop", option, target, index);
 			}
 		}
+
+		if (shiftModifier && config.swapTeleportSpell())
+		{
+			if (target.equals("varrock teleport"))
+			{
+				swapTeleport(target, option, "grand exchange", index);
+			}
+			else if (target.equals("camelot teleport"))
+			{
+				swapTeleport(target, option, "seers'", index);
+			}
+			else if (target.equals("watchtower teleport"))
+			{
+				swapTeleport(target, option, "yanille", index);
+			}
+			else if (target.equals("teleport to house"))
+			{
+				swapTeleport(target, option, "outside", index);
+			}
+		}
 	}
 
 	private static boolean shouldSwapPickpocket(String target)
 	{
 		return !target.startsWith("villager") && !target.startsWith("bandit") && !target.startsWith("menaphite thug");
+	}
+
+	private void swapTeleport(String target, String option, String optionA, int index)
+	{
+		if (option.equals("cast"))
+		{
+			swap(optionA, option, target, index);
+		}
+		else if (option.equals(optionA))
+		{
+			swap("cast", option, target, index);
+		}
 	}
 
 	@Subscribe

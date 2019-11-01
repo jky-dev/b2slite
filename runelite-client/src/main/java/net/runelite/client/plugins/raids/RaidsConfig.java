@@ -314,7 +314,7 @@ public interface RaidsConfig extends Config
 	)
 	default boolean scavsBeforeOlm()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(

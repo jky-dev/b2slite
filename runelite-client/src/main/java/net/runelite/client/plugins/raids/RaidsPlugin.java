@@ -47,6 +47,7 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.InstanceTemplates;
 import net.runelite.api.ItemID;
+import net.runelite.api.MenuAction;
 import net.runelite.api.NullObjectID;
 import static net.runelite.api.Perspective.SCENE_SIZE;
 import net.runelite.api.Point;
@@ -70,6 +71,7 @@ import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
@@ -429,6 +431,17 @@ public class RaidsPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
+	public void onOverlayMenuClicked(final OverlayMenuClicked event)
+	{
+		if (event.getEntry().getMenuAction() == MenuAction.RUNELITE_OVERLAY &&
+			event.getEntry().getOption().equals(RaidsOverlay.BROADCAST_ACTION) &&
+			event.getOverlay() == overlay)
+		{
+			sendRaidLayoutMessage();
+		}
+	}
+
 	public void checkRaidPresence(boolean force)
 	{
 		if (client.getGameState() != GameState.LOGGED_IN)
@@ -464,7 +477,11 @@ public class RaidsPlugin extends Plugin
 				raid.updateLayout(layout);
 				RotationSolver.solve(raid.getCombatRooms());
 				overlay.setScoutOverlayShown(true);
-				sendRaidLayoutMessage();
+
+				if (config.layoutMessage())
+				{
+					sendRaidLayoutMessage();
+				}
 			}
 			else if (!config.scoutOverlayAtBank())
 			{
@@ -481,11 +498,6 @@ public class RaidsPlugin extends Plugin
 
 	private void sendRaidLayoutMessage()
 	{
-		if (!config.layoutMessage())
-		{
-			return;
-		}
-
 		final String layout = getRaid().getLayout().toCodeString();
 		final String rooms = getRaid().toRoomString();
 		final String raidData = "[" + layout + "]: " + rooms;
