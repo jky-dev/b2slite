@@ -40,6 +40,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
+import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -73,6 +74,9 @@ public class ImplingsPlugin extends Plugin
 
 	@Inject
 	private ImplingsConfig config;
+
+	@Inject
+	private Notifier notifier;
 
 	@Provides
 	ImplingsConfig getConfig(ConfigManager configManager)
@@ -122,6 +126,11 @@ public class ImplingsPlugin extends Plugin
 
 		if (impling != null)
 		{
+			if (showImplingType(impling.getImplingType()) == ImplingsConfig.ImplingMode.NOTIFY)
+			{
+				notifier.notify(impling.getImplingType().getName() + " impling is in the area");
+			}
+
 			implings.add(npc);
 		}
 	}
@@ -134,6 +143,11 @@ public class ImplingsPlugin extends Plugin
 
 		if (impling != null && !implings.contains(npc))
 		{
+			if (showImplingType(impling.getImplingType()) == ImplingsConfig.ImplingMode.NOTIFY)
+			{
+				notifier.notify(impling.getImplingType().getName() + " impling is in the area");
+			}
+
 			implings.add(npc);
 		}
 	}
@@ -168,10 +182,11 @@ public class ImplingsPlugin extends Plugin
 			return false;
 		}
 
-		return showImplingType(impling.getImplingType());
+		ImplingsConfig.ImplingMode impMode = showImplingType(impling.getImplingType());
+		return impMode == ImplingsConfig.ImplingMode.HIGHLIGHT || impMode == ImplingsConfig.ImplingMode.NOTIFY;
 	}
 
-	boolean showImplingType(ImplingType implingType)
+	ImplingsConfig.ImplingMode showImplingType(ImplingType implingType)
 	{
 		switch (implingType)
 		{
@@ -200,7 +215,7 @@ public class ImplingsPlugin extends Plugin
 			case LUCKY:
 				return config.showLucky();
 			default:
-				return false;
+				return ImplingsConfig.ImplingMode.NONE;
 		}
 	}
 

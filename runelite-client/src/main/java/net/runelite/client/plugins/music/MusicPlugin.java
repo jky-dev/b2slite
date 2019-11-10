@@ -47,7 +47,7 @@ import net.runelite.api.SpriteID;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.events.AreaSoundEffectPlayed;
-import net.runelite.api.events.ConfigChanged;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ScriptCallbackEvent;
 import net.runelite.api.events.VarClientIntChanged;
@@ -70,7 +70,8 @@ import net.runelite.client.plugins.PluginDescriptor;
 
 @PluginDescriptor(
 	name = "Music",
-	description = "Adds search and filter for the music list, and additional volume control"
+	description = "Adds search and filter for the music list, and additional volume control",
+	tags = {"sound", "volume"}
 )
 public class MusicPlugin extends Plugin
 {

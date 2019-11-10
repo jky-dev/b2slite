@@ -1,14 +1,10 @@
 package net.runelite.client.plugins.implings;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.Map;
 import javax.inject.Inject;
 import net.runelite.api.Client;
-import net.runelite.api.NPC;
-import net.runelite.client.plugins.implings.ImplingsConfig;
-import net.runelite.client.plugins.implings.ImplingsPlugin;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
@@ -41,7 +37,7 @@ public class ImplingCounterOverlay extends Overlay
 
         for (Map.Entry<ImplingType, Integer> entry : plugin.getImplingCounterMap().entrySet())
         {
-            if (plugin.showImplingType(entry.getKey()) && entry.getValue() != 0)
+            if (plugin.showImplingType(entry.getKey()) != ImplingsConfig.ImplingMode.NONE && entry.getValue() != 0)
             {
                 panelComponent.getChildren().add(LineComponent.builder()
                         .left(entry.getKey().getName())

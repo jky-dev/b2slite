@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Kruithne <kruithne@gmail.com>
+ * Copyright (c) 2017-2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,60 +22,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.customcursor;
+package net.runelite.api.events;
 
-import com.google.inject.Provides;
-import javax.inject.Inject;
-import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.ClientUI;
+import lombok.Value;
+import net.runelite.api.Skill;
 
-@PluginDescriptor(
-	name = "Custom Cursor",
-	description = "Replaces your mouse cursor image",
-	enabledByDefault = false
-)
-public class CustomCursorPlugin extends Plugin
+/**
+ * An event where the experience, level, or boosted level of a {@link Skill} has been modified.
+ */
+@Value
+public class StatChanged
 {
-	@Inject
-	private ClientUI clientUI;
-
-	@Inject
-	private CustomCursorConfig config;
-
-	@Provides
-	CustomCursorConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(CustomCursorConfig.class);
-	}
-
-	@Override
-	protected void startUp()
-	{
-		updateCursor();
-	}
-
-	@Override
-	protected void shutDown()
-	{
-		clientUI.resetCursor();
-	}
-
-	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("customcursor") && event.getKey().equals("cursorStyle"))
-		{
-			updateCursor();
-		}
-	}
-
-	private void updateCursor()
-	{
-		CustomCursor selectedCursor = config.selectedCursor();
-		clientUI.setCursor(selectedCursor.getCursorImage(), selectedCursor.toString());
-	}
+	private final Skill skill;
+	private final int xp;
+	private final int level;
+	private final int boostedLevel;
 }

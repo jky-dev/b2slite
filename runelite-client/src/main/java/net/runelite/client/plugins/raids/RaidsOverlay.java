@@ -175,20 +175,20 @@ public class RaidsOverlay extends Overlay
 				{
 					case COMBAT:
 						combatCount++;
-						roomName = room.getBoss().getName();
-						switch (RaidRoom.Boss.fromString(roomName))
+						roomName = room.getName();
+						switch (room)
 						{
 							case VANGUARDS:
 								vanguards = true;
 								break;
-							case UNKNOWN:
+							case UNKNOWN_COMBAT:
 								unknownCombat = true;
 								break;
 						}
 						break;
 					case PUZZLE:
-						roomName = room.getPuzzle().getName();
-						switch (RaidRoom.Puzzle.fromString(roomName))
+						roomName = room.getName();
+						switch (room)
 						{
 							case CRABS:
 								crabs = true;
@@ -291,17 +291,17 @@ public class RaidsOverlay extends Overlay
 			{
 				case COMBAT:
 					bossCount++;
-					if (plugin.getRoomWhitelist().contains(room.getBoss().getName().toLowerCase()))
+					if (plugin.getRoomWhitelist().contains(room.getName().toLowerCase()))
 					{
 						color = Color.GREEN;
 					}
-					else if (plugin.getRoomBlacklist().contains(room.getBoss().getName().toLowerCase())
-						|| config.enableRotationWhitelist() && bossCount > bossMatches)
+					else if (plugin.getRoomBlacklist().contains(room.getName().toLowerCase())
+							|| config.enableRotationWhitelist() && bossCount > bossMatches)
 					{
 						color = Color.RED;
 					}
 
-					String bossName = room.getBoss().getName();
+					String bossName = room.getName();
 					String bossNameLC = bossName.toLowerCase();
 					if (config.showRecommendedItems())
 					{
@@ -311,16 +311,18 @@ public class RaidsOverlay extends Overlay
 						}
 					}
 
+					String name = room == RaidRoom.UNKNOWN_COMBAT ? "Unknown" : room.getName();
+
 					panelComponent.getChildren().add(LineComponent.builder()
 						.left(config.showRecommendedItems() ? "" : room.getType().getName())
-						.right(bossName)
+						.right(name)
 						.rightColor(color)
 						.build());
 
 					break;
 
 				case PUZZLE:
-					String puzzleName = room.getPuzzle().getName();
+					String puzzleName = room.getName();
 					String puzzleNameLC = puzzleName.toLowerCase();
 					if (plugin.getRecommendedItemsList().get(puzzleNameLC) != null)
 					{

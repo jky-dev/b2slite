@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Kruithne <kruithne@gmail.com>
+ * Copyright (c) 2017, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,60 +22,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.customcursor;
+package net.runelite.client.events;
 
-import com.google.inject.Provides;
-import javax.inject.Inject;
-import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.ClientUI;
+import lombok.Data;
 
-@PluginDescriptor(
-	name = "Custom Cursor",
-	description = "Replaces your mouse cursor image",
-	enabledByDefault = false
-)
-public class CustomCursorPlugin extends Plugin
+/**
+ * An event where a configuration entry has been modified.
+ */
+@Data
+public class ConfigChanged
 {
-	@Inject
-	private ClientUI clientUI;
-
-	@Inject
-	private CustomCursorConfig config;
-
-	@Provides
-	CustomCursorConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(CustomCursorConfig.class);
-	}
-
-	@Override
-	protected void startUp()
-	{
-		updateCursor();
-	}
-
-	@Override
-	protected void shutDown()
-	{
-		clientUI.resetCursor();
-	}
-
-	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("customcursor") && event.getKey().equals("cursorStyle"))
-		{
-			updateCursor();
-		}
-	}
-
-	private void updateCursor()
-	{
-		CustomCursor selectedCursor = config.selectedCursor();
-		clientUI.setCursor(selectedCursor.getCursorImage(), selectedCursor.toString());
-	}
+	/**
+	 * The parent group for the key.
+	 * <p>
+	 * Typically set to the name of a plugin to prevent potential collisions
+	 * between other key values that may have the same name.
+	 */
+	private String group;
+	/**
+	 * The configuration key that has been modified.
+	 */
+	private String key;
+	/**
+	 * The previous value of the entry.
+	 */
+	private String oldValue;
+	/**
+	 * The new value of the entry, null if the entry has been unset.
+	 */
+	private String newValue;
 }

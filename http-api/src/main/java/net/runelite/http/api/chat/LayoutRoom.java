@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,20 +22,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.http.api.chat;
 
-package net.runelite.api.events;
-
-import lombok.Data;
-import net.runelite.api.Skill;
-
-/**
- * An event where the experience level of a {@link Skill} has been modified.
- */
-@Data
-public class ExperienceChanged
+public enum LayoutRoom
 {
-	/**
-	 * The modified skill.
-	 */
-	private Skill skill;
+	START,
+	END,
+	SCAVENGERS,
+	FARMING,
+	EMPTY,
+
+	TEKTON,
+	MUTTADILES,
+	GUARDIANS,
+	VESPULA,
+	SHAMANS,
+	VASA,
+	VANGUARDS,
+	MYSTICS,
+	UNKNOWN_COMBAT,
+
+	CRABS,
+	ICE_DEMON,
+	TIGHTROPE,
+	THIEVING,
+	UNKNOWN_PUZZLE;
 }

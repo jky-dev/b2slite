@@ -83,14 +83,9 @@ public class RaidsKeyboardListener implements KeyListener
 					switch (room.getType())
 					{
 						case COMBAT:
-							String bossName = room.getBoss().getShortName();
-							rotation += bossName + ", ";
-
-							break;
-
 						case PUZZLE:
-							String puzzleName = room.getPuzzle().getShortName();
-							rotation += puzzleName + ", ";
+							String name = room.getShortName();
+							rotation += name + ", ";
 							break;
 					}
 				}
