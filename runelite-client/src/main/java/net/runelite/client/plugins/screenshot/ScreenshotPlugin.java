@@ -69,8 +69,7 @@ import net.runelite.api.WorldType;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.events.LocalPlayerDeath;
-import net.runelite.api.events.PlayerDespawned;
+import net.runelite.api.events.PlayerDeath;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import static net.runelite.api.widgets.WidgetID.BARROWS_REWARD_GROUP_ID;
@@ -193,8 +192,6 @@ public class ScreenshotPlugin extends Plugin
 
 	private NavigationButton titleBarButton;
 
-	private Map<Player, Integer> deadPlayers = new HashMap<>();
-
 	private final HotkeyListener hotkeyListener = new HotkeyListener(() -> config.hotkey())
 	{
 		@Override
@@ -256,11 +253,6 @@ public class ScreenshotPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
-		if (config.screenshotOtherDeaths())
-		{
-			screenshotDeadPlayers();
-		}
-
 		if (!shouldTakeScreenshot)
 		{
 			return;
@@ -290,39 +282,18 @@ public class ScreenshotPlugin extends Plugin
 		}
 	}
 
-	// decrement counter
-	private void screenshotDeadPlayers()
-	{
-		for (Map.Entry<Player, Integer> entry : deadPlayers.entrySet())
-		{
-			entry.setValue(entry.getValue() - 1);
-
-			// 5 ticks after first entry 10 - 6
-			if (entry.getValue() == 6)
-			{
-				takeScreenshot(entry.getKey().getName() + " has died! " + format(new Date()));
-			}
-
-			// the player should no longer be alive
-			if (entry.getValue() == 0)
-			{
-				deadPlayers.remove(entry.getKey());
-			}
-		}
-	}
-
 	@Subscribe
-	public void onPlayerDespawned(PlayerDespawned event)
+	public void onPlayerDeath(PlayerDeath playerDeath)
 	{
-		deadPlayers.remove(event.getPlayer());
-	}
-
-	@Subscribe
-	public void onLocalPlayerDeath(LocalPlayerDeath death)
-	{
-		if (config.screenshotPlayerDeath())
+		if (playerDeath.getPlayer() == client.getLocalPlayer() && config.screenshotPlayerDeath())
 		{
 			takeScreenshot("Death " + format(new Date()));
+		}
+
+		if (config.screenshotOtherDeaths())
+		{
+			if (playerDeath.getPlayer() == client.getLocalPlayer() || (!playerDeath.getPlayer().isFriend() && !playerDeath.getPlayer().isClanMember())) return;
+			takeScreenshot(playerDeath.getPlayer().getName() + " has died! " + format(new Date()));
 		}
 	}
 
@@ -799,20 +770,5 @@ public class ScreenshotPlugin extends Plugin
 	int gettheatreOfBloodNumber()
 	{
 		return theatreOfBloodNumber;
-	}
-
-	@Subscribe
-	public void onAnimationChanged(AnimationChanged event)
-	{
-		if (!(event.getActor() instanceof Player)) return;
-
-		Player player = (Player)event.getActor();
-
-		if (player == client.getLocalPlayer() || (!player.isFriend() && !player.isClanMember())) return;
-
-		if (player.getAnimation() == 836) // death animation
-		{
-			deadPlayers.put(player, 10);
-		}
 	}
 }
