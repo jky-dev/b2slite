@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Lotto <https://github.com/devLotto>
+ * Copyright (c) 2019 Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,38 +22,60 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.http.service.worlds;
+package net.runelite.client.rs;
 
-import net.runelite.http.api.worlds.WorldType;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.function.IntConsumer;
 
-enum ServiceWorldType
+class CountingInputStream extends FilterInputStream
 {
-	MEMBERS(WorldType.MEMBERS, 1),
-	PVP(WorldType.PVP, 1 << 2),
-	BOUNTY(WorldType.BOUNTY, 1 << 5),
-	SKILL_TOTAL(WorldType.SKILL_TOTAL, 1 << 7),
-	HIGH_RISK(WorldType.HIGH_RISK, 1 << 10),
-	LAST_MAN_STANDING(WorldType.LAST_MAN_STANDING, 1 << 14),
-	TOURNAMENT(WorldType.TOURNAMENT, 1 << 25),
-	DEADMAN(WorldType.DEADMAN, 1 << 29),
-	LEAGUE(WorldType.LEAGUE, 1 << 30);
+	private final IntConsumer changed;
 
-	private final WorldType apiType;
-	private final int mask;
-
-	ServiceWorldType(WorldType apiType, int mask)
+	CountingInputStream(InputStream in, IntConsumer changed)
 	{
-		this.apiType = apiType;
-		this.mask = mask;
+		super(in);
+		this.changed = changed;
 	}
 
-	public WorldType getApiType()
+	private int read = 0;
+
+	@Override
+	public int read(byte[] b, int off, int len) throws IOException
 	{
-		return apiType;
+		int thisRead = super.read(b, off, len);
+		if (thisRead > 0)
+		{
+			this.read += thisRead;
+		}
+		changed.accept(this.read);
+		return thisRead;
 	}
 
-	public int getMask()
+	@Override
+	public int read() throws IOException
 	{
-		return mask;
+		int val = super.read();
+		if (val != -1)
+		{
+			this.read++;
+		}
+		return val;
+	}
+
+	@Override
+	public long skip(long n) throws IOException
+	{
+		long thisRead = in.skip(n);
+		this.read += thisRead;
+		changed.accept(this.read);
+		return thisRead;
+	}
+
+	@Override
+	public boolean markSupported()
+	{
+		return false;
 	}
 }
