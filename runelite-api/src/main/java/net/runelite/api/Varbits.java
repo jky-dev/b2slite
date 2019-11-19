@@ -523,7 +523,16 @@ public enum Varbits
 	/**
 	 * 1 is true, 0 is false.
 	 */
-	GAUNTLET_ENTERED(9178);
+	GAUNTLET_ENTERED(9178),
+
+	/**
+	 * Twisted league
+	 */
+	TWISTED_LEAGUE_RELIC_1(10049),
+	TWISTED_LEAGUE_RELIC_2(10050),
+	TWISTED_LEAGUE_RELIC_3(10051),
+	TWISTED_LEAGUE_RELIC_4(10052),
+	TWISTED_LEAGUE_RELIC_5(10053);
 
 	/**
 	 * The raw varbit ID.
