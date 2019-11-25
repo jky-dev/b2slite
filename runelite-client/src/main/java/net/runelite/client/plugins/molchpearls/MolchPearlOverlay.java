@@ -97,7 +97,7 @@ public class MolchPearlOverlay extends Overlay
 				.build());
 		}
 
-		if (plugin.getAvgFish() > 0 && config.showAvg())
+		if (plugin.getTotalPearlsFound() > 1 && config.showAvg())
 		{
 			panelComponent.getChildren().add(LineComponent.builder()
 				.left("Avg Streak:")
