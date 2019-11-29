@@ -46,9 +46,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -66,7 +63,6 @@ import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.SpriteID;
 import net.runelite.api.WorldType;
-import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.PlayerDeath;
@@ -285,15 +281,10 @@ public class ScreenshotPlugin extends Plugin
 	@Subscribe
 	public void onPlayerDeath(PlayerDeath playerDeath)
 	{
-		if (playerDeath.getPlayer() == client.getLocalPlayer() && config.screenshotPlayerDeath())
+		Player player = playerDeath.getPlayer();
+		if (player == client.getLocalPlayer() && config.screenshotPlayerDeath())
 		{
 			takeScreenshot("Death " + format(new Date()));
-		}
-
-		if (config.screenshotOtherDeaths())
-		{
-			if (playerDeath.getPlayer() == client.getLocalPlayer() || (!playerDeath.getPlayer().isFriend() && !playerDeath.getPlayer().isClanMember())) return;
-			takeScreenshot(playerDeath.getPlayer().getName() + " has died! " + format(new Date()));
 		}
 	}
 

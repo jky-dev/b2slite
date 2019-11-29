@@ -154,16 +154,16 @@ public class BanListPlugin extends Plugin
 	@Subscribe
 	public void onClanMemberJoined(ClanMemberJoined event)
 	{
-		ClanMember member = event.getMember();
-		ListType listType = checkBanList(Text.standardize(member.getUsername()));
-		if (listType != null)
-		{
-			sendWarning(Text.standardize(member.getUsername()), listType);
-			if (config.highlightInClan())
-			{
-				highlightRedInCC();
-			}
-		}
+//		ClanMember member = event.getMember();
+//		ListType listType = checkBanList(Text.standardize(member.getUsername()));
+//		if (listType != null)
+//		{
+//			sendWarning(Text.standardize(member.getUsername()), listType);
+//			if (config.highlightInClan())
+//			{
+//				highlightRedInCC();
+//			}
+//		}
 	}
 
 	/**

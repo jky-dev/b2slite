@@ -246,9 +246,7 @@ public interface RaidsConfig extends Config
 		parent = "roomConfig",
 		keyName = "whitelistedRotations",
 		name = "Whitelisted rotations",
-		hidden = true,
-		unhide = "enableRotationWhitelist",
-		description = "Warn when boss rotation doesn't match a whitelisted one. Add rotations like [tekton, muttadile, guardians]"
+		description = "Warn when boss rotation doesn't match a whitelisted one. Add rotations like: tekton, muttadiles, guardians - each rotation on its own line"
 	)
 	default String whitelistedRotations()
 	{

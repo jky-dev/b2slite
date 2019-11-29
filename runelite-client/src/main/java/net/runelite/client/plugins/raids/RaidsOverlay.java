@@ -265,15 +265,6 @@ public class RaidsOverlay extends Overlay
 				.build());
 		}
 
-		int bossMatches = 0;
-		int bossCount = 0;
-		roomCount = 0;
-
-		if (config.enableRotationWhitelist())
-		{
-			bossMatches = plugin.getRotationMatches();
-		}
-
 		Set<Integer> imageIds = new HashSet<>();
 		for (Room layoutRoom : plugin.getRaid().getLayout().getRooms())
 		{
@@ -290,13 +281,12 @@ public class RaidsOverlay extends Overlay
 			switch (room.getType())
 			{
 				case COMBAT:
-					bossCount++;
 					if (plugin.getRoomWhitelist().contains(room.getName().toLowerCase()))
 					{
 						color = Color.GREEN;
 					}
 					else if (plugin.getRoomBlacklist().contains(room.getName().toLowerCase())
-							|| config.enableRotationWhitelist() && bossCount > bossMatches)
+							|| config.enableRotationWhitelist() && !plugin.getRotationMatches())
 					{
 						color = Color.RED;
 					}

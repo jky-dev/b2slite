@@ -25,6 +25,7 @@
  */
 package net.runelite.client.plugins.raids;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
@@ -35,15 +36,20 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -127,6 +133,7 @@ public class RaidsPlugin extends Plugin
 	private static final Pattern LEVEL_COMPLETE_REGEX = Pattern.compile("(.+) level complete! Duration: ([0-9:]+)");
 	private static final Pattern RAID_COMPLETE_REGEX = Pattern.compile("Congratulations - your raid is complete! Duration: ([0-9:]+)");
 	private static final String LAYOUT_COMMAND = "!layout";
+	private static final int MAX_LAYOUT_LEN = 300;
 
 	@Inject
 	private ChatMessageManager chatMessageManager;
@@ -189,20 +196,21 @@ public class RaidsPlugin extends Plugin
 	private ScheduledExecutorService scheduledExecutorService;
 
 	@Getter
-	private final ArrayList<String> roomWhitelist = new ArrayList<>();
+	private final Set<String> roomWhitelist = new HashSet<String>();
 
 	@Getter
-	private final ArrayList<String> roomBlacklist = new ArrayList<>();
+	private final Set<String> roomBlacklist = new HashSet<String>();
 
 	@Getter
-	private final ArrayList<String> rotationWhitelist = new ArrayList<>();
+	private final Set<String> rotationWhitelist = new HashSet<String>();
 
 	@Getter
-	private final ArrayList<String> layoutWhitelist = new ArrayList<>();
+	private final Set<String> layoutWhitelist = new HashSet<String>();
 
 	@Getter
 	private final Map<String, List<Integer>> recommendedItemsList = new HashMap<>();
 
+	@Setter(AccessLevel.PACKAGE) // for the test
 	@Getter
 	private Raid raid;
 
@@ -572,11 +580,11 @@ public class RaidsPlugin extends Plugin
 		}
 	}
 
-	private void updateLists()
+	@VisibleForTesting
+	void updateLists()
 	{
 		updateList(roomWhitelist, config.whitelistedRooms());
 		updateList(roomBlacklist, config.blacklistedRooms());
-		updateList(rotationWhitelist, config.whitelistedRotations());
 		updateList(layoutWhitelist, config.whitelistedLayouts());
 		updateMap(recommendedItemsList, config.recommendedItems());
 	}
@@ -627,32 +635,22 @@ public class RaidsPlugin extends Plugin
 				}
 			}
 		}
+
+		// Update rotation whitelist
+		rotationWhitelist.clear();
+		for (String line : config.whitelistedRotations().split("\\n"))
+		{
+			rotationWhitelist.add(line.toLowerCase().replace(" ", ""));
+		}
 	}
 
-	private void updateList(ArrayList<String> list, String input)
+	private void updateList(Collection<String> list, String input)
 	{
 		list.clear();
-
-		if (list == rotationWhitelist)
-		{
-			Matcher m = ROTATION_REGEX.matcher(input);
-			while (m.find())
-			{
-				String rotation = m.group(1).toLowerCase();
-
-				if (!list.contains(rotation))
-				{
-					list.add(rotation);
-				}
-			}
-		}
-		else
-		{
-			list.addAll(Text.fromCSV(input.toLowerCase()));
-		}
+		list.addAll(Text.fromCSV(input.toLowerCase()));
 	}
 
-	int getRotationMatches()
+	boolean getRotationMatches()
 	{
 		RaidRoom[] combatRooms = raid.getCombatRooms();
 		String rotation = Arrays.stream(combatRooms)
@@ -660,7 +658,7 @@ public class RaidsPlugin extends Plugin
 			.map(String::toLowerCase)
 			.collect(Collectors.joining(","));
 
-		return rotationWhitelist.contains(rotation) ? combatRooms.length : 0;
+		return rotationWhitelist.contains(rotation);
 	}
 
 	private Point findLobbyBase()
@@ -865,6 +863,12 @@ public class RaidsPlugin extends Plugin
 			.filter(room -> room.getType() == RoomType.COMBAT || room.getType() == RoomType.PUZZLE)
 			.map(RaidRoom::getName)
 			.toArray());
+
+		if (layoutMessage.length() > MAX_LAYOUT_LEN)
+		{
+			log.debug("layout message too long! {}", layoutMessage.length());
+			return;
+		}
 
 		String response = new ChatMessageBuilder()
 			.append(ChatColorType.HIGHLIGHT)
