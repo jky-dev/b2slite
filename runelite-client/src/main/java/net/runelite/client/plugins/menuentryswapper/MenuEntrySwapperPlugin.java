@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * Copyright (c) 2018, Kamiel
+ * Copyright (c) 2019, Rami <https://github.com/Rami-J>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +42,6 @@ import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.events.ClientTick;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.api.events.FocusChanged;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.MenuOptionClicked;
@@ -51,6 +51,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemVariationMapping;
 import net.runelite.client.input.KeyManager;
@@ -481,6 +482,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 				swap("send-parcel", option, target, index);
 			}
 
+			if (config.swapCaptainKhaled() && target.contains("captain khaled"))
+			{
+				swap("task", option, target, index);
+			}
+
 			if (config.swapBank())
 			{
 				swap("bank", option, target, index);
@@ -494,6 +500,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 			if (config.swapExchange())
 			{
 				swap("exchange", option, target, index);
+			}
+
+			if (config.swapHelp())
+			{
+				swap("help", option, target, index);
 			}
 
 			if (config.swapDarkMage())
@@ -674,6 +685,35 @@ public class MenuEntrySwapperPlugin extends Plugin
 			swap("spellbook", option, target, index);
 			swap("perks", option, target, index);
 		}
+		else if (config.swapJewelleryBox() && option.equals("teleport menu"))
+		{
+			swap("duel arena", option, target, index);
+			swap("castle wars", option, target, index);
+			swap("clan wars", option, target, index);
+			swap("burthorpe", option, target, index);
+			swap("barbarian outpost", option, target, index);
+			swap("corporeal beast", option, target, index);
+			swap("tears of guthix", option, target, index);
+			swap("wintertodt camp", option, target, index);
+			swap("warriors' guild", option, target, index);
+			swap("champions' guild", option, target, index);
+			swap("monastery", option, target, index);
+			swap("ranging guild", option, target, index);
+			swap("fishing guild", option, target, index);
+			swap("mining guild", option, target, index);
+			swap("crafting guild", option, target, index);
+			swap("cooking guild", option, target, index);
+			swap("woodcutting guild", option, target, index);
+			swap("farming guild", option, target, index);
+			swap("miscellania", option, target, index);
+			swap("grand exchange", option, target, index);
+			swap("falador park", option, target, index);
+			swap("dondakan's rock", option, target, index);
+			swap("edgeville", option, target, index);
+			swap("karamja", option, target, index);
+			swap("draynor village", option, target, index);
+			swap("al kharid", option, target, index);
+		}
 		else if (config.swapPrivate() && option.equals("shared"))
 		{
 			swap("private", option, target, index);
@@ -681,6 +721,10 @@ public class MenuEntrySwapperPlugin extends Plugin
 		else if (config.swapPick() && option.equals("pick"))
 		{
 			swap("pick-lots", option, target, index);
+		}
+		else if (shiftModifier && option.equals("view offer") && config.swapGEAbort())
+		{
+			swap("abort offer", option, target, index);
 		}
 		else if (config.shiftClickCustomization() && shiftModifier && !option.equals("use"))
 		{
@@ -832,6 +876,24 @@ public class MenuEntrySwapperPlugin extends Plugin
 		else if (config.swapBones() && option.equals("bury"))
 		{
 			swap("use", option, target, index);
+		}
+		else if (option.equals("collect to inventory") || option.startsWith("collect-note") || option.startsWith("collect-item"))
+		{
+			switch (config.swapGEItemCollect())
+			{
+				case ITEMS:
+					swap("collect-items", option, target, index);
+					swap("collect-item", option, target, index);
+					break;
+				case NOTES:
+					swap("collect-notes", option, target, index);
+					swap("collect-note", option, target, index);
+					break;
+				case BANK:
+					swap("collect to bank", option, target, index);
+					swap("bank", option, target, index);
+					break;
+			}
 		}
 
 		if (!config.customSwap().isEmpty())

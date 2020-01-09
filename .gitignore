@@ -9,3 +9,5 @@ project.properties
 .settings/
 .classpath
 *.log
+.vscode
+.factorypath
