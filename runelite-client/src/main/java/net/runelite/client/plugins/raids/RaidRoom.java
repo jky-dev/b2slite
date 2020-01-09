@@ -31,31 +31,30 @@ import lombok.RequiredArgsConstructor;
 @Getter
 enum RaidRoom
 {
-	START("Start", "Start", RoomType.START),
-	END("End", "End", RoomType.END),
-	SCAVENGERS("Scavengers", "Scavs", RoomType.SCAVENGERS),
-	FARMING("Farming", "Farm", RoomType.FARMING),
-	EMPTY("Empty", "-", RoomType.EMPTY),
+	START("Start", RoomType.START),
+	END("End", RoomType.END),
+	SCAVENGERS("Scavengers", RoomType.SCAVENGERS),
+	FARMING("Farming", RoomType.FARMING),
+	EMPTY("Empty", RoomType.EMPTY),
 
-	TEKTON("Tekton", "Tek", RoomType.COMBAT),
-	MUTTADILES("Muttadiles", "Mutt", RoomType.COMBAT),
-	GUARDIANS("Guardians", "Guard", RoomType.COMBAT),
-	VESPULA("Vespula", "Vesp", RoomType.COMBAT),
-	SHAMANS("Shamans", "Sham", RoomType.COMBAT),
-	VASA("Vasa", "Vasa", RoomType.COMBAT),
-	VANGUARDS("Vanguards", "Vangs", RoomType.COMBAT),
-	MYSTICS("Mystics", "Myst", RoomType.COMBAT),
-	UNKNOWN_COMBAT("Unknown C", "Unk", RoomType.COMBAT),
+	TEKTON("Tekton", RoomType.COMBAT),
+	MUTTADILES("Muttadiles", RoomType.COMBAT),
+	GUARDIANS("Guardians", RoomType.COMBAT),
+	VESPULA("Vespula", RoomType.COMBAT),
+	SHAMANS("Shamans", RoomType.COMBAT),
+	VASA("Vasa", RoomType.COMBAT),
+	VANGUARDS("Vanguards", RoomType.COMBAT),
+	MYSTICS("Mystics", RoomType.COMBAT),
+	UNKNOWN_COMBAT("Unknown (combat)", RoomType.COMBAT),
 
-	CRABS("Crabs", "Crabs", RoomType.PUZZLE),
-	ICE_DEMON("Ice Demon", "Ice", RoomType.PUZZLE),
-	TIGHTROPE("Tightrope", "Rope", RoomType.PUZZLE),
-	THIEVING("Thieving", "Thieve", RoomType.PUZZLE),
-	UNKNOWN_PUZZLE("Unknown P", "Unk", RoomType.PUZZLE);
+	CRABS("Crabs", RoomType.PUZZLE),
+	ICE_DEMON("Ice Demon", RoomType.PUZZLE),
+	TIGHTROPE("Tightrope", RoomType.PUZZLE),
+	THIEVING("Thieving", RoomType.PUZZLE),
+	UNKNOWN_PUZZLE("Unknown (puzzle)", RoomType.PUZZLE);
 
 	static final int ROOM_MAX_SIZE = 32;
 
 	private final String name;
-	private final String shortName;
 	private final RoomType type;
 }
