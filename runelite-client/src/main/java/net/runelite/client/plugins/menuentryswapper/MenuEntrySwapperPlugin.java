@@ -428,6 +428,62 @@ public class MenuEntrySwapperPlugin extends Plugin
 				}
 			}
 		}
+
+		if (config.enableBankingSwap() && (menuEntryAdded.getOption().startsWith("Withdraw-1") ||
+				menuEntryAdded.getOption().startsWith("Deposit-1") ||
+				menuEntryAdded.getOption().startsWith("Store") ||
+				menuEntryAdded.getOption().startsWith("Donate")))
+		{
+			MenuEntry[] menuEntries = client.getMenuEntries();
+			String target = menuEntryAdded.getTarget().substring(menuEntryAdded.getTarget().indexOf(">") + 1, menuEntryAdded.getTarget().lastIndexOf("<")).toLowerCase();
+
+			if (withdraw5.contains(target))
+			{
+				highPrioritySwap(menuEntries, "withdraw-5");
+				highPrioritySwap(menuEntries, "deposit-5");
+				highPrioritySwap(menuEntries, "store-5");
+				highPrioritySwap(menuEntries, "donate-5");
+			}
+			else if (withdraw10.contains(target))
+			{
+				highPrioritySwap(menuEntries, "withdraw-10");
+				highPrioritySwap(menuEntries, "deposit-10");
+				highPrioritySwap(menuEntries, "store-10");
+				highPrioritySwap(menuEntries, "donate-10");
+			}
+			else if (withdrawX.contains(target))
+			{
+				highPrioritySwap(menuEntries, withdrawAmount);
+				highPrioritySwap(menuEntries, depositAmount);
+			}
+			else if (withdrawAll.contains(target))
+			{
+				highPrioritySwap(menuEntries, "withdraw-all");
+				highPrioritySwap(menuEntries, "deposit-all");
+				highPrioritySwap(menuEntries, "store-all");
+				highPrioritySwap(menuEntries, "donate-all");
+			}
+		}
+	}
+
+	private void highPrioritySwap(MenuEntry[] menuEntries, String option)
+	{
+		for (int i = menuEntries.length - 1; i >= 0; --i)
+		{
+			MenuEntry entry = menuEntries[i];
+
+			if (entry.getOption().toLowerCase().equals(option))
+			{
+				// we must also raise the priority of the op so it doesn't get sorted later
+				entry.setType(MenuAction.CC_OP.getId());
+
+				menuEntries[i] = menuEntries[menuEntries.length - 1];
+				menuEntries[menuEntries.length - 1] = entry;
+
+				client.setMenuEntries(menuEntries);
+				break;
+			}
+		}
 	}
 
 	@Subscribe
@@ -991,36 +1047,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			{
 				swap("buy 50", option, target, index);
 				swap("sell 50", option, target, index);
-			}
-		}
-
-		if (config.enableBankingSwap() && (option.equals("withdraw-1") || option.equals("deposit-1") || option.equals("store") || option.equals("donate")))
-		{
-			if (withdraw5.contains(target))
-			{
-				swap("withdraw-5", option, target, index);
-				swap("deposit-5", option, target, index);
-				swap("store-5", option, target, index);
-				swap("donate-5", option, target, index);
-			}
-			else if (withdraw10.contains(target))
-			{
-				swap("withdraw-10", option, target, index);
-				swap("deposit-10", option, target, index);
-				swap("store-10", option, target, index);
-				swap("donate-10", option, target, index);
-			}
-			else if (withdrawX.contains(target))
-			{
-				swap(withdrawAmount, option, target, index);
-				swap(depositAmount, option, target, index);
-			}
-			else if (withdrawAll.contains(target))
-			{
-				swap("withdraw-all", option, target, index);
-				swap("deposit-all", option, target, index);
-				swap("store-all", option, target, index);
-				swap("donate-all", option, target, index);
 			}
 		}
 
