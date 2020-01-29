@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2020, Zach <https://github.com/zacharydwaller>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,61 +22,31 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.widgets;
+package net.runelite.client.plugins.menuentryswapper;
 
-import java.awt.Rectangle;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
-import net.runelite.api.Point;
+import lombok.RequiredArgsConstructor;
+import net.runelite.api.MenuAction;
 
-/**
- * An item that is being represented in a {@link Widget}.
- */
-@AllArgsConstructor
-@ToString
 @Getter
-public class WidgetItem
+@RequiredArgsConstructor
+public enum ShiftDepositMode
 {
-	/**
-	 * The ID of the item represented.
-	 *
-	 * @see net.runelite.api.ItemID
-	 */
-	private final int id;
-	/**
-	 * The quantity of the represented item.
-	 */
-	private final int quantity;
-	/**
-	 * The index position of this WidgetItem inside its parents
-	 * WidgetItem array.
-	 *
-	 * @see Widget#getWidgetItems()
-	 */
-	private final int index;
-	/**
-	 * The area where the widget is drawn on the canvas.
-	 */
-	private final Rectangle canvasBounds;
-	/**
-	 * The widget which contains this item.
-	 */
-	private final Widget widget;
-	/**
-	 * Whether or not this widget item is being dragged.
-	 */
-	private final boolean dragging;
+	DEPOSIT_1("Deposit-1", MenuAction.CC_OP, 3),
+	DEPOSIT_5("Deposit-5", MenuAction.CC_OP, 4),
+	DEPOSIT_10("Deposit-10", MenuAction.CC_OP, 5),
+	DEPOSIT_X("Deposit-X", MenuAction.CC_OP_LOW_PRIORITY, 6),
+	DEPOSIT_ALL("Deposit-All", MenuAction.CC_OP_LOW_PRIORITY, 8),
+	EXTRA_OP("Eat/Wield/Etc.", MenuAction.CC_OP_LOW_PRIORITY, 9),
+	OFF("Off", MenuAction.UNKNOWN, 0);
 
-	/**
-	 * Gets the upper-left coordinate of where the widget is being drawn
-	 * on the canvas.
-	 *
-	 * @return the upper-left coordinate of where this widget is drawn
-	 */
-	public Point getCanvasLocation()
+	private final String name;
+	private final MenuAction menuAction;
+	private final int identifier;
+
+	@Override
+	public String toString()
 	{
-		return new Point((int) canvasBounds.getX(), (int) canvasBounds.getY());
+		return name;
 	}
-
 }
