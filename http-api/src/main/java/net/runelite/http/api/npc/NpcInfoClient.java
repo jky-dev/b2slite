@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Lotto <https://github.com/devLotto>
+ * Copyright (c) 2020, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,23 +22,60 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.screenshot.imgur;
+package net.runelite.http.api.npc;
 
-import java.io.File;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Base64;
-import lombok.Data;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.util.Map;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.http.api.RuneLiteAPI;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
-@Data
-public class ImageUploadRequest
+@Slf4j
+@Value
+public class NpcInfoClient
 {
-	private final String image;
-	private final String type;
+	private final OkHttpClient client;
 
-	public ImageUploadRequest(File imageFile) throws IOException
+	public Map<Integer, NpcInfo> getNpcs() throws IOException
 	{
-		this.image = Base64.getEncoder().encodeToString(Files.readAllBytes(imageFile.toPath()));
-		this.type = "base64";
+		HttpUrl.Builder urlBuilder = RuneLiteAPI.getStaticBase().newBuilder()
+			.addPathSegment("npcs")
+			.addPathSegment("npcs.min.json");
+
+		HttpUrl url = urlBuilder.build();
+
+		log.debug("Built URI: {}", url);
+
+		Request request = new Request.Builder()
+			.url(url)
+			.build();
+
+		try (Response response = client.newCall(request).execute())
+		{
+			if (!response.isSuccessful())
+			{
+				log.warn("Error looking up npcs: {}", response);
+				return null;
+			}
+
+			InputStream in = response.body().byteStream();
+			final Type typeToken = new TypeToken<Map<Integer, NpcInfo>>()
+			{
+			}.getType();
+			return RuneLiteAPI.GSON.fromJson(new InputStreamReader(in), typeToken);
+		}
+		catch (JsonParseException ex)
+		{
+			throw new IOException(ex);
+		}
 	}
 }

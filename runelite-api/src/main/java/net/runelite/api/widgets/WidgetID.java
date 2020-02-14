@@ -147,6 +147,8 @@ public class WidgetID
 	public static final int EXPLORERS_RING_ALCH_GROUP_ID = 483;
 	public static final int OPTIONS_GROUP_ID = 261;
 	public static final int GWD_KC_GROUP_ID = 406;
+	public static final int LMS_GROUP_ID = 333;
+	public static final int LMS_INGAME_GROUP_ID = 328;
 
 	static class WorldMap
 	{
@@ -155,7 +157,7 @@ public class WidgetID
 		static final int SEARCH = 24;
 		static final int SURFACE_SELECTOR = 32;
 		static final int TOOLTIP = 38;
-		static final int OPTION = 43;
+		static final int OPTION = 46;
 	}
 
 	static class SlayerRewards
@@ -306,6 +308,7 @@ public class WidgetID
 		static final int RUN_ORB_TEXT = 23;
 		static final int SPEC_ORB = 28;
 		static final int WORLDMAP_ORB = 41;
+		static final int WIKI_BANNER = 43;
 	}
 
 	static class LoginClickToPlayScreen
@@ -837,9 +840,9 @@ public class WidgetID
 
 	static class Options
 	{
-		static final int MUSIC_SLIDER = 44;
-		static final int SOUND_EFFECT_SLIDER = 50;
-		static final int AREA_SOUND_SLIDER = 56;
+		static final int MUSIC_SLIDER = 38;
+		static final int SOUND_EFFECT_SLIDER = 44;
+		static final int AREA_SOUND_SLIDER = 50;
 	}
 
 	static class AchievementDiary
@@ -850,5 +853,15 @@ public class WidgetID
 	static class Skills
 	{
 		static final int CONTAINER = 0;
+	}
+
+	static class Lms
+	{
+		static final int INFO = 3;
+	}
+
+	static class LmsKDA
+	{
+		static final int INFO = 4;
 	}
 }

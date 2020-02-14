@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Alexsuperfly <https://github.com/Alexsuperfly>
+ * Copyright (c) 2020, Hexagon <hexagon@fking.work>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,12 +22,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.cache.definitions;
 
-package net.runelite.client.plugins.screenshot;
+import lombok.Data;
 
-public enum UploadStyle
+@Data
+public class HitSplatDefinition
 {
-	NEITHER,
-	IMGUR,
-	CLIPBOARD
+	private String stringFormat = "";
+	private int varbitID = -1;
+	private int leftSprite = -1;
+	private int leftSprite2 = -1;
+	private int rightSpriteId = -1;
+	private int fontType = -1;
+	private int backgroundSprite = -1;
+	private int varpID = -1;
+	private int useDamage = -1;
+	private int textColor = 0xFFFFFF;
+	private int displayCycles = 70;
+	private int[] multihitsplats;
+	private int scrollToOffsetX = 0;
+	private int fadeStartCycle = -1;
+	private int scrollToOffsetY = 0;
+	private int textOffsetY = 0;
 }

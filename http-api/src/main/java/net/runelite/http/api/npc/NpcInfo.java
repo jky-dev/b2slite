@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Lotto <https://github.com/devLotto>
+ * Copyright (c) 2020, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,19 +22,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.screenshot.imgur;
+package net.runelite.http.api.npc;
 
 import lombok.Data;
 
 @Data
-public class ImageUploadResponse
+public class NpcInfo
 {
-	private Data data;
-	private boolean success;
-
-	@lombok.Data
-	public static class Data
-	{
-		private String link;
-	}
+	private String name;
+	private int combat;
+	private int hitpoints;
 }

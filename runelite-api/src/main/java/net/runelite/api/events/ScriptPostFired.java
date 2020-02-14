@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Abex
+ * Copyright (c) 2020, Trevor <https://github.com/Trevor159>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,23 +22,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.wiki;
+package net.runelite.api.events;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.runelite.api.SpriteID;
-import net.runelite.client.game.SpriteOverride;
+import lombok.Value;
 
-@RequiredArgsConstructor
-public enum WikiSprite implements SpriteOverride
+/**
+ * An event that is fired after the designated script is ran
+ */
+@Value
+public class ScriptPostFired
 {
-	WIKI_ICON(-300, "wiki.png"),
-	WIKI_SELECTED_ICON(-301, "wiki_selected.png"),
-	FIXED_MODE_MINIMAP_CLICKMASK(SpriteID.MINIMAP_CLICK_MASK, "fixed_mode_minimap_clickmask.png");
-
-	@Getter
-	private final int spriteId;
-
-	@Getter
-	private final String fileName;
+	/**
+	 * The script id of the invoked script
+	 */
+	private final int scriptId;
 }
