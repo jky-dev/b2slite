@@ -157,6 +157,17 @@ public interface RuneLiteConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "requestFocusSetting",
+		name = "Request focus or bring to top",
+		description = "If enabled, request focus will focus, otherwise will just bring client to top",
+		position = 21
+	)
+	default boolean requestFocusOn()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "notificationSound",
 		name = "Notification sound",
 		description = "Enables the playing of a beep sound when notifications are displayed",

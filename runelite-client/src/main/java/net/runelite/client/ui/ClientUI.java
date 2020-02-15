@@ -588,27 +588,27 @@ public class ClientUI
 	 */
 	public void requestFocus()
 	{
-		if (OSType.getOSType() == OSType.MacOS)
+		if (config.requestFocusOn())
 		{
-			OSXUtil.requestFocus();
-			frame.requestFocus();
-			giveClientFocus();
-		}
-		else if (OSType.getOSType() == OSType.Windows && System.getProperty("os.name").contains("10"))
-		{
-			frame.setAlwaysOnTop(true);
-			frame.setAlwaysOnTop(config.gameAlwaysOnTop());
+			if (OSType.getOSType() == OSType.MacOS)
+			{
+				OSXUtil.requestFocus();
+			}
+
+			if (OSType.getOSType() == OSType.Windows)
+			{
+				frame.setAlwaysOnTop(true);
+				frame.setAlwaysOnTop(config.gameAlwaysOnTop());
+			}
+
 			frame.requestFocus();
 			giveClientFocus();
 		}
 		else
 		{
-			frame.requestFocus();
-			giveClientFocus();
+			frame.setAlwaysOnTop(true);
+			frame.setAlwaysOnTop(config.gameAlwaysOnTop());
 		}
-
-
-
 	}
 
 	/**
