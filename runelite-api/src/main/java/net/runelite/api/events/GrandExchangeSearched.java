@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019, Ron Young <https://github.com/raiyni>
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
+ *     list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ *     this list of conditions and the following disclaimer in the documentation
+ *     and/or other materials provided with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -22,27 +22,31 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.timers;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.ui.overlay.infobox.InfoBoxPriority;
-import net.runelite.client.ui.overlay.infobox.Timer;
+package net.runelite.api.events;
 
-class TimerTimer extends Timer
+import lombok.Data;
+
+/**
+ * An event where the Grand Exchange has been searched.
+ */
+@Data
+public class GrandExchangeSearched
 {
-	private final GameTimer timer;
+	/**
+	 * Whether or not the event has been consumed by a subscriber.
+	 */
+	private boolean consumed;
 
-	TimerTimer(GameTimer timer, Duration duration, Plugin plugin)
+	/**
+	 * Marks the event as having been consumed.
+	 * <p>
+	 * Setting this state indicates that a plugin has set the GE
+	 * search results and that the event will not be passed on
+	 * for handling by vanilla client code.
+	 */
+	public void consume()
 	{
-		super(duration.toMillis(), ChronoUnit.MILLIS, null, plugin);
-		this.timer = timer;
-		setPriority(InfoBoxPriority.MED);
-	}
-
-	public GameTimer getTimer()
-	{
-		return timer;
+		this.consumed = true;
 	}
 }
