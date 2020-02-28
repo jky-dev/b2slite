@@ -28,6 +28,7 @@ import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Set;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import net.runelite.api.NPC;
 import static net.runelite.api.NullObjectID.NULL_1293;
@@ -136,7 +137,7 @@ public class CrypticClue extends ClueScroll implements TextClueScroll, NpcClueSc
 		new CrypticClue("'Small shoe.' Often found with rod on mushroom.", "Gnome trainer", new WorldPoint(2476, 3428, 0), "Talk to any Gnome trainer in the agility area of the Tree Gnome Stronghold."),
 		new CrypticClue("I live in a deserted crack collecting soles.", "Genie", new WorldPoint(3371, 9320, 0), "Enter the crack west of Nardah Rug merchant, and talk to the Genie. You'll need a light source and a rope.", true),
 		new CrypticClue("46 is my number. My body is the colour of burnt orange and crawls among those with eight. Three mouths I have, yet I cannot eat. My blinking blue eye hides my grave.", new WorldPoint(3170, 3885, 0), "Sapphire respawn in the Spider's Nest, lvl 46 Wilderness. Dig under the sapphire spawn."),
-		new CrypticClue("Green is the colour of my death as the winter-guise, I swoop towards the ground.", new WorldPoint(2780, 3783, 0), "Players need to slide down to where Trollweiss grows on Trollweiss Mountain."),
+		new CrypticClue("Green is the colour of my death as the winter-guise, I swoop towards the ground.", new WorldPoint(2780, 3783, 0), "Players need to slide down to where Trollweiss grows on Trollweiss Mountain. Bring a sled"),
 		new CrypticClue("Talk to a party-goer in Falador.", "Lucy", new WorldPoint(3046, 3382, 0), "Lucy is the bartender on the first floor of the party room."),
 		new CrypticClue("He knows just how easy it is to lose track of time.", "Brother Kojo", new WorldPoint(2570, 3250, 0), "Speak to Brother Kojo in the Clock Tower. Answer: 22", "On a clock, how many times a day do the minute hand and the hour hand overlap?"),
 		new CrypticClue("A great view - watch the rapidly drying hides get splashed. Check the box you are sitting on.", BOXES, new WorldPoint(2523, 3493, 1), "Almera's House north of Baxtorian Falls, search boxes on the first floor."),
@@ -171,7 +172,7 @@ public class CrypticClue extends ClueScroll implements TextClueScroll, NpcClueSc
 		new CrypticClue("Someone watching the fights in the Duel Arena is your next destination.", "Jeed", new WorldPoint(3360, 3242, 0), "Talk to Jeed, found on the upper floors, at the Duel Arena."),
 		new CrypticClue("It seems to have reached the end of the line, and it's still empty.", MINE_CART_6045, new WorldPoint(3041, 9820, 0), "Search the carts in the northern part of the Dwarven Mine."),
 		new CrypticClue("You'll have to plug your nose if you use this source of herbs.", null, "Kill an Aberrant or Deviant spectre."),
-		new CrypticClue("When you get tired of fighting, go deep, deep down until you need an antidote.", CRATE_357, new WorldPoint(2576, 9583, 0), "Go to Yanille Agility dungeon and fall into the place with the poison spiders. Search the crate by the stairs leading up."),
+		new CrypticClue("When you get tired of fighting, go deep, deep down until you need an antidote.", CRATE_357, new WorldPoint(2576, 9583, 0), "Go to Yanille Agility dungeon and fall into the place with the poison spiders by praying at the Chaos altar. Search the crate by the stairs leading up."),
 		new CrypticClue("Search the bookcase in the monastery.", BOOKCASE_380, new WorldPoint(3054, 3484, 0), "Search the southeastern bookcase at Edgeville Monastery."),
 		new CrypticClue("Surprising? I bet he is...", "Sir Prysin", new WorldPoint(3205, 3474, 0), "Talk to Sir Prysin in Varrock Palace."),
 		new CrypticClue("Search upstairs in the houses of Seers' Village for some drawers.", DRAWERS_25766, new WorldPoint(2716, 3471, 1), "Located in the house with the spinning wheel. South of the Seers' Village bank."),
@@ -331,6 +332,7 @@ public class CrypticClue extends ClueScroll implements TextClueScroll, NpcClueSc
 	private final int objectId;
 	private final WorldPoint location;
 	private final String solution;
+	@Nullable
 	private final String questionText;
 
 	private CrypticClue(String text, WorldPoint location, String solution)
@@ -340,12 +342,12 @@ public class CrypticClue extends ClueScroll implements TextClueScroll, NpcClueSc
 
 	private CrypticClue(String text, int objectId, WorldPoint location, String solution)
 	{
-		this(text, null, objectId, location, solution, "");
+		this(text, null, objectId, location, solution, null);
 	}
 
 	private CrypticClue(String text, String npc, WorldPoint location, String solution)
 	{
-		this(text, npc, -1, location, solution, "");
+		this(text, npc, -1, location, solution, null);
 	}
 
 	private CrypticClue(String text, String npc, WorldPoint location, String solution, boolean requiresLight)
@@ -366,10 +368,10 @@ public class CrypticClue extends ClueScroll implements TextClueScroll, NpcClueSc
 
 	private CrypticClue(String text, String npc, int objectId, WorldPoint location, String solution)
 	{
-		this(text, npc, objectId, location, solution, "");
+		this(text, npc, objectId, location, solution, null);
 	}
 
-	private CrypticClue(String text, String npc, int objectId, WorldPoint location, String solution, String questionText)
+	private CrypticClue(String text, String npc, int objectId, WorldPoint location, String solution, @Nullable String questionText)
 	{
 		this.text = text;
 		this.npc = npc;
@@ -465,7 +467,7 @@ public class CrypticClue extends ClueScroll implements TextClueScroll, NpcClueSc
 	{
 		for (CrypticClue clue : CLUES)
 		{
-			if (clue.text.equalsIgnoreCase(text) || clue.questionText.equalsIgnoreCase(text))
+			if (text.equalsIgnoreCase(clue.text) || text.equalsIgnoreCase(clue.questionText))
 			{
 				return clue;
 			}
