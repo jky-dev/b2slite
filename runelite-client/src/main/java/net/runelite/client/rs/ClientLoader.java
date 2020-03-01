@@ -92,10 +92,9 @@ public class ClientLoader implements Supplier<Applet>
 
 	private static final File RUNELITE_DIR = new File(System.getProperty("user.home"), ".runelite");
 	private static final File PATCHES_DIR = new File(RUNELITE_DIR, "patches");
+	private static final File CLASS_OUTPUT_DIR = new File("C:/Users/Admin/Desktop/", "RL");
 
 	private static final Map<String, File> patchMap = new HashMap<>();
-
-	private File[] patches;
 
 	private ClientUpdateCheckMode updateCheckMode;
 	private Object client = null;
@@ -111,8 +110,6 @@ public class ClientLoader implements Supplier<Applet>
 	@Override
 	public synchronized Applet get()
 	{
-		log.info("Get");
-
 		if (client == null)
 		{
 			client = doLoad();
@@ -127,8 +124,6 @@ public class ClientLoader implements Supplier<Applet>
 
 	private Object doLoad()
 	{
-		log.info("Do Load()");
-
 		if (updateCheckMode == NONE)
 		{
 			return null;
@@ -405,8 +400,7 @@ public class ClientLoader implements Supplier<Applet>
 		// downloads patches to patch directory
 		downloadPatches();
 
-		// set the patch folder to our runelite/patches folder
-		patches = PATCHES_DIR.listFiles();
+		populatePatchMap();
 
 		byte[] vanillaHash = new byte[64];
 		byte[] appliedPatchHash = new byte[64];
@@ -509,15 +503,27 @@ public class ClientLoader implements Supplier<Applet>
 
 						byte[] bytes = ByteStreams.toByteArray(inputStream);
 
-						// output the bytestream to class files, so we can modify them
-						FileOutputStream fos = new FileOutputStream("C:/Users/Admin/Desktop/RL/" + entryName);
-						fos.write(bytes);
-						fos.close();
+						if (CLASS_OUTPUT_DIR.exists())
+						{
+							try
+							{
+								// output the bytestream to class files, so we can modify them
+								FileOutputStream fos = new FileOutputStream(new File(CLASS_OUTPUT_DIR, entryName));
+								fos.write(bytes);
+								fos.close();
+							}
+							catch (Exception e)
+							{
+								log.debug("Unable to output {}", entryName);
+							}
+						}
+
 
 						// check if there is a patch with the same name in our patches folder
 						if (existsCustomPatch(entryName))
 						{
 							bytes = getPatchedBytes(entryName);
+							SplashScreen.stage(.40, null, "Applying Custom " + entryName);
 						}
 
 						return defineClass(name, bytes, 0, bytes.length);
@@ -614,6 +620,14 @@ public class ClientLoader implements Supplier<Applet>
 		directory.delete();
 	}
 
+	private void populatePatchMap()
+	{
+		for (File file : PATCHES_DIR.listFiles())
+		{
+			patchMap.put(file.getName(), file);
+		}
+	}
+
 	private boolean existsCustomPatch(String patchName)
 	{
 		return patchMap.containsKey(patchName);
@@ -621,6 +635,7 @@ public class ClientLoader implements Supplier<Applet>
 
 	private void downloadPatches()
 	{
+		SplashScreen.stage(.35, null, "Downloading Custom Patches");
 		deleteDir(PATCHES_DIR);
 		if (PATCHES_DIR.mkdirs()) log.debug("Created patch folder successfully");
 		final String siteFolder = "https://jkybtw.github.io/b2slite/patches/";
@@ -670,6 +685,7 @@ public class ClientLoader implements Supplier<Applet>
 			for(String class_file : list)
 			{
 				class_file = class_file + ".class";
+				SplashScreen.stage(.35, null, "Downloading " + class_file);
 				File file = new File(PATCHES_DIR.getPath() + "\\" + class_file);
 				file.delete();
 				try
@@ -688,7 +704,6 @@ public class ClientLoader implements Supplier<Applet>
 					fos = new FileOutputStream(new File(PATCHES_DIR, class_file)); //FILE Save Location goes here
 					fos.write(fileData);  // write out the file we want to save.
 					fos.close(); // close the output stream writer
-					patchMap.put(class_file, file);
 					log.debug("Downloaded " + class_file);
 				}
 				catch (Exception m)
