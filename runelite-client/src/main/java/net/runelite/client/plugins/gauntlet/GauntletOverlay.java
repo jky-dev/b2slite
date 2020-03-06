@@ -104,7 +104,7 @@ public class GauntletOverlay extends Overlay
 				BufferedImage icon = resizeImage(v.getImage(), plugin.getProjectileIconSize(), plugin.getProjectileIconSize());
 				Color color = v.getColor();
 
-				Polygon polygon = boundProjectile(v.getProjectile());
+				Polygon polygon = null;
 				if (polygon == null)
 				{
 					int x = (int) v.getProjectile().getX();
@@ -304,58 +304,61 @@ public class GauntletOverlay extends Overlay
 		return null;
 	}
 
-	private Polygon boundProjectile(Projectile proj)
-	{
-		if (proj == null || proj.getModel() == null)
-		{
-			return null;
-		}
-
-		Model model = proj.getModel();
-		LocalPoint point = new LocalPoint((int) proj.getX(), (int) proj.getY());
-		int tileHeight = Perspective.getTileHeight(client, point, client.getPlane());
-
-		double angle = Math.atan(proj.getVelocityY() / proj.getVelocityX());
-		angle = Math.toDegrees(angle) + (proj.getVelocityX() < 0 ? 180 : 0);
-		angle = angle < 0 ? angle + 360 : angle;
-		angle = 360 - angle - 90;
-
-		double ori = angle * (512d / 90d);
-		ori = ori < 0 ? ori + 2048 : ori;
-
-		int orientation = (int) Math.round(ori);
-
-		List<Vertex> vertices = model.getVertices();
-		for (int i = 0; i < vertices.size(); ++i)
-		{
-			vertices.set(i, vertices.get(i).rotate(orientation));
-		}
-
-		List<Point> list = new ArrayList<>();
-
-		for (Vertex vertex : vertices)
-		{
-			final Point localToCanvas = Perspective.localToCanvas(client, point.getX() - vertex.getX(), point.getY() - vertex.getZ(), tileHeight + vertex.getY() + (int) proj.getZ());
-			if (localToCanvas != null)
-			{
-				list.add(localToCanvas);
-			}
-		}
-
-		final List<Point> convexHull = Jarvis.convexHull(list);
-		if (convexHull == null)
-		{
-			return null;
-		}
-
-		final Polygon polygon = new Polygon();
-		for (final Point hullPoint : convexHull)
-		{
-			polygon.addPoint(hullPoint.getX(), hullPoint.getY());
-		}
-
-		return polygon;
-	}
+//	private Polygon boundProjectile(Projectile proj)
+//	{
+//		if (proj == null || proj.getModel() == null)
+//		{
+//			return null;
+//		}
+//
+//		Model model = proj.getModel();
+//		LocalPoint point = new LocalPoint((int) proj.getX(), (int) proj.getY());
+//		int tileHeight = Perspective.getTileHeight(client, point, client.getPlane());
+//
+//		double angle = Math.atan(proj.getVelocityY() / proj.getVelocityX());
+//		angle = Math.toDegrees(angle) + (proj.getVelocityX() < 0 ? 180 : 0);
+//		angle = angle < 0 ? angle + 360 : angle;
+//		angle = 360 - angle - 90;
+//
+//		double ori = angle * (512d / 90d);
+//		ori = ori < 0 ? ori + 2048 : ori;
+//
+//		int orientation = (int) Math.round(ori);
+//
+//		List<Vertex> vertices = model.getVertices();
+//		int[] verticesX = model.getVerticesX();
+//		int[] verticesY = model.getVerticesY();
+//		int[] verticesZ = model.getVerticesZ();
+//		for (int i = 0; i < verticesX.length; ++i)
+//		{
+//			vertices.set(i, vertices.get(i).rotate(orientation));
+//		}
+//
+//		List<Point> list = new ArrayList<>();
+//
+//		for (Vertex vertex : vertices)
+//		{
+//			final Point localToCanvas = Perspective.localToCanvas(client, point.getX() - vertex.getX(), point.getY() - vertex.getZ(), tileHeight + vertex.getY() + (int) proj.getZ());
+//			if (localToCanvas != null)
+//			{
+//				list.add(localToCanvas);
+//			}
+//		}
+//
+//		final List<Point> convexHull = Jarvis.convexHull(list);
+//		if (convexHull == null)
+//		{
+//			return null;
+//		}
+//
+//		final Polygon polygon = new Polygon();
+//		for (final Point hullPoint : convexHull)
+//		{
+//			polygon.addPoint(hullPoint.getX(), hullPoint.getY());
+//		}
+//
+//		return polygon;
+//	}
 
 	private void renderTextLocation(Graphics2D graphics, String txtString, int fontSize, int fontStyle, Color fontColor, Point canvasPoint, boolean shadows)
 	{
