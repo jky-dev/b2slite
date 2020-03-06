@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
@@ -63,6 +64,7 @@ public class ReportButtonPlugin extends Plugin
 
 	private Instant loginTime;
 	private Instant totalGamingTime;
+	private int ticksSinceLogin;
 	private boolean ready;
 	private boolean readyGaming;
 
@@ -120,6 +122,7 @@ public class ReportButtonPlugin extends Plugin
 				if (ready)
 				{
 					loginTime = Instant.now();
+					ticksSinceLogin = 0;
 					ready = false;
 				}
 				if (readyGaming)
@@ -128,6 +131,17 @@ public class ReportButtonPlugin extends Plugin
 					readyGaming = false;
 				}
 				break;
+		}
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick tick)
+	{
+		ticksSinceLogin++;
+
+		if (config.time() == TimeStyle.GAME_TICKS)
+		{
+			updateReportButtonTime();
 		}
 	}
 
@@ -173,6 +187,9 @@ public class ReportButtonPlugin extends Plugin
 			case GAMING_TIME:
 				reportButton.setText(getTotalGamingTime());
 				break;
+			case GAME_TICKS:
+				reportButton.setText(getGameTicks());
+				break;
 			case OFF:
 				reportButton.setText("Report");
 				break;
@@ -201,6 +218,11 @@ public class ReportButtonPlugin extends Plugin
 		Duration duration = Duration.between(totalGamingTime, Instant.now());
 		LocalTime time = LocalTime.ofSecondOfDay(duration.getSeconds());
 		return time.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+	}
+
+	private String getGameTicks()
+	{
+		return Integer.toString(ticksSinceLogin);
 	}
 
 	private static String getLocalTime()

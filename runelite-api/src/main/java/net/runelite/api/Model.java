@@ -24,16 +24,11 @@
  */
 package net.runelite.api;
 
-import java.util.List;
-import net.runelite.api.model.Vertex;
-
 /**
  * Represents the model of an object.
  */
 public interface Model extends Renderable
 {
-	List<Vertex> getVertices();
-
 	int getVerticesCount();
 
 	int[] getVerticesX();
