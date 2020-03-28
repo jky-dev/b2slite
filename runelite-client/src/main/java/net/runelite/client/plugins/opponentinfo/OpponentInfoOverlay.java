@@ -37,7 +37,6 @@ import net.runelite.api.Client;
 import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
-import net.runelite.api.Varbits;
 import net.runelite.client.game.HiscoreManager;
 import net.runelite.client.game.NPCManager;
 import net.runelite.client.ui.overlay.Overlay;
@@ -69,7 +68,6 @@ class OpponentInfoOverlay extends Overlay
 	private int lastRatio = 0;
 	private int lastHealthScale = 0;
 	private String opponentName;
-	private String opponentsOpponentName;
 
 	@Inject
 	private OpponentInfoOverlay(
@@ -128,17 +126,6 @@ class OpponentInfoOverlay extends Overlay
 					}
 				}
 			}
-
-			final Actor opponentsOpponent = opponent.getInteracting();
-			if (opponent instanceof NPC && opponentsOpponent != null
-				&& (opponentsOpponent != client.getLocalPlayer() || client.getVar(Varbits.MULTICOMBAT_AREA) == 1))
-			{
-				opponentsOpponentName = Text.removeTags(opponentsOpponent.getName());
-			}
-			else
-			{
-				opponentsOpponentName = null;
-			}
 		}
 
 		if (opponentName == null)
@@ -151,8 +138,8 @@ class OpponentInfoOverlay extends Overlay
 		panelComponent.getChildren().clear();
 
 		// Opponent name
-		int textWidth = Math.max(ComponentConstants.STANDARD_WIDTH, fontMetrics.stringWidth(opponentName));
-		panelComponent.setPreferredSize(new Dimension(textWidth, 0));
+		int panelWidth = Math.max(ComponentConstants.STANDARD_WIDTH, fontMetrics.stringWidth(opponentName) + ComponentConstants.STANDARD_BORDER + ComponentConstants.STANDARD_BORDER);
+		panelComponent.setPreferredSize(new Dimension(panelWidth, 0));
 		panelComponent.getChildren().add(TitleComponent.builder()
 			.text(opponentName)
 			.build());
@@ -216,16 +203,6 @@ class OpponentInfoOverlay extends Overlay
 			}
 
 			panelComponent.getChildren().add(progressBarComponent);
-		}
-
-		// Opponents opponent
-		if (opponentsOpponentName != null && opponentInfoConfig.showOpponentsOpponent())
-		{
-			textWidth = Math.max(textWidth, fontMetrics.stringWidth(opponentsOpponentName));
-			panelComponent.setPreferredSize(new Dimension(textWidth, 0));
-			panelComponent.getChildren().add(TitleComponent.builder()
-				.text(opponentsOpponentName)
-				.build());
 		}
 
 		return panelComponent.render(graphics);

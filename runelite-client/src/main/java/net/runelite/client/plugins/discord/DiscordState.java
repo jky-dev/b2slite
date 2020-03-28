@@ -122,9 +122,7 @@ class DiscordState
 		}
 		else
 		{
-			// If we aren't showing the elapsed time within Discord then
-			// We null out the event start property
-			event = new EventWithTime(eventType, config.hideElapsedTime() ? null : Instant.now());
+			event = new EventWithTime(eventType, Instant.now());
 
 			events.add(event);
 		}
@@ -174,13 +172,13 @@ class DiscordState
 		final String versionShortHand = RuneLiteProperties.getVersion().replace("-SNAPSHOT", "+");
 
 		final DiscordPresence.DiscordPresenceBuilder presenceBuilder = DiscordPresence.builder()
-				.state(config.showCustomMessage().isEmpty() ? MoreObjects.firstNonNull(state, "") : config.showCustomMessage()) // place of where you are
-				.details(MoreObjects.firstNonNull(details, "")) // what you are doing
-				.largeImageText(RuneLiteProperties.getTitle() + " v" + versionShortHand)
-				.startTimestamp(event.getStart())
-				.smallImageKey(imageKey)
-				.partyMax(PARTY_MAX)
-				.partySize(party.getMembers().size());
+			.state(config.showCustomMessage().isEmpty() ? MoreObjects.firstNonNull(state, "") : config.showCustomMessage())
+			.details(MoreObjects.firstNonNull(details, ""))
+			.largeImageText(RuneLiteProperties.getTitle() + " v" + versionShortHand)
+			.startTimestamp(config.hideElapsedTime() ? null : event.getStart())
+			.smallImageKey(imageKey)
+			.partyMax(PARTY_MAX)
+			.partySize(party.getMembers().size());
 
 		if (party.isOwner())
 		{
@@ -203,8 +201,26 @@ class DiscordState
 	 */
 	void checkForTimeout()
 	{
+		if (events.isEmpty())
+		{
+			return;
+		}
+
 		final Duration actionTimeout = Duration.ofMinutes(config.actionTimeout());
 		final Instant now = Instant.now();
+		final EventWithTime eventWithTime = events.get(0);
+
 		events.removeIf(event -> event.getType().isShouldTimeout() && now.isAfter(event.getUpdated().plus(actionTimeout)));
+
+		assert DiscordGameEventType.IN_MENU.getState() != null;
+		if (DiscordGameEventType.IN_MENU.getState().equals(eventWithTime.getType().getState()) && now.isAfter(eventWithTime.getStart().plus(actionTimeout)))
+		{
+			final DiscordPresence presence = lastPresence
+				.toBuilder()
+				.startTimestamp(null)
+				.build();
+			lastPresence = presence;
+			discordService.updatePresence(presence);
+		}
 	}
 }

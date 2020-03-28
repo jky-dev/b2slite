@@ -153,6 +153,7 @@ public class WidgetID
 	public static final int LMS_INGAME_GROUP_ID = 328;
 	public static final int ADVENTURE_LOG_ID = 187;
 	public static final int COUNTERS_LOG_GROUP_ID = 625;
+	public static final int GAUNTLET_TIMER_GROUP_ID = 637;
 
 	static class WorldMap
 	{
@@ -214,11 +215,27 @@ public class WidgetID
 	static class FriendList
 	{
 		static final int TITLE = 3;
+		static final int FULL_CONTAINER = 5;
+		static final int SORT_BY_NAME_BUTTON = 7;
+		static final int SORT_BY_LAST_WORLD_CHANGE_BUTTON = 8;
+		static final int SORT_BY_WORLD_BUTTON = 9;
+		static final int LEGACY_SORT_BUTTON = 10;
+		static final int NAMES_CONTAINER = 11;
+		static final int SCROLL_BAR = 12;
+		static final int LOADING_TEXT = 13;
+		static final int PREVIOUS_NAME_HOLDER = 18;
 	}
 
 	static class IgnoreList
 	{
 		static final int TITLE = 3;
+		static final int FULL_CONTAINER = 5;
+		static final int SORT_BY_NAME_BUTTON = 7;
+		static final int LEGACY_SORT_BUTTON = 8;
+		static final int NAMES_CONTAINER = 9;
+		static final int SCROLL_BAR = 10;
+		static final int LOADING_TEXT = 11;
+		static final int PREVIOUS_NAME_HOLDER = 16;
 	}
 
 	static class ClanChat
@@ -873,7 +890,7 @@ public class WidgetID
 
 	static class LmsKDA
 	{
-		static final int INFO = 4;
+		static final int INFO = 5;
 	}
 
 	static class AdventureLog
@@ -885,5 +902,10 @@ public class WidgetID
 	{
 		static final int OWNER = 4;
 		static final int TEXT = 6;
+	}
+
+	static class GauntletTimer
+	{
+		static final int CONTAINER = 2;
 	}
 }
