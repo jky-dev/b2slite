@@ -97,6 +97,8 @@ public class ClientLoader implements Supplier<Applet>
 
 	private static final Map<String, File> patchMap = new HashMap<>();
 
+	private boolean disableCustomPatch = false;
+	private String customMessage = "";
 	private ClientUpdateCheckMode updateCheckMode;
 	private Object client = null;
 
@@ -131,7 +133,7 @@ public class ClientLoader implements Supplier<Applet>
 
 		try
 		{
-			SplashScreen.stage(0, null, "Fetching applet viewer config");
+			SplashScreen.stage(0, null, customMessage + "Fetching applet viewer config");
 			RSConfig config = downloadConfig();
 
 			SplashScreen.stage(.05, null, "Waiting for other clients to start");
@@ -140,9 +142,9 @@ public class ClientLoader implements Supplier<Applet>
 			ClassLoader classLoader;
 			try (FileChannel lockfile = FileChannel.open(LOCK_FILE.toPath(),
 				StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
-				 FileLock flock = lockfile.lock())
+				FileLock flock = lockfile.lock())
 			{
-				SplashScreen.stage(.05, null, "Downloading Old School RuneScape");
+				SplashScreen.stage(.05, null, customMessage + "Downloading Old School RuneScape");
 				try
 				{
 					updateVanilla(config);
@@ -164,22 +166,22 @@ public class ClientLoader implements Supplier<Applet>
 
 				if (updateCheckMode == AUTO)
 				{
-					SplashScreen.stage(.35, null, "Patching");
+					SplashScreen.stage(.35, null, customMessage + "Patching");
 					applyPatch();
 				}
 
-				SplashScreen.stage(.40, null, "Loading client");
+				SplashScreen.stage(.40, null, customMessage + "Loading client");
 				File jarFile = updateCheckMode == AUTO ? PATCHED_CACHE : VANILLA_CACHE;
 				// create the classloader for the jar while we hold the lock, and eagerly load and link all classes
 				// in the jar. Otherwise the jar can change on disk and can break future classloads.
 				classLoader = createJarClassLoader(jarFile);
 			}
 
-			SplashScreen.stage(.465, "Starting", "Starting Old School RuneScape");
+			SplashScreen.stage(.465, customMessage + "Starting", customMessage + "Starting Old School RuneScape");
 
 			Applet rs = loadClient(config, classLoader);
 
-			SplashScreen.stage(.5, null, "Starting core classes");
+			SplashScreen.stage(.5, null, customMessage + "Starting core classes");
 
 			return rs;
 		}
@@ -187,6 +189,7 @@ public class ClientLoader implements Supplier<Applet>
 			| VerificationException | SecurityException e)
 		{
 			log.error("Error loading RS!", e);
+			disableCustomPatch = true;
 
 			SwingUtilities.invokeLater(() -> FatalErrorDialog.showNetErrorWindow("loading the client", e));
 			return e;
@@ -472,7 +475,7 @@ public class ClientLoader implements Supplier<Applet>
 		}
 
 		try (HashingOutputStream hos = new HashingOutputStream(Hashing.sha512(), new FileOutputStream(PATCHED_CACHE));
-			 InputStream patch = ClientLoader.class.getResourceAsStream("/client.patch"))
+			InputStream patch = ClientLoader.class.getResourceAsStream("/client.patch"))
 		{
 			new FileByFileV1DeltaApplier().applyDelta(VANILLA_CACHE, patch, hos);
 
@@ -545,7 +548,7 @@ public class ClientLoader implements Supplier<Applet>
 
 
 						// check if there is a patch with the same name in our patches folder
-						if (existsCustomPatch(entryName))
+						if (existsCustomPatch(entryName) && !disableCustomPatch)
 						{
 							bytes = getPatchedBytes(entryName);
 							SplashScreen.stage(.40, null, "Applying Custom " + entryName);
@@ -553,8 +556,10 @@ public class ClientLoader implements Supplier<Applet>
 
 						return defineClass(name, bytes, 0, bytes.length);
 					}
-					catch (IOException e)
+					catch (IOException | VerifyError e)
 					{
+						disableCustomPatch = true;
+						customMessage = "Unable to patch! ";
 						throw new ClassNotFoundException(null, e);
 					}
 				}
