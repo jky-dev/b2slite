@@ -556,11 +556,12 @@ public class ClientLoader implements Supplier<Applet>
 
 						return defineClass(name, bytes, 0, bytes.length);
 					}
-					catch (IOException | VerifyError e)
+					catch (IOException | VerifyError | IncompatibleClassChangeError e)
 					{
 						disableCustomPatch = true;
 						customMessage = "Unable to patch! ";
-						throw new ClassNotFoundException(null, e);
+						doLoad();
+						return null;
 					}
 				}
 			};
@@ -702,7 +703,7 @@ public class ClientLoader implements Supplier<Applet>
 		try
 		{
 			// Parse custom patch list
-			Scanner s = new Scanner(new File(PATCHES_DIR.getPath() + "\\classes.dat"));
+			Scanner s = new Scanner(new File(PATCHES_DIR, "classes.dat"));
 			ArrayList<String> list = new ArrayList<String>();
 			while (s.hasNext())
 			{
@@ -716,7 +717,7 @@ public class ClientLoader implements Supplier<Applet>
 			{
 				class_file = class_file + ".class";
 				SplashScreen.stage(.35, null, "Downloading " + class_file);
-				File file = new File(PATCHES_DIR.getPath() + "\\" + class_file);
+				File file = new File(PATCHES_DIR, class_file);
 				file.delete();
 				try
 				{
