@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Woox <https://github.com/wooxsolo>
+ * Copyright (c) 2020, Sean Dewar <https://github.com/seandewar>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,44 +22,53 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.npcunaggroarea;
+package net.runelite.client.plugins.camera;
 
-import com.google.inject.Inject;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import net.runelite.client.ui.overlay.OverlayPanel;
+import javax.inject.Inject;
+import net.runelite.api.Client;
+import net.runelite.api.Point;
+import net.runelite.api.VarClientInt;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.components.LineComponent;
+import net.runelite.client.ui.overlay.tooltip.Tooltip;
+import net.runelite.client.ui.overlay.tooltip.TooltipManager;
 
-class NpcAggroAreaNotWorkingOverlay extends OverlayPanel
+class CameraOverlay extends Overlay
 {
-	private final NpcAggroAreaPlugin plugin;
-	private final NpcAggroAreaConfig config;
+	private final CameraConfig config;
+	private final Client client;
+	private final TooltipManager tooltipManager;
 
 	@Inject
-	private NpcAggroAreaNotWorkingOverlay(NpcAggroAreaPlugin plugin, NpcAggroAreaConfig config)
+	private CameraOverlay(final CameraConfig config, final Client client, final TooltipManager tooltipManager)
 	{
-		this.plugin = plugin;
 		this.config = config;
-
-		panelComponent.getChildren().add(LineComponent.builder()
-			.left("Unaggressive NPC timers will start working when you teleport far away or enter a dungeon.")
-			.build());
-
-		setPriority(OverlayPriority.LOW);
-		setPosition(OverlayPosition.TOP_LEFT);
-		setClearChildren(false);
+		this.client = client;
+		this.tooltipManager = tooltipManager;
+		setPosition(OverlayPosition.DYNAMIC);
+		setLayer(OverlayLayer.ABOVE_WIDGETS);
 	}
 
 	@Override
-	public Dimension render(Graphics2D graphics)
+	public Dimension render(final Graphics2D graphics)
 	{
-		if (!plugin.isActive() || plugin.getSafeCenters()[1] != null || config.hideOverlayHint())
+		final Widget slider = client.getWidget(WidgetInfo.OPTIONS_CAMERA_ZOOM_SLIDER_HANDLE);
+		final Point mousePos = client.getMouseCanvasPosition();
+
+		if (slider == null || slider.isHidden() || !slider.getBounds().contains(mousePos.getX(), mousePos.getY()))
 		{
 			return null;
 		}
 
-		return super.render(graphics);
+		final int value = client.getVar(VarClientInt.CAMERA_ZOOM_RESIZABLE_VIEWPORT);
+		final int max = config.innerLimit() ? config.INNER_ZOOM_LIMIT : CameraPlugin.DEFAULT_INNER_ZOOM_LIMIT;
+
+		tooltipManager.add(new Tooltip("Camera Zoom: " + value + " / " + max));
+		return null;
 	}
 }

@@ -139,6 +139,7 @@ public class IdleNotifierPlugin extends Plugin
 			case WOODCUTTING_MITHRIL:
 			case WOODCUTTING_ADAMANT:
 			case WOODCUTTING_RUNE:
+			case WOODCUTTING_GILDED:
 			case WOODCUTTING_DRAGON:
 			case WOODCUTTING_INFERNAL:
 			case WOODCUTTING_3A_AXE:
@@ -197,6 +198,9 @@ public class IdleNotifierPlugin extends Plugin
 			case FISHING_OILY_ROD:
 			case FISHING_KARAMBWAN:
 			case FISHING_BAREHAND:
+			case FISHING_PEARL_ROD:
+			case FISHING_PEARL_FLY_ROD:
+			case FISHING_PEARL_BARBARIAN_ROD:
 			/* Mining(Normal) */
 			case MINING_BRONZE_PICKAXE:
 			case MINING_IRON_PICKAXE:
@@ -205,6 +209,7 @@ public class IdleNotifierPlugin extends Plugin
 			case MINING_MITHRIL_PICKAXE:
 			case MINING_ADAMANT_PICKAXE:
 			case MINING_RUNE_PICKAXE:
+			case MINING_GILDED_PICKAXE:
 			case MINING_DRAGON_PICKAXE:
 			case MINING_DRAGON_PICKAXE_UPGRADED:
 			case MINING_DRAGON_PICKAXE_OR:
@@ -221,6 +226,7 @@ public class IdleNotifierPlugin extends Plugin
 			case MINING_MOTHERLODE_MITHRIL:
 			case MINING_MOTHERLODE_ADAMANT:
 			case MINING_MOTHERLODE_RUNE:
+			case MINING_MOTHERLODE_GILDED:
 			case MINING_MOTHERLODE_DRAGON:
 			case MINING_MOTHERLODE_DRAGON_UPGRADED:
 			case MINING_MOTHERLODE_DRAGON_OR:

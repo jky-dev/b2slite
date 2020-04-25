@@ -264,7 +264,7 @@ public class OverlayManager
 		saveOverlay(overlay);
 	}
 
-	private synchronized void rebuildOverlayLayers()
+	synchronized void rebuildOverlayLayers()
 	{
 		for (OverlayLayer l : OverlayLayer.values())
 		{

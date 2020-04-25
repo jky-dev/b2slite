@@ -42,6 +42,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.ObjectID;
+import net.runelite.api.Player;
 import net.runelite.api.SpriteID;
 import net.runelite.api.WallObject;
 import net.runelite.api.events.GameObjectChanged;
@@ -344,6 +345,7 @@ public class BarrowsPlugin extends Plugin
 
 	private boolean isInCrypt()
 	{
-		return client.getLocalPlayer().getWorldLocation().getRegionID() == CRYPT_REGION_ID;
+		Player localPlayer = client.getLocalPlayer();
+		return localPlayer != null && localPlayer.getWorldLocation().getRegionID() == CRYPT_REGION_ID;
 	}
 }
