@@ -115,6 +115,7 @@ public final class AnimationID
 	public static final int FISHING_PEARL_ROD = 8188;
 	public static final int FISHING_PEARL_FLY_ROD = 8189;
 	public static final int FISHING_PEARL_BARBARIAN_ROD = 8190;
+	public static final int FISHING_PEARL_OILY_ROD = 6932;
 	public static final int MINING_BRONZE_PICKAXE = 625;
 	public static final int MINING_IRON_PICKAXE = 626;
 	public static final int MINING_STEEL_PICKAXE = 627;
@@ -152,6 +153,7 @@ public final class AnimationID
 	public static final int MAGIC_ENCHANTING_AMULET_1 = 719; // sapphire, opal, diamond
 	public static final int MAGIC_ENCHANTING_AMULET_2 = 720; // emerald, jade, dragonstone
 	public static final int MAGIC_ENCHANTING_AMULET_3 = 721; // ruby, topaz, onyx, zenyte
+	public static final int MAGIC_ENCHANTING_BOLTS = 4462;
 	public static final int BURYING_BONES = 827;
 	public static final int USING_GILDED_ALTAR = 3705;
 	public static final int LOOKING_INTO = 832;

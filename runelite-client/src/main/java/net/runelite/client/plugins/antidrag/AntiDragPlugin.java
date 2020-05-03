@@ -28,7 +28,6 @@ import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
 import javax.inject.Inject;
 import net.runelite.api.Client;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.api.GameState;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.FocusChanged;
@@ -71,6 +70,7 @@ public class AntiDragPlugin extends Plugin implements KeyListener
 	private KeyManager keyManager;
 
 	private boolean inPvp;
+	private boolean held;
 
 	@Provides
 	AntiDragConfig getConfig(ConfigManager configManager)
@@ -94,10 +94,6 @@ public class AntiDragPlugin extends Plugin implements KeyListener
 		}
 
 		keyManager.registerKeyListener(this);
-		if (config.inverseDrag())
-		{
-			client.setInventoryDragDelay(config.dragDelay());
-		}
 	}
 
 	@Override
@@ -116,37 +112,59 @@ public class AntiDragPlugin extends Plugin implements KeyListener
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		if (e.getKeyCode() == KeyEvent.VK_SHIFT)
+		if (e.getKeyCode() == KeyEvent.VK_SHIFT && config.onShiftOnly())
 		{
-			if (!config.inverseDrag())
-			{
-				client.setInventoryDragDelay(config.dragDelay());
-			}
-			else
-			{
-				final int delay = config.dragDelay();
-				client.setInventoryDragDelay(delay);
-				setBankDragDelay(delay);
-			}
+			setDragDelay();
+			held = true;
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
-		if (e.getKeyCode() == KeyEvent.VK_SHIFT)
+		if (e.getKeyCode() == KeyEvent.VK_SHIFT && config.onShiftOnly())
 		{
-			if (!config.inverseDrag())
+			resetDragDelay();
+			held = false;
+		}
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		if (event.getGroup().equals(CONFIG_GROUP))
+		{
+			if (config.onShiftOnly() || inPvp)
 			{
-				client.setInventoryDragDelay(DEFAULT_DELAY);
-				// In this case, 0 is the default for bank item widgets.
-				setBankDragDelay(DEFAULT_DELAY);			}
+				held = false;
+				clientThread.invoke(this::resetDragDelay);
+			}
 			else
 			{
-				client.setInventoryDragDelay(config.dragDelay());
+				clientThread.invoke(this::setDragDelay);
 			}
-
 		}
+	}
+
+	@Subscribe
+	public void onVarbitChanged(VarbitChanged varbitChanged)
+	{
+		boolean currentStatus = client.getVar(Varbits.PVP_SPEC_ORB) == 1;
+
+		if (currentStatus != inPvp)
+		{
+			inPvp = currentStatus;
+
+			if (!inPvp && !config.onShiftOnly())
+			{
+				setDragDelay();
+			}
+			else
+			{
+				resetDragDelay();
+			}
+		}
+
 	}
 
 	@Subscribe
@@ -154,28 +172,21 @@ public class AntiDragPlugin extends Plugin implements KeyListener
 	{
 		if (!focusChanged.isFocused())
 		{
-			if (!config.inverseDrag())
-			{
-				client.setInventoryDragDelay(DEFAULT_DELAY);
-			}
-			else
-			{
-				client.setInventoryDragDelay(config.dragDelay());
-			}
+			held = false;
+			clientThread.invoke(this::resetDragDelay);
+		}
+		else if (!inPvp && !config.onShiftOnly())
+		{
+			clientThread.invoke(this::setDragDelay);
 		}
 	}
 
 	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
+	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
-		if (config.inverseDrag())
+		if (widgetLoaded.getGroupId() == WidgetID.BANK_GROUP_ID && (!config.onShiftOnly() || held))
 		{
-			client.setInventoryDragDelay(config.dragDelay());
-		}
-		else
-		{
-			client.setInventoryDragDelay(DEFAULT_DELAY);
-			setBankDragDelay(DEFAULT_DELAY);
+			setBankDragDelay(config.dragDelay());
 		}
 	}
 

@@ -385,6 +385,7 @@ public class ClientUI
 				}
 			};
 
+			sidebarListener.setEnabledOnLogin(true);
 			keyManager.registerKeyListener(sidebarListener);
 
 			// Add mouse listener
