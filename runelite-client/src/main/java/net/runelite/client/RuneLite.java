@@ -274,7 +274,7 @@ public class RuneLite
 		}
 		catch (Exception e)
 		{
-			log.warn("Failure during startup", e);
+			log.error("Failure during startup", e);
 			SwingUtilities.invokeLater(() ->
 				new FatalErrorDialog("b2sLite has encountered an unexpected error during startup.")
 					.open());
