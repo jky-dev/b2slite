@@ -698,4 +698,14 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		keyName = "swapGauntlet",
+		name = "Corrupted Gauntlet",
+		description = "Swap Enter with Enter-corrupted when entering The Gauntlet"
+	)
+	default boolean swapGauntlet()
+	{
+		return false;
+	}
 }

@@ -737,7 +737,7 @@ public class TheatrePlugin extends Plugin {
 			{
 				bloatTimer++;
 				Bloat_downCount = 0;
-				if (Bloat_NPC.getHealth() == 0)
+				if (Bloat_NPC.isDead())
 				{
 					Bloat_State = 2;
 				}
