@@ -160,11 +160,11 @@ public interface RuneLiteConfig extends Config
 
 	@ConfigItem(
 		keyName = "requestFocusSetting",
-		name = "Request focus or bring to top",
-		description = "If enabled, request focus will focus, otherwise will just bring client to top",
+		name = "Bring to top when requesting focus",
+		description = "If enabled, when the client requests focus, only bring the client to the top",
 		position = 21
 	)
-	default boolean requestFocusOn()
+	default boolean bringToTopOnRequestFocus()
 	{
 		return false;
 	}

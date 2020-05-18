@@ -665,7 +665,7 @@ public class ClientUI
 	 */
 	public void requestFocus()
 	{
-		if (!config.requestFocusOn()) {
+		if (config.bringToTopOnRequestFocus()) {
 			bringToTop();
 			return;
 		}
@@ -689,7 +689,7 @@ public class ClientUI
 	 */
 	public void forceFocus()
 	{
-		if (!config.requestFocusOn()) {
+		if (config.bringToTopOnRequestFocus()) {
 			bringToTop();
 			return;
 		}
