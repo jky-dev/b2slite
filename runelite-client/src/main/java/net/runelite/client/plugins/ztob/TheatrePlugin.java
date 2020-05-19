@@ -336,6 +336,7 @@ public class TheatrePlugin extends Plugin {
 				case ItemID.CRYSTAL_HALBERD_810_I:
 				case ItemID.CRYSTAL_HALBERD_910:
 				case ItemID.CRYSTAL_HALBERD_910_I:
+				case ItemID.SWIFT_BLADE:
 					attackType = 1;
 					break;
 				case ItemID.TOXIC_BLOWPIPE:
