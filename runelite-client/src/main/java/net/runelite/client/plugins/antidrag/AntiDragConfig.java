@@ -46,7 +46,7 @@ public interface AntiDragConfig extends Config
 	@ConfigItem(
 		keyName = "onShiftOnly",
 		name = "On Shift Only",
-		description = "Configures whether to only adjust the delay while holding shift. Required for anti drag in PvP scenarios.",
+		description = "Configures whether to only adjust the delay while holding shift in non-PvP scenarios. Shift is required in PvP regardless of this config setting",
 		position = 2
 	)
 	default boolean onShiftOnly()
@@ -61,6 +61,17 @@ public interface AntiDragConfig extends Config
 		position = 3
 	)
 	default boolean inverseDrag()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "disableOnCtrl",
+		name = "Disable On Control Pressed",
+		description = "Configures whether to ignore the delay while holding control.",
+		position = 3
+	)
+	default boolean disableOnCtrl()
 	{
 		return false;
 	}

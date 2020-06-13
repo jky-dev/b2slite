@@ -47,6 +47,8 @@ public @interface ConfigItem
 
 	boolean secret() default false;
 
+	String section() default "";
+
 	String group() default "";
 
 	String unhide() default "";
