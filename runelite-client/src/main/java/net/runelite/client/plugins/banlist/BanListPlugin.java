@@ -337,6 +337,7 @@ public class BanListPlugin extends Plugin
 			public void onResponse(Call call, Response response) throws IOException
 			{
 				String text = response.body().string();
+				if (text.indexOf("lcp_instance_0") == -1) return;
 				String mytext = text.substring(text.indexOf("lcp_instance_0"), text.indexOf("strong>Evidence Quality Suggestion"));
 				String[] split = mytext.split("href=");
 				for (String x : split)
