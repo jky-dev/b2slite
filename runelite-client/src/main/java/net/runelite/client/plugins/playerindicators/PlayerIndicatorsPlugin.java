@@ -31,30 +31,25 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
-
 import lombok.Value;
-import net.runelite.api.ClanMemberRank;
-import static net.runelite.api.ClanMemberRank.UNRANKED;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Client;
 import net.runelite.api.FriendsChatRank;
 import static net.runelite.api.FriendsChatRank.UNRANKED;
-import net.runelite.api.Client;
 import static net.runelite.api.MenuAction.*;
-
-import net.runelite.client.events.ConfigChanged;
-import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.Player;
+import net.runelite.api.SkullIcon;
+import net.runelite.api.SpriteID;
+import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.PlayerDespawned;
 import net.runelite.api.events.PlayerSpawned;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.Player;
-import net.runelite.api.events.ClientTick;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.game.ClanManager;
-import net.runelite.client.game.SpriteManager;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.FriendChatManager;
+import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -308,7 +303,7 @@ public class PlayerIndicatorsPlugin extends Plugin
 		{
 			if (player == null) continue;
 
-			if (player.isFriend() || player.isClanMember() ||
+			if (player.isFriend() || player.isFriendsChatMember() ||
 				player == client.getLocalPlayer())
 			{
 				if (player == client.getLocalPlayer() && config.includeSelf() == PlayerIncludeSelf.NO) continue;

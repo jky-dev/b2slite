@@ -93,7 +93,7 @@ public class ClientLoader implements Supplier<Applet>
 
 	private static final File RUNELITE_DIR = new File(System.getProperty("user.home"), ".runelite");
 	private static final File PATCHES_DIR = new File(RUNELITE_DIR, "patches");
-	private static final File CLASS_OUTPUT_DIR = new File("C:/Users/Admin/Desktop/", "RL");
+	private static final File CLASS_OUTPUT_DIR = new File("C:/Users/Jacky/Desktop/", "RL");
 
 	private static final Map<String, File> patchMap = new HashMap<>();
 
