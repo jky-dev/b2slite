@@ -29,7 +29,7 @@
 	<parent>
 		<groupId>net.runelite</groupId>
 		<artifactId>runelite-parent</artifactId>
-		<version>1.6.20-SNAPSHOT</version>
+		<version>1.6.21-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>client</artifactId>
@@ -204,7 +204,6 @@
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
 			<version>3.0.2</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
