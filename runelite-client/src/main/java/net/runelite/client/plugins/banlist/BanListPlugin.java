@@ -33,10 +33,10 @@ import java.util.Arrays;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
-import net.runelite.api.ClanMember;
+import net.runelite.api.FriendsChatMember;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.events.ClanMemberJoined;
+import net.runelite.api.events.FriendsChatMemberJoined;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.api.events.WidgetHiddenChanged;
 import net.runelite.api.events.WidgetLoaded;
@@ -135,7 +135,7 @@ public class BanListPlugin extends Plugin
 		if (client.getGameState() != GameState.LOGGED_IN
 				|| client.getWidget(WidgetInfo.LOGIN_CLICK_TO_PLAY_SCREEN) != null
 				|| client.getViewportWidget() == null
-				|| client.getWidget(WidgetInfo.CLAN_CHAT) == null
+				|| client.getWidget(WidgetInfo.FRIENDS_CHAT) == null
 				|| !config.highlightInClan())
 		{
 			return;
@@ -143,7 +143,7 @@ public class BanListPlugin extends Plugin
 
 		clientThread.invokeLater(() ->
 		{
-			if (!client.getWidget(WidgetInfo.CLAN_CHAT).isHidden())
+			if (!client.getWidget(WidgetInfo.FRIENDS_CHAT).isHidden())
 			{
 				highlightRedInCC();
 			}
@@ -152,7 +152,7 @@ public class BanListPlugin extends Plugin
 
 
 	@Subscribe
-	public void onClanMemberJoined(ClanMemberJoined event)
+	public void onFriendsChatMemberJoined(FriendsChatMemberJoined event)
 	{
 //		ClanMember member = event.getMember();
 //		ListType listType = checkBanList(Text.standardize(member.getUsername()));
@@ -386,7 +386,7 @@ public class BanListPlugin extends Plugin
 	{
 		clientThread.invokeLater(() ->
 		{
-			Widget widget = client.getWidget(WidgetInfo.CLAN_CHAT_LIST);
+			Widget widget = client.getWidget(WidgetInfo.FRIENDS_CHAT_LIST);
 			for (Widget widgetChild : widget.getDynamicChildren())
 			{
 				ListType listType = checkBanList(widgetChild.getText());
