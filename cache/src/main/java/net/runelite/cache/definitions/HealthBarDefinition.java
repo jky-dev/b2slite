@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, TheStonedTurtle <https://github.com/TheStonedTurtle>
+ * Copyright (c) 2020, Trevor <https://github.com/Trevor159>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,24 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.itemskeptondeath;
+package net.runelite.cache.definitions;
 
-import com.google.common.collect.ImmutableSet;
-import java.util.Set;
-import net.runelite.api.ItemID;
+import lombok.Data;
 
-final class LostIfNotProtected
+@Data
+public class HealthBarDefinition
 {
-	private static final Set<Integer> ITEMS = ImmutableSet.of(
-		ItemID.AMULET_OF_THE_DAMNED,
-		ItemID.RING_OF_CHAROS, ItemID.RING_OF_CHAROSA,
-		ItemID.LUNAR_STAFF,
-		ItemID.SHADOW_SWORD,
-		ItemID.KERIS, ItemID.KERISP, ItemID.KERISP_10583, ItemID.KERISP_10584
-	);
-
-	public static boolean isLostIfNotProtected(int id)
-	{
-		return ITEMS.contains(id);
-	}
+	public int id;
+	public int field3276;
+	public int field3277;
+	public int field3278;
+	public int field3283;
+	public int field3272;
+	public int field3275;
+	public int healthBarFrontSpriteId;
+	public int healthBarBackSpriteId;
+	public int healthScale;
+	public int healthBarPadding;
 }
