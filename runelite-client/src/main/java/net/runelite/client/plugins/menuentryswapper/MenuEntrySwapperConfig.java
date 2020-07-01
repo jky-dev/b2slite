@@ -64,6 +64,14 @@ public interface MenuEntrySwapperConfig extends Config
 	)
 	String uiSection = "ui";
 
+	@ConfigSection(
+		name = "b2sLite Swaps",
+		description = "All custom b2sLite swaps",
+		position = 4,
+		closedByDefault = true
+	)
+	String b2sSection = "b2s";
+
 	@ConfigItem(
 		position = -2,
 		keyName = "shiftClickCustomization",
@@ -288,7 +296,8 @@ public interface MenuEntrySwapperConfig extends Config
 	@ConfigItem(
 		keyName = "swapPickpocket",
 		name = "Pickpocket",
-		description = "Swap Talk-to with Pickpocket"
+		description = "Swap Talk-to with Pickpocket",
+		section = b2sSection
 	)
 	default boolean swapPickpocket()
 	{
@@ -375,7 +384,8 @@ public interface MenuEntrySwapperConfig extends Config
 	@ConfigItem(
 		keyName = "TeleFromEquipped",
 		name = "Teleport from Equipped Screen",
-		description = "Allows you to teleport from equipped items (used with Teleport Item)"
+		description = "Allows you to teleport from equipped items (used with Teleport Item)",
+		section = b2sSection
 	)
 	default boolean swapTeleportFromEquipped()
 	{
@@ -430,7 +440,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapDuelRing",
 		name = "Swap Duel Arena",
 		description = "One click duel arena",
-		position = 25
+		section = b2sSection
 	)
 	default DuelRingMode swapDA()
 	{
@@ -441,7 +451,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapMaxCape",
 		name = "Max Cape",
 		description = "Swap tele option on max cape",
-		position = 26
+		section = b2sSection
 	)
 	default MaxCapeMode swapMaxCape()
 	{
@@ -452,7 +462,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapDesert",
 		name = "Desert Amulet",
 		description = "Swap tele option on desert amulet",
-		position = 27
+		section = b2sSection
 	)
 	default DesertAmuletMode swapDesert()
 	{
@@ -463,7 +473,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapArdy",
 		name = "Ardourgne Cloak",
 		description = "Swap tele option on Ardougne Cloak",
-		position = 28
+		section = b2sSection
 	)
 	default ArdyCloakMode swapArdy()
 	{
@@ -474,7 +484,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapMory",
 		name = "Morytania Legs",
 		description = "Swap tele option on legs",
-		position = 29
+		section = b2sSection
 	)
 	default MoryLegsMode swapMoryLegs()
 	{
@@ -485,7 +495,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapGloves",
 		name = "Karamja Gloves",
 		description = "Swap tele option on gloves",
-		position = 30
+		section = b2sSection
 	)
 	default KaramGloveMode swapKaramGloves()
 	{
@@ -496,7 +506,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapGlory",
 		name = "Amulet of Glory",
 		description = "Swap tele option on glory",
-		position = 31
+		section = b2sSection
 	)
 	default GloryMode swapGlory()
 	{
@@ -507,7 +517,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapXerics",
 		name = "Xerics Talisman",
 		description = "Swap tele option on xeric's talisman",
-		position = 32
+		section = b2sSection
 	)
 	default XericsTalismanMode swapXerics()
 	{
@@ -518,7 +528,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapGames",
 		name = "Games Necklace",
 		description = "Swap tele option on Games Necklace",
-		position = 33
+		section = b2sSection
 	)
 	default GamesNecklaceMode swapGames()
 	{
@@ -529,7 +539,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapBlessing",
 		name = "Rada's Blessing",
 		description = "Swap tele option on Rada's Blessing",
-		position = 34
+		section = b2sSection
 	)
 	default BlessingMode swapBlessing()
 	{
@@ -540,7 +550,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapDigsite",
 		name = "Digsite Pendant",
 		description = "Swap tele option on Digsite Pendant",
-		position = 35
+		section = b2sSection
 	)
 	default DigsiteMode swapDigsite()
 	{
@@ -551,7 +561,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapFishingCape",
 		name = "Fishing Cape",
 		description = "Swap tele option on Fishing Cape",
-		position = 36
+		section = b2sSection
 	)
 	default FishingCapeMode swapFishingCape()
 	{
@@ -562,7 +572,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapMemoirs",
 		name = "Kharedst's Memoirs",
 		description = "Swap tele option on Kharedst's Memoirs",
-		position = 37
+		section = b2sSection
 	)
 	default MemoirsMode swapMemoirs()
 	{
@@ -573,7 +583,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "customSwap",
 		name = "Custom menu swap",
 		description = "Swap opt1|target1:opt2|target2, separated by commas",
-		position = 38
+		section = b2sSection
 	)
 	default String customSwap() { return ""; }
 
@@ -581,7 +591,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "valueSwap",
 		name = "Store Value Swap",
 		description = "Enable swapping value with buy/sell, items separated by commas",
-		position = 39
+		section = b2sSection
 	)
 	default boolean enableValueSwap() { return false; }
 
@@ -589,7 +599,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "buy1",
 		name = "Buy/Sell 1",
 		description = "Swap Value with Buy 1",
-		position = 40
+		section = b2sSection
 	)
 	default String buy1() { return ""; }
 
@@ -597,7 +607,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "buy5",
 		name = "Buy/Sell 5",
 		description = "Swap Value with Buy 5",
-		position = 41
+		section = b2sSection
 	)
 	default String buy5() { return ""; }
 
@@ -605,7 +615,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "buy10",
 		name = "Buy/Sell 10",
 		description = "Swap Value with Buy 10",
-		position = 42
+		section = b2sSection
 	)
 	default String buy10() { return ""; }
 
@@ -613,7 +623,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "buy50",
 		name = "Buy/Sell 50",
 		description = "Swap Value with Buy 50",
-		position = 43
+		section = b2sSection
 	)
 	default String buy50() { return ""; }
 
@@ -621,7 +631,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "bankingSwap",
 		name = "Bank Swap",
 		description = "Enable swapping Withdraw/Deposit in banks, items separated by commas",
-		position = 44
+		section = b2sSection
 	)
 	default boolean enableBankingSwap() { return false; }
 
@@ -629,7 +639,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "withdraw5",
 		name = "Withdraw/Deposit 5",
 		description = "Swap withdraw-1 with withdraw-5 / deposit-1 with deposit-5",
-		position = 45
+		section = b2sSection
 	)
 	default String withdraw5() { return ""; }
 
@@ -637,7 +647,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "withdraw10",
 		name = "Withdraw/Deposit 10",
 		description = "Swap withdraw-1 with withdraw-10 / deposit-1 with deposit-10",
-		position = 46
+		section = b2sSection
 	)
 	default String withdraw10() { return ""; }
 
@@ -645,7 +655,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "xAmount",
 		name = "X Amount",
 		description = "Select X amount for swapping",
-		position = 47
+		section = b2sSection
 	)
 	default int xAmount() { return 1; }
 
@@ -653,7 +663,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "withdrawX",
 		name = "Withdraw/Deposit X",
 		description = "Swap Withdraw-1 with Withdraw-X where X is the amount set above",
-		position = 48
+		section = b2sSection
 	)
 	default String withdrawX() { return ""; }
 
@@ -661,7 +671,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "withdrawAll",
 		name = "Withdraw/Deposit All",
 		description = "Swap Withdraw-1 with Withdraw-All",
-		position = 49
+		section = b2sSection
 	)
 	default String withdrawAll() { return ""; }
 
@@ -669,7 +679,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "drop",
 		name = "Drop",
 		description = "Swap use with drop for left click dropping",
-		position = 50
+		section = b2sSection
 	)
 	default String dropItems() { return ""; }
 

@@ -187,6 +187,19 @@ public class MenuEntrySwapperPlugin extends Plugin
 			enableCustomization();
 		}
 
+		buy1.addAll(Text.fromCSV(config.buy1().toLowerCase()));
+		buy5.addAll(Text.fromCSV(config.buy5().toLowerCase()));
+		buy10.addAll(Text.fromCSV(config.buy10().toLowerCase()));
+		buy50.addAll(Text.fromCSV(config.buy50().toLowerCase()));
+		withdraw5.addAll(Text.fromCSV(config.withdraw5().toLowerCase()));
+		withdraw10.addAll(Text.fromCSV(config.withdraw10().toLowerCase()));
+		withdrawX.addAll(Text.fromCSV(config.withdrawX().toLowerCase()));
+		withdrawAll.addAll(Text.fromCSV(config.withdrawAll().toLowerCase()));
+		customSwap.addAll(Text.fromCSV(config.customSwap().toLowerCase()));
+		dropItems.addAll(Text.fromCSV(config.dropItems().toLowerCase()));
+		withdrawAmount = "withdraw-" + Integer.toString(config.xAmount());
+		depositAmount = "deposit-" + Integer.toString(config.xAmount());
+
 		setupSwaps();
 	}
 
@@ -194,6 +207,16 @@ public class MenuEntrySwapperPlugin extends Plugin
 	public void shutDown()
 	{
 		disableCustomization();
+
+		buy1.clear();
+		buy5.clear();
+		buy10.clear();
+		buy50.clear();
+		withdraw5.clear();
+		withdraw10.clear();
+		withdrawX.clear();
+		withdrawAll.clear();
+		dropItems.clear();
 
 		swaps.clear();
 	}
@@ -376,6 +399,99 @@ public class MenuEntrySwapperPlugin extends Plugin
 		swapTeleport("camelot teleport", "seers'");
 		swapTeleport("watchtower teleport", "yanille");
 		swapTeleport("teleport to house", "outside");
+
+		// b2sLite swaps
+		swapContains("remove", alwaysTrue(), "crafting guild", () -> config.swapMaxCape() == MaxCapeMode.CRAFTING && !isInCraftingGuild());
+		swapContains("remove", alwaysTrue(), "tele to poh", () -> (config.swapMaxCape() == MaxCapeMode.CRAFTING && isInCraftingGuild()) ||
+			(config.swapMaxCape() == MaxCapeMode.TELE_HOUSE));
+
+		swapContains("talk-to", alwaysTrue(), "pickpocket", () -> config.swapPickpocket());
+		swapContains("wear", alwaysTrue(), "farm teleport", () -> config.swapArdy() == ArdyCloakMode.FARM && config.swapTeleportItem());
+		swapContains("wear", alwaysTrue(), "monastery teleport", () -> config.swapArdy() == ArdyCloakMode.MONASTERY && config.swapTeleportItem());
+		swapContains("wear", alwaysTrue(), "ecto teleport", () -> config.swapMoryLegs() == MoryLegsMode.ECTO && config.swapTeleportItem());
+		swapContains("wear", alwaysTrue(), "burgh teleport", () -> config.swapMoryLegs() == MoryLegsMode.BURGH && config.swapTeleportItem());
+		swapContains("remove", alwaysTrue(), "ardougne farm", () -> config.swapArdy() == ArdyCloakMode.FARM && config.swapTeleportFromEquipped());
+		swapContains("remove", alwaysTrue(), "kandarin monastery", () -> config.swapArdy() == ArdyCloakMode.MONASTERY && config.swapTeleportFromEquipped());
+		swapContains("remove", alwaysTrue(), "burgh de rott", () -> config.swapMoryLegs() == MoryLegsMode.ECTO && config.swapTeleportFromEquipped());
+		swapContains("remove", alwaysTrue(), "ectofunctus pit", () -> config.swapMoryLegs() == MoryLegsMode.BURGH && config.swapTeleportFromEquipped());
+
+		for (DuelRingMode mode : DuelRingMode.values())
+		{
+			swapContains("remove", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapDA() == mode && config.swapTeleportFromEquipped());
+		}
+
+		for (GloryMode mode : GloryMode.values())
+		{
+			swapContains("remove", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapGlory() == mode && config.swapTeleportFromEquipped());
+		}
+
+		for (XericsTalismanMode mode : XericsTalismanMode.values())
+		{
+			swapContains("remove", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapXerics() == mode && config.swapTeleportFromEquipped());
+		}
+
+		for (GamesNecklaceMode mode : GamesNecklaceMode.values())
+		{
+			swapContains("remove", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapGames() == mode && config.swapTeleportFromEquipped());
+		}
+
+		for (DigsiteMode mode : DigsiteMode.values())
+		{
+			swapContains("remove", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapDigsite() == mode && config.swapTeleportFromEquipped());
+		}
+
+		for (MemoirsMode mode : MemoirsMode.values())
+		{
+			swapContains("remove", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapMemoirs() == mode && config.swapTeleportFromEquipped());
+		}
+
+		for (DesertAmuletMode mode : DesertAmuletMode.values())
+		{
+			swapContains("remove", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapDesert() == mode && config.swapTeleportFromEquipped());
+			swapContains("wear", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapDesert() == mode && config.swapTeleportItem());
+		}
+
+		for (KaramGloveMode mode : KaramGloveMode.values())
+		{
+			swapContains("remove", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapKaramGloves() == mode && config.swapTeleportFromEquipped());
+			swapContains("wear", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapKaramGloves() == mode && config.swapTeleportItem());
+		}
+
+		for (FishingCapeMode mode : FishingCapeMode.values())
+		{
+			swapContains("remove", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapFishingCape() == mode && config.swapTeleportFromEquipped());
+			swapContains("wear", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapFishingCape() == mode && config.swapTeleportItem());
+		}
+
+		for (BlessingMode mode : BlessingMode.values())
+		{
+			swapContains("remove", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapBlessing() == mode && config.swapTeleportFromEquipped());
+			swapContains("equip", alwaysTrue(), mode.toString().toLowerCase(), () -> config.swapBlessing() == mode && config.swapTeleportItem());
+		}
+
+		swapContains("wear", alwaysTrue(), "rub", () -> config.swapTeleportItem());
+		swapContains("wear", alwaysTrue(), "lava maze", () -> config.swapTeleportItem());
+
+		swapContains("remove", alwaysTrue(), "rub", () -> config.swapTeleportFromEquipped());
+		swapContains("remove", alwaysTrue(), "lava maze", () -> config.swapTeleportFromEquipped());
+
+		swapContains("wield", alwaysTrue(), "teleport", () -> config.swapTeleportItem());
+
+		if (!config.customSwap().isEmpty())
+		{
+			String[] swaps = config.customSwap().split(",");
+
+			for (String string : swaps)
+			{
+				String[] split = string.trim().split(":");
+				swapContains(split[0].split("\\|")[0].toLowerCase(), alwaysTrue(), split[1].split("\\|")[0].toLowerCase(), () -> true);
+			}
+		}
+	}
+
+	private boolean isInCraftingGuild()
+	{
+		return client.getLocalPlayer().getWorldLocation().getRegionID() == 11571;
 	}
 
 	private void swap(String option, String swappedOption, Supplier<Boolean> enabled)
@@ -634,40 +750,72 @@ public class MenuEntrySwapperPlugin extends Plugin
 			bankModeSwap(actionId, opId);
 		}
 
-		if (config.enableBankingSwap() && (menuEntryAdded.getOption().startsWith("Withdraw-1") ||
-				menuEntryAdded.getOption().startsWith("Deposit-1") ||
-				menuEntryAdded.getOption().startsWith("Store") ||
-				menuEntryAdded.getOption().startsWith("Donate")))
+		// b2sLite custom withdraw
+		if (config.enableBankingSwap() && menuEntryAdded.getType() == MenuAction.CC_OP.getId() &&
+			menuEntryAdded.getIdentifier() == 1 &&
+			menuEntryAdded.getOption().startsWith("Withdraw-"))
 		{
-			MenuEntry[] menuEntries = client.getMenuEntries();
 			String target = menuEntryAdded.getTarget().substring(menuEntryAdded.getTarget().indexOf(">") + 1, menuEntryAdded.getTarget().lastIndexOf("<")).toLowerCase();
+			ShiftWithdrawMode shiftWithdrawMode = null;
 
 			if (withdraw5.contains(target))
 			{
-				highPrioritySwap(menuEntries, "withdraw-5");
-				highPrioritySwap(menuEntries, "deposit-5");
-				highPrioritySwap(menuEntries, "store-5");
-				highPrioritySwap(menuEntries, "donate-5");
+				shiftWithdrawMode = ShiftWithdrawMode.WITHDRAW_5;
 			}
 			else if (withdraw10.contains(target))
 			{
-				highPrioritySwap(menuEntries, "withdraw-10");
-				highPrioritySwap(menuEntries, "deposit-10");
-				highPrioritySwap(menuEntries, "store-10");
-				highPrioritySwap(menuEntries, "donate-10");
+				shiftWithdrawMode = ShiftWithdrawMode.WITHDRAW_10;
 			}
 			else if (withdrawX.contains(target))
 			{
-				highPrioritySwap(menuEntries, withdrawAmount);
-				highPrioritySwap(menuEntries, depositAmount);
+				shiftWithdrawMode = ShiftWithdrawMode.WITHDRAW_X;
 			}
 			else if (withdrawAll.contains(target))
 			{
-				highPrioritySwap(menuEntries, "withdraw-all");
-				highPrioritySwap(menuEntries, "deposit-all");
-				highPrioritySwap(menuEntries, "store-all");
-				highPrioritySwap(menuEntries, "donate-all");
+				shiftWithdrawMode = ShiftWithdrawMode.WITHDRAW_ALL;
 			}
+
+			if (shiftWithdrawMode == null)
+			{
+				return;
+			}
+
+			final int actionId = shiftWithdrawMode.getMenuAction().getId();
+			final int opId = shiftWithdrawMode.getIdentifier();
+			bankModeSwap(actionId, opId);
+		}
+
+		if (config.enableBankingSwap() && menuEntryAdded.getType() == MenuAction.CC_OP.getId() && (menuEntryAdded.getIdentifier() == 2 || menuEntryAdded.getIdentifier() == 1)
+			&& menuEntryAdded.getOption().startsWith("Deposit-"))
+		{
+			String target = menuEntryAdded.getTarget().substring(menuEntryAdded.getTarget().indexOf(">") + 1, menuEntryAdded.getTarget().lastIndexOf("<")).toLowerCase();
+			ShiftDepositMode shiftDepositMode = null;
+
+			if (withdraw5.contains(target))
+			{
+				shiftDepositMode = ShiftDepositMode.DEPOSIT_5;
+			}
+			else if (withdraw10.contains(target))
+			{
+				shiftDepositMode = ShiftDepositMode.DEPOSIT_10;
+			}
+			else if (withdrawX.contains(target))
+			{
+				shiftDepositMode = ShiftDepositMode.DEPOSIT_X;
+			}
+			else if (withdrawAll.contains(target))
+			{
+				shiftDepositMode = ShiftDepositMode.DEPOSIT_ALL;
+			}
+
+			if (shiftDepositMode == null)
+			{
+				return;
+			}
+
+			final int opId = WidgetInfo.TO_GROUP(menuEntryAdded.getActionParam1()) == WidgetID.DEPOSIT_BOX_GROUP_ID ? shiftDepositMode.getIdentifierDepositBox() : shiftDepositMode.getIdentifier();
+			final int actionId = opId >= 6 ? MenuAction.CC_OP_LOW_PRIORITY.getId() : MenuAction.CC_OP.getId();
+			bankModeSwap(actionId, opId);
 		}
 	}
 
@@ -682,26 +830,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			if (entry.getType() == entryTypeId && entry.getIdentifier() == entryIdentifier)
 			{
 				// Raise the priority of the op so it doesn't get sorted later
-				entry.setType(MenuAction.CC_OP.getId());
-
-				menuEntries[i] = menuEntries[menuEntries.length - 1];
-				menuEntries[menuEntries.length - 1] = entry;
-
-				client.setMenuEntries(menuEntries);
-				break;
-			}
-		}
-	}
-
-	private void highPrioritySwap(MenuEntry[] menuEntries, String option)
-	{
-		for (int i = menuEntries.length - 1; i >= 0; --i)
-		{
-			MenuEntry entry = menuEntries[i];
-
-			if (entry.getOption().toLowerCase().equals(option))
-			{
-				// we must also raise the priority of the op so it doesn't get sorted later
 				entry.setType(MenuAction.CC_OP.getId());
 
 				menuEntries[i] = menuEntries[menuEntries.length - 1];
