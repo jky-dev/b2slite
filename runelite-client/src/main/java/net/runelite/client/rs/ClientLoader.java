@@ -75,9 +75,9 @@ import net.runelite.client.ui.FatalErrorDialog;
 import net.runelite.client.ui.SplashScreen;
 import net.runelite.client.util.CountingInputStream;
 import net.runelite.client.util.VerificationException;
-import net.runelite.http.api.RuneLiteAPI;
 import net.runelite.http.api.worlds.World;
 import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.compress.utils.IOUtils;
@@ -91,6 +91,8 @@ public class ClientLoader implements Supplier<Applet>
 	private static File VANILLA_CACHE = new File(RuneLite.CACHE_DIR, "vanilla.cache");
 	private static File PATCHED_CACHE = new File(RuneLite.CACHE_DIR, "patched.cache");
 
+	private final OkHttpClient okHttpClient;
+	private final ClientConfigLoader clientConfigLoader;
 	private static final File RUNELITE_DIR = new File(System.getProperty("user.home"), ".runelite");
 	private static final File PATCHES_DIR = new File(RUNELITE_DIR, "patches");
 	private static final File CLASS_OUTPUT_DIR = new File("C:/Users/Jacky/Desktop/", "RL");
@@ -100,13 +102,16 @@ public class ClientLoader implements Supplier<Applet>
 	private boolean disableCustomPatch = false;
 	private String customMessage = "";
 	private ClientUpdateCheckMode updateCheckMode;
-	private Object client = null;
+	private final WorldSupplier worldSupplier;
 
-	private WorldSupplier worldSupplier = new WorldSupplier();
+	private Object client;
 
-	public ClientLoader(ClientUpdateCheckMode updateCheckMode)
+	public ClientLoader(OkHttpClient okHttpClient, ClientUpdateCheckMode updateCheckMode)
 	{
+		this.okHttpClient = okHttpClient;
+		this.clientConfigLoader = new ClientConfigLoader(okHttpClient);
 		this.updateCheckMode = updateCheckMode;
+		this.worldSupplier = new WorldSupplier(okHttpClient);
 	}
 
 	@Override
@@ -204,7 +209,7 @@ public class ClientLoader implements Supplier<Applet>
 		{
 			try
 			{
-				RSConfig config = ClientConfigLoader.fetch(url);
+				RSConfig config = clientConfigLoader.fetch(url);
 
 				if (Strings.isNullOrEmpty(config.getCodeBase()) || Strings.isNullOrEmpty(config.getInitialJar()) || Strings.isNullOrEmpty(config.getInitialClass()))
 				{
@@ -238,7 +243,7 @@ public class ClientLoader implements Supplier<Applet>
 	@Nonnull
 	private RSConfig downloadFallbackConfig() throws IOException
 	{
-		RSConfig backupConfig = ClientConfigLoader.fetch(HttpUrl.parse(RuneLiteProperties.getJavConfigBackup()));
+		RSConfig backupConfig = clientConfigLoader.fetch(HttpUrl.parse(RuneLiteProperties.getJavConfigBackup()));
 
 		if (Strings.isNullOrEmpty(backupConfig.getCodeBase()) || Strings.isNullOrEmpty(backupConfig.getInitialJar()) || Strings.isNullOrEmpty(backupConfig.getInitialClass()))
 		{
@@ -315,7 +320,7 @@ public class ClientLoader implements Supplier<Applet>
 					.url(url)
 					.build();
 
-				try (Response response = RuneLiteAPI.CLIENT.newCall(request).execute())
+				try (Response response = okHttpClient.newCall(request).execute())
 				{
 					// Its important to not close the response manually - this should be the only close or
 					// try-with-resources on this stream or it's children

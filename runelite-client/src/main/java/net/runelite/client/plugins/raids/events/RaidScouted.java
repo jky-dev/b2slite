@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, TheLonelyDev <https://github.com/TheLonelyDev>
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2020, Trevor <https://github.com/Trevor159>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,45 +22,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.groundmarkers;
+package net.runelite.client.plugins.raids.events;
 
-import java.awt.event.KeyEvent;
-import javax.inject.Inject;
-import net.runelite.client.input.KeyListener;
+import lombok.Value;
+import net.runelite.client.plugins.raids.Raid;
 
-public class GroundMarkerInputListener implements KeyListener
+/**
+ * An event that fires when the player scouts a raid
+ *
+ * This will fire every time the raid plugin successfully scouts a raid but mostly fires at LOGGED_IN gamestate changes
+ * This event only fires in scoutable raids (not challenge mode)
+ * The raid object is not guaranteed to change in between events
+ */
+@Value
+public class RaidScouted
 {
-	private static final int HOTKEY = KeyEvent.VK_SHIFT;
-
-	private final GroundMarkerPlugin plugin;
-
-	@Inject
-	private GroundMarkerInputListener(GroundMarkerPlugin plugin)
-	{
-		this.plugin = plugin;
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e)
-	{
-
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e)
-	{
-		if (e.getKeyCode() == HOTKEY)
-		{
-			plugin.setHotKeyPressed(true);
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e)
-	{
-		if (e.getKeyCode() == HOTKEY)
-		{
-			plugin.setHotKeyPressed(false);
-		}
-	}
+	private Raid raid;
+	private boolean firstScout;
 }

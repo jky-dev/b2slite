@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Matthew Steglinski <https://github.com/sainttx>
+ * Copyright (c) 2020, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,16 +22,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.events;
+package net.runelite.api;
 
-import lombok.Value;
-import net.runelite.api.Player;
-
-/**
- * An event fired when a player dies.
- */
-@Value
-public class PlayerDeath
+public interface VarbitComposition
 {
-	private final Player player;
+	/**
+	 * The varp index for this varbit
+	 *
+	 * @return
+	 */
+	int getIndex();
+
+	/**
+	 * The least significant bit of the varbit
+	 *
+	 * @return
+	 */
+	int getLeastSignificantBit();
+
+	/**
+	 * The most significant bit of the varbit (inclusive)
+	 *
+	 * @return
+	 */
+	int getMostSignificantBit();
 }

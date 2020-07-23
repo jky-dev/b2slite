@@ -512,7 +512,7 @@ public class TabInterface
 			return;
 		}
 
-		if (activeTab != null && client.getVar(VarClientInt.INPUT_TYPE) == InputType.RUNELITE.getType())
+		if (activeTab != null && client.getVar(VarClientInt.INPUT_TYPE) == InputType.RUNELITE_CHATBOX_PANEL.getType())
 		{
 			// don't reset active tab if we are editing tags
 			updateBounds();
@@ -801,6 +801,14 @@ public class TabInterface
 
 		Widget draggedOn = client.getDraggedOnWidget();
 		Widget draggedWidget = client.getDraggedWidget();
+
+		// Returning early or nulling the drag release listener has no effect. Hence, we need to
+		// null the draggedOnWidget instead.
+		if (draggedWidget.getId() == WidgetInfo.BANK_ITEM_CONTAINER.getId() && isActive()
+			&& config.preventTagTabDrags())
+		{
+			client.setDraggedOnWidget(null);
+		}
 
 		if (!isDragging || draggedOn == null)
 		{
@@ -1113,7 +1121,7 @@ public class TabInterface
 			incinerator.setOriginalWidth(INCINERATOR_WIDTH);
 			incinerator.setOriginalY(INCINERATOR_HEIGHT);
 
-			Widget child = incinerator.getDynamicChildren()[0];
+			Widget child = incinerator.getChild(0);
 			child.setOriginalHeight(INCINERATOR_HEIGHT);
 			child.setOriginalWidth(INCINERATOR_WIDTH);
 			child.setWidthMode(WidgetSizeMode.ABSOLUTE);

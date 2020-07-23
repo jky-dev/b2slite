@@ -43,15 +43,14 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.inject.Inject;
 import lombok.Getter;
-import lombok.Setter;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemComposition;
+import net.runelite.api.KeyCode;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.events.ClientTick;
-import net.runelite.api.events.FocusChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.MenuOptionClicked;
@@ -88,6 +87,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 	private static final String CONFIG_GROUP = "shiftclick";
 	private static final String SWAPPER_GROUP = "menuentryswapper";
+	private static final String SHIFTCLICK_CONFIG_GROUP = "shiftclick";
 	private static final String ITEM_KEY_PREFIX = "item_";
 
 	private static final WidgetMenuOption FIXED_INVENTORY_TAB_CONFIGURE = new WidgetMenuOption(CONFIGURE,
@@ -134,9 +134,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private MenuEntrySwapperConfig config;
 
 	@Inject
-	private ShiftClickInputListener inputListener;
-
-	@Inject
 	private ConfigManager configManager;
 
 	@Inject
@@ -150,9 +147,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 	@Getter
 	private boolean configuringShiftClick = false;
-
-	@Setter
-	private boolean shiftModifier = false;
 
 	private final Multimap<String, Swap> swaps = LinkedHashMultimap.create();
 	private final ArrayListMultimap<String, Integer> optionIndexes = ArrayListMultimap.create();
@@ -238,7 +232,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		swap("talk-to", "trade", config::swapTrade);
 		swap("talk-to", "trade-with", config::swapTrade);
 		swap("talk-to", "shop", config::swapTrade);
-		swap("talk-to", "robin", "claim-slime", config::swapTrade);
+		swap("talk-to", "robin", "claim-slime", config::claimSlime);
 		swap("talk-to", "travel", config::swapTravel);
 		swap("talk-to", "pay-fare", config::swapTravel);
 		swap("talk-to", "charter", config::swapTravel);
@@ -340,39 +334,39 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 		swap("pick", "pick-lots", config::swapPick);
 
-		swap("view offer", "abort offer", () -> shiftModifier && config.swapGEAbort());
+		swap("view offer", "abort offer", () -> shiftModifier() && config.swapGEAbort());
 
-		swap("cast", "npc contact", "honest jimmy", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "bert the sandman", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "advisor ghrim", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "dark mage", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "lanthus", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "turael", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "mazchna", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "vannaka", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "chaeldar", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "nieve", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "steve", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "duradel", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "krystilia", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "konar", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "murphy", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "cyrisus", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "smoggy", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "ginea", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "watson", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "barbarian guard", () -> shiftModifier && config.swapNpcContact());
-		swap("cast", "npc contact", "random", () -> shiftModifier && config.swapNpcContact());
+		swap("cast", "npc contact", "honest jimmy", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "bert the sandman", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "advisor ghrim", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "dark mage", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "lanthus", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "turael", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "mazchna", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "vannaka", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "chaeldar", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "nieve", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "steve", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "duradel", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "krystilia", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "konar", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "murphy", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "cyrisus", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "smoggy", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "ginea", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "watson", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "barbarian guard", () -> shiftModifier() && config.swapNpcContact());
+		swap("cast", "npc contact", "random", () -> shiftModifier() && config.swapNpcContact());
 
-		swap("value", "buy 1", () -> shiftModifier && config.shopBuy() == BuyMode.BUY_1);
-		swap("value", "buy 5", () -> shiftModifier && config.shopBuy() == BuyMode.BUY_5);
-		swap("value", "buy 10", () -> shiftModifier && config.shopBuy() == BuyMode.BUY_10);
-		swap("value", "buy 50", () -> shiftModifier && config.shopBuy() == BuyMode.BUY_50);
+		swap("value", "buy 1", () -> shiftModifier() && config.shopBuy() == BuyMode.BUY_1);
+		swap("value", "buy 5", () -> shiftModifier() && config.shopBuy() == BuyMode.BUY_5);
+		swap("value", "buy 10", () -> shiftModifier() && config.shopBuy() == BuyMode.BUY_10);
+		swap("value", "buy 50", () -> shiftModifier() && config.shopBuy() == BuyMode.BUY_50);
 
-		swap("value", "sell 1", () -> shiftModifier && config.shopSell() == SellMode.SELL_1);
-		swap("value", "sell 5", () -> shiftModifier && config.shopSell() == SellMode.SELL_5);
-		swap("value", "sell 10", () -> shiftModifier && config.shopSell() == SellMode.SELL_10);
-		swap("value", "sell 50", () -> shiftModifier && config.shopSell() == SellMode.SELL_50);
+		swap("value", "sell 1", () -> shiftModifier() && config.shopSell() == SellMode.SELL_1);
+		swap("value", "sell 5", () -> shiftModifier() && config.shopSell() == SellMode.SELL_5);
+		swap("value", "sell 10", () -> shiftModifier() && config.shopSell() == SellMode.SELL_10);
+		swap("value", "sell 50", () -> shiftModifier() && config.shopSell() == SellMode.SELL_50);
 
 		swap("wear", "rub", config::swapTeleportItem);
 		swap("wear", "teleport", config::swapTeleportItem);
@@ -516,19 +510,14 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 	private void swapTeleport(String option, String swappedOption)
 	{
-		swap("cast", option, swappedOption, () -> shiftModifier && config.swapTeleportSpell());
-		swap(swappedOption, option, "cast", () -> shiftModifier && config.swapTeleportSpell());
+		swap("cast", option, swappedOption, () -> shiftModifier() && config.swapTeleportSpell());
+		swap(swappedOption, option, "cast", () -> shiftModifier() && config.swapTeleportSpell());
 	}
 
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event)
 	{
-		if (!(CONFIG_GROUP.equals(event.getGroup()) || SWAPPER_GROUP.equals(event.getGroup())))
-		{
-			return;
-		}
-
-		if (event.getKey().equals("shiftClickCustomization"))
+		if (event.getGroup().equals(MenuEntrySwapperConfig.GROUP) && event.getKey().equals("shiftClickCustomization"))
 		{
 			if (config.shiftClickCustomization())
 			{
@@ -539,7 +528,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 				disableCustomization();
 			}
 		}
-		else if (event.getKey().startsWith(ITEM_KEY_PREFIX))
+		else if (event.getGroup().equals(SHIFTCLICK_CONFIG_GROUP) && event.getKey().startsWith(ITEM_KEY_PREFIX))
 		{
 			clientThread.invoke(this::resetItemCompositionCache);
 		}
@@ -609,7 +598,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private Integer getSwapConfig(int itemId)
 	{
 		itemId = ItemVariationMapping.map(itemId);
-		String config = configManager.getConfiguration(CONFIG_GROUP, ITEM_KEY_PREFIX + itemId);
+		String config = configManager.getConfiguration(SHIFTCLICK_CONFIG_GROUP, ITEM_KEY_PREFIX + itemId);
 		if (config == null || config.isEmpty())
 		{
 			return null;
@@ -621,27 +610,27 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private void setSwapConfig(int itemId, int index)
 	{
 		itemId = ItemVariationMapping.map(itemId);
-		configManager.setConfiguration(CONFIG_GROUP, ITEM_KEY_PREFIX + itemId, index);
+		configManager.setConfiguration(SHIFTCLICK_CONFIG_GROUP, ITEM_KEY_PREFIX + itemId, index);
 	}
 
 	private void unsetSwapConfig(int itemId)
 	{
 		itemId = ItemVariationMapping.map(itemId);
-		configManager.unsetConfiguration(CONFIG_GROUP, ITEM_KEY_PREFIX + itemId);
+		configManager.unsetConfiguration(SHIFTCLICK_CONFIG_GROUP, ITEM_KEY_PREFIX + itemId);
 	}
 
 	private void enableCustomization()
 	{
-		keyManager.registerKeyListener(inputListener);
 		refreshShiftClickCustomizationMenus();
+		// set shift click action index on the item compositions
 		clientThread.invoke(this::resetItemCompositionCache);
 	}
 
 	private void disableCustomization()
 	{
-		keyManager.unregisterKeyListener(inputListener);
 		removeShiftClickCustomizationMenus();
 		configuringShiftClick = false;
+		// flush item compositions to reset the shift click action index
 		clientThread.invoke(this::resetItemCompositionCache);
 	}
 
@@ -728,7 +717,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		// Swap to shift-click deposit behavior
 		// Deposit- op 1 is the current withdraw amount 1/5/10/x for deposit box interface
 		// Deposit- op 2 is the current withdraw amount 1/5/10/x for bank interface
-		if (shiftModifier && config.bankDepositShiftClick() != ShiftDepositMode.OFF
+		if (shiftModifier() && config.bankDepositShiftClick() != ShiftDepositMode.OFF
 			&& menuEntryAdded.getType() == MenuAction.CC_OP.getId() && (menuEntryAdded.getIdentifier() == 2 || menuEntryAdded.getIdentifier() == 1)
 			&& menuEntryAdded.getOption().startsWith("Deposit-"))
 		{
@@ -740,7 +729,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 		// Swap to shift-click withdraw behavior
 		// Deposit- op 1 is the current withdraw amount 1/5/10/x
-		if (shiftModifier && config.bankWithdrawShiftClick() != ShiftWithdrawMode.OFF
+		if (shiftModifier() && config.bankWithdrawShiftClick() != ShiftWithdrawMode.OFF
 			&& menuEntryAdded.getType() == MenuAction.CC_OP.getId() && menuEntryAdded.getIdentifier() == 1
 			&& menuEntryAdded.getOption().startsWith("Withdraw-"))
 		{
@@ -893,30 +882,40 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private void swapMenuEntry(int index, MenuEntry menuEntry)
 	{
 		final int eventId = menuEntry.getIdentifier();
+		final MenuAction menuAction = MenuAction.of(menuEntry.getType());
 		final String option = Text.removeTags(menuEntry.getOption()).toLowerCase();
 		final String target = Text.removeTags(menuEntry.getTarget()).toLowerCase();
 		final NPC hintArrowNpc = client.getHintArrowNpc();
 
 		if (hintArrowNpc != null
 			&& hintArrowNpc.getIndex() == eventId
-			&& NPC_MENU_TYPES.contains(MenuAction.of(menuEntry.getType())))
+			&& NPC_MENU_TYPES.contains(menuAction))
 		{
 			return;
 		}
 
-		// Special case use shift click due to items not actually containing a "Use" option, making
-		// the client unable to perform the swap itself.
-		if (shiftModifier && config.shiftClickCustomization() && !option.equals("use"))
+		if (shiftModifier() && (menuAction == MenuAction.ITEM_FIRST_OPTION
+			|| menuAction == MenuAction.ITEM_SECOND_OPTION
+			|| menuAction == MenuAction.ITEM_THIRD_OPTION
+			|| menuAction == MenuAction.ITEM_FOURTH_OPTION
+			|| menuAction == MenuAction.ITEM_FIFTH_OPTION
+			|| menuAction == MenuAction.ITEM_USE))
 		{
-			Integer customOption = getSwapConfig(eventId);
-
-			if (customOption != null && customOption == -1)
+			// Special case use shift click due to items not actually containing a "Use" option, making
+			// the client unable to perform the swap itself.
+			if (config.shiftClickCustomization() && !option.equals("use"))
 			{
-				if (swap("use", target, index, true))
+				Integer customOption = getSwapConfig(eventId);
+
+				if (customOption != null && customOption == -1)
 				{
-					return;
+					swap("use", target, index, true);
 				}
 			}
+
+			// don't perform swaps on items when shift is held; instead prefer the client menu swap, which
+			// we may have overwrote
+			return;
 		}
 
 		Collection<Swap> swaps = this.swaps.get(option);
@@ -964,21 +963,19 @@ public class MenuEntrySwapperPlugin extends Plugin
 	@Subscribe
 	public void onPostItemComposition(PostItemComposition event)
 	{
+		if (!config.shiftClickCustomization())
+		{
+			// since shift-click is done by the client we have to check if our shift click customization is on
+			// prior to altering the item shift click action index.
+			return;
+		}
+
 		ItemComposition itemComposition = event.getItemComposition();
 		Integer option = getSwapConfig(itemComposition.getId());
 
 		if (option != null)
 		{
 			itemComposition.setShiftClickActionIndex(option);
-		}
-	}
-
-	@Subscribe
-	public void onFocusChanged(FocusChanged event)
-	{
-		if (!event.isFocused())
-		{
-			shiftModifier = false;
 		}
 	}
 
@@ -1095,5 +1092,10 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.addManagedCustomMenu(RESIZABLE_BOTTOM_LINE_INVENTORY_TAB_CONFIGURE);
 			menuManager.addManagedCustomMenu(RESIZABLE_INVENTORY_TAB_CONFIGURE);
 		}
+	}
+
+	private boolean shiftModifier()
+	{
+		return client.isKeyPressed(KeyCode.KC_SHIFT);
 	}
 }
