@@ -1042,8 +1042,8 @@ public final class SpriteID
 	public static final int MINIMAP_ORB_PRAYER_ACTIVATED = 1066;
 	public static final int MINIMAP_ORB_HITPOINTS_ICON = 1067;
 	public static final int MINIMAP_ORB_PRAYER_ICON = 1068;
+	public static final int MINIMAP_ORB_WALK_ICON = 1069;
 	public static final int MINIMAP_ORB_RUN_ICON = 1070;
-	public static final int MINIMAP_ORB_RUN_ICON_ACTIVATED = 1070;
 	public static final int MINIMAP_ORB_FRAME = 1071;
 	public static final int MINIMAP_ORB_FRAME_HOVERED = 1072;
 	public static final int OPTIONS_CAMERA = 1073;

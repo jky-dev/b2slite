@@ -27,7 +27,7 @@ b2sLite is a fork of the open source OSRS client RuneLite.
 ## Join our discord community [here](https://discord.gg/qSupxuM)!
 
 ![](https://runelite.net/img/logo.png)
-# runelite [![Travis](https://img.shields.io/travis/runelite/runelite.svg)](https://travis-ci.org/runelite/runelite) [![Discord](https://img.shields.io/discord/301497432909414422.svg)](https://discord.gg/mePCs8U)
+# runelite [![CI](https://github.com/runelite/runelite/workflows/CI/badge.svg)](https://github.com/runelite/runelite/actions?query=workflow%3ACI+branch%3Amaster) [![Discord](https://img.shields.io/discord/301497432909414422.svg)](https://discord.gg/mePCs8U)
 
 RuneLite is a free, open source OldSchool RuneScape client.
 

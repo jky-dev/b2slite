@@ -53,6 +53,7 @@ import static net.runelite.api.AnimationID.WOODCUTTING_IRON;
 import static net.runelite.api.AnimationID.WOODCUTTING_MITHRIL;
 import static net.runelite.api.AnimationID.WOODCUTTING_RUNE;
 import static net.runelite.api.AnimationID.WOODCUTTING_STEEL;
+import static net.runelite.api.AnimationID.WOODCUTTING_TRAILBLAZER;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
@@ -467,6 +468,7 @@ public class WintertodtPlugin extends Plugin
 			case WOODCUTTING_INFERNAL:
 			case WOODCUTTING_3A_AXE:
 			case WOODCUTTING_CRYSTAL:
+			case WOODCUTTING_TRAILBLAZER:
 				setActivity(WintertodtActivity.WOODCUTTING);
 				break;
 
