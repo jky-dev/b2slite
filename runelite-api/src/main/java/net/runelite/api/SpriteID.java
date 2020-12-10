@@ -1563,9 +1563,6 @@ public final class SpriteID
 	public static final int TAB_MAGIC_SPELLBOOK_ARCEUUS_UNUSED = 1708;
 	/* Unmapped: 1709, 1710 */
 	public static final int TAB_MAGIC_SPELLBOOK_ARCEUUS = 1711;
-	public static final int BIG_ASS_GUTHIX_SPELL = 1774;
-	public static final int BIG_SUPERHEAT = 1800;
-	public static final int BIG_SPEC_TRANSFER = 1959;
 	/* Unmapped: 1712~2175 */
 	public static final int HEALTHBAR_DEFAULT_FRONT_30PX = 2176;
 	public static final int HEALTHBAR_DEFAULT_BACK_30PX = 2177;
@@ -1594,4 +1591,8 @@ public final class SpriteID
 	public static final int FRIENDS_CHAT_RANK_TRIPLE_CHEVRON_SERGEANT = 2831;
 	public static final int FRIENDS_CHAT_RANK_DOUBLE_CHEVRON_CORPORAL = 2832;
 	public static final int FRIENDS_CHAT_RANK_SINGLE_CHEVRON_RECRUIT = 2833;
+
+	public static final int SETTINGS_SLIDER_HANDLE_BLUE = 2858;
+	public static final int SETTINGS_SLIDER_HANDLE_RED = 2859;
+	public static final int SETTINGS_SLIDER_HANDLE_GREEN = 2860;
 }
