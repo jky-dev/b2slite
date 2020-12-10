@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import net.runelite.api.Actor;
+import net.runelite.api.AnimationID;
 import static net.runelite.api.AnimationID.*;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;

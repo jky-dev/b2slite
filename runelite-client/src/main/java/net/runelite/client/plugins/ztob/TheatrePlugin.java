@@ -304,7 +304,6 @@ public class TheatrePlugin extends Plugin {
 				case ItemID.DRAGON_CLAWS:
 				case ItemID.SCYTHE_OF_VITUR:
 				case ItemID.SCYTHE_OF_VITUR_UNCHARGED:
-				case ItemID.SCYTHE_10735:
 				case ItemID.SCYTHE_OF_VITUR_22664:
 				case ItemID.HAM_JOINT:
 				case ItemID.EVENT_RPG:
