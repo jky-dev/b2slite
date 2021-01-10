@@ -68,7 +68,7 @@ public class SplashScreen extends JFrame implements ActionListener
 
 	private SplashScreen() throws IOException
 	{
-		BufferedImage logo = ImageUtil.getResourceStreamFromClass(SplashScreen.class, "b2sLite.png");
+		BufferedImage logo = ImageUtil.loadImageResource(SplashScreen.class, "b2sLite.png");
 
 		setTitle("b2s Launcher");
 

@@ -378,6 +378,7 @@ public interface RuneLiteConfig extends Config
 		return false;
 	}
 
+	@Alpha
 	@ConfigItem(
 		keyName = "overlayBackgroundColor",
 		name = "Overlay Color",
@@ -385,7 +386,6 @@ public interface RuneLiteConfig extends Config
 		position = 44,
 		section = overlaySettings
 	)
-	@Alpha
 	default Color overlayBackgroundColor()
 	{
 		return ComponentConstants.STANDARD_BACKGROUND_COLOR;
