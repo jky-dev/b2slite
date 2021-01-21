@@ -371,6 +371,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		swap("wear", "rub", config::swapTeleportItem);
 		swap("wear", "teleport", config::swapTeleportItem);
 		swap("wield", "teleport", config::swapTeleportItem);
+		swap("wield", "invoke", config::swapTeleportItem);
 
 		swap("bury", "use", config::swapBones);
 
@@ -397,6 +398,8 @@ public class MenuEntrySwapperPlugin extends Plugin
 		swapTeleport("camelot teleport", "seers'");
 		swapTeleport("watchtower teleport", "yanille");
 		swapTeleport("teleport to house", "outside");
+
+		swap("eat", "guzzle", config::swapRockCake);
 
 		// b2sLite swaps
 		swapContains("remove", alwaysTrue(), "crafting guild", () -> config.swapMaxCape() == MaxCapeMode.CRAFTING && !isInCraftingGuild());
