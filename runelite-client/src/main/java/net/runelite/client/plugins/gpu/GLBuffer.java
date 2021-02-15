@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, dekvall <https://github.com/dekvall>
+ * Copyright (c) 2021, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,30 +22,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.objectindicators;
+package net.runelite.client.plugins.gpu;
 
-import java.awt.Color;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import net.runelite.api.ObjectComposition;
-import net.runelite.api.TileObject;
+import org.jocl.Pointer;
+import org.jocl.cl_mem;
 
-/**
- * Used to denote marked objects and their colors.
- * Note: This is not used for serialization of object indicators; see {@link ObjectPoint}
- */
-@Value
-@RequiredArgsConstructor
-class ColorTileObject
+class GLBuffer
 {
-	private final TileObject tileObject;
-	/**
-	 * Non-transformed object composition for the object
-	 */
-	private final ObjectComposition composition;
-	/**
-	 * Name to highlight for multilocs
-	 */
-	private final String name;
-	private final Color color;
+	int glBufferId = -1;
+	int size = -1;
+	cl_mem cl_mem;
+
+	Pointer ptr()
+	{
+		return cl_mem != null ? Pointer.to(cl_mem) : null;
+	}
 }

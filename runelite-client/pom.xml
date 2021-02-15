@@ -29,7 +29,7 @@
 	<parent>
 		<groupId>net.runelite</groupId>
 		<artifactId>runelite-parent</artifactId>
-		<version>1.6.40-SNAPSHOT</version>
+		<version>1.7.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>client</artifactId>
@@ -175,6 +175,25 @@
 			<groupId>net.runelite.gluegen</groupId>
 			<artifactId>gluegen-rt-natives-macosx</artifactId>
 			<version>2.4.0-rc-20210117</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.runelite.jocl</groupId>
+			<artifactId>jocl</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.runelite.jocl</groupId>
+			<artifactId>jocl</artifactId>
+			<version>1.0</version>
+			<classifier>macos-x64</classifier>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.runelite.jocl</groupId>
+			<artifactId>jocl</artifactId>
+			<version>1.0</version>
+			<classifier>macos-arm64</classifier>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>

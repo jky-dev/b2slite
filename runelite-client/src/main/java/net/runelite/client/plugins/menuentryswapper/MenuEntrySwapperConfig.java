@@ -153,6 +153,17 @@ public interface MenuEntrySwapperConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "swapBattlestaves",
+		name = "Battlestaff",
+		description = "Swap Wield with Use on Battlestaves without orbs",
+		section = itemSection
+	)
+	default boolean swapBattlestaves()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "swapPrayerBook",
 		name = "Recite-Prayer",
 		description = "Swap Read with Recite-prayer on the Prayer Book from The Great Brain Robbery quest",
@@ -346,6 +357,17 @@ public interface MenuEntrySwapperConfig extends Config
 		section = objectSection
 	)
 	default boolean swapJewelleryBox()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapPortalNexus",
+		name = "Portal Nexus",
+		description =  "Swap Teleport options with Teleport Menu on the Portal Nexus",
+		section = objectSection
+	)
+	default boolean swapPortalNexus()
 	{
 		return false;
 	}

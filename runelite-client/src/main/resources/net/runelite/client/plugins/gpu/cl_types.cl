@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, dekvall <https://github.com/dekvall>
+ * Copyright (c) 2021, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,30 +22,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.objectindicators;
 
-import java.awt.Color;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import net.runelite.api.ObjectComposition;
-import net.runelite.api.TileObject;
+struct uniform {
+  int cameraYaw;
+  int cameraPitch;
+  int centerX;
+  int centerY;
+  int zoom;
+  int cameraX;
+  int cameraY;
+  int cameraZ;
+  int4 sinCosTable[2048];
+};
 
-/**
- * Used to denote marked objects and their colors.
- * Note: This is not used for serialization of object indicators; see {@link ObjectPoint}
- */
-@Value
-@RequiredArgsConstructor
-class ColorTileObject
-{
-	private final TileObject tileObject;
-	/**
-	 * Non-transformed object composition for the object
-	 */
-	private final ObjectComposition composition;
-	/**
-	 * Name to highlight for multilocs
-	 */
-	private final String name;
-	private final Color color;
-}
+struct shared_data {
+  int totalNum[12]; // number of faces with a given priority
+  int totalDistance[12]; // sum of distances to faces of a given priority
+  int totalMappedNum[18]; // number of faces with a given adjusted priority
+  int min10; // minimum distance to a face of priority 10
+  int dfs[0]; // packed face id and distance, size 512 for small, 4096 for large
+};
+
+struct modelinfo {
+  int offset;   // offset into buffer
+  int uvOffset; // offset into uv buffer
+  int size;     // length in faces
+  int idx;      // write idx in target buffer
+  int flags;    // radius, orientation
+  int x;        // scene position x
+  int y;        // scene position y
+  int z;        // scene position z
+};

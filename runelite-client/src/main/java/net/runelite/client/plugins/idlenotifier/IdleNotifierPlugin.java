@@ -152,7 +152,7 @@ public class IdleNotifierPlugin extends Plugin
 			case COOKING_FIRE:
 			case COOKING_RANGE:
 			case COOKING_WINE:
-			/* Crafting(Gem Cutting, Glassblowing, Spinning, Battlestaves, Pottery) */
+			/* Crafting(Gem Cutting, Glassblowing, Spinning, Weaving, Battlestaves, Pottery) */
 			case GEM_CUTTING_OPAL:
 			case GEM_CUTTING_JADE:
 			case GEM_CUTTING_REDTOPAZ:
@@ -163,6 +163,7 @@ public class IdleNotifierPlugin extends Plugin
 			case GEM_CUTTING_AMETHYST:
 			case CRAFTING_GLASSBLOWING:
 			case CRAFTING_SPINNING:
+			case CRAFTING_LOOM:
 			case CRAFTING_BATTLESTAVES:
 			case CRAFTING_LEATHER:
 			case CRAFTING_POTTERS_WHEEL:
@@ -273,6 +274,10 @@ public class IdleNotifierPlugin extends Plugin
 			case MAGIC_ENCHANTING_BOLTS:
 			/* Prayer */
 			case USING_GILDED_ALTAR:
+			case ECTOFUNTUS_FILL_SLIME_BUCKET:
+			case ECTOFUNTUS_INSERT_BONES:
+			case ECTOFUNTUS_GRIND_BONES:
+			case ECTOFUNTUS_EMPTY_BIN:
 			/* Farming */
 			case FARMING_MIX_ULTRACOMPOST:
 			case FARMING_HARVEST_BUSH:
@@ -440,12 +445,12 @@ public class IdleNotifierPlugin extends Plugin
 
 		if (config.logoutIdle() && checkIdleLogout())
 		{
-			notifier.notify("[" + local.getName() + "] is about to log out from idling too long!");
+			notifier.notify("You are about to log out from idling too long!");
 		}
 
 		if (check6hrLogout())
 		{
-			notifier.notify("[" + local.getName() + "] is about to log out from being online for 6 hours!");
+			notifier.notify("You are about to log out from being online for 6 hours!");
 		}
 
 		if (local.getInteracting() != null && local.getInteracting().getName().contains("Fishing spot"))
@@ -460,54 +465,54 @@ public class IdleNotifierPlugin extends Plugin
 
 		if (config.animationIdle() && checkAnimationIdle(waitDuration, local))
 		{
-			notifier.notify("[" + local.getName() + "] is now idle!");
+			notifier.notify("You are now idle!");
 		}
 
 		if (config.movementIdle() && checkMovementIdle(waitDuration, local))
 		{
-			notifier.notify("[" + local.getName() + "] has stopped moving!");
+			notifier.notify("You have stopped moving!");
 		}
 
 		if (config.interactionIdle() && checkInteractionIdle(waitDuration, local))
 		{
 			if (lastInteractWasCombat)
 			{
-				notifier.notify("[" + local.getName() + "] is now out of combat!");
+				notifier.notify("You are now out of combat!");
 			}
 			else
 			{
-				notifier.notify("[" + local.getName() + "] is now idle!");
+				notifier.notify("You are now idle!");
 			}
 		}
 
 		if (checkLowHitpoints())
 		{
-			notifier.notify("[" + local.getName() + "] has low hitpoints!");
+			notifier.notify("You have low hitpoints!");
 		}
 
 		if (checkLowPrayer())
 		{
-			notifier.notify("[" + local.getName() + "] has low prayer!");
+			notifier.notify("You have low prayer!");
 		}
 
 		if (checkLowEnergy())
 		{
-			notifier.notify("[" + local.getName() + "] has low run energy!");
+			notifier.notify("You have low run energy!");
 		}
 
 		if (checkHighEnergy())
 		{
-			notifier.notify("[" + local.getName() + "] has restored run energy!");
+			notifier.notify("You have restored run energy!");
 		}
 
 		if (checkLowOxygen())
 		{
-			notifier.notify("[" + local.getName() + "] has low oxygen!");
+			notifier.notify("You have low oxygen!");
 		}
 
 		if (checkFullSpecEnergy())
 		{
-			notifier.notify("[" + local.getName() + "] has restored spec energy!");
+			notifier.notify("You have restored spec energy!");
 		}
 
 		if (checkMoving(waitDuration))

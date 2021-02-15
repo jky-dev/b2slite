@@ -346,6 +346,14 @@ public class MenuEntrySwapperPlugin extends Plugin
 		swap("teleport menu", "draynor village", config::swapJewelleryBox);
 		swap("teleport menu", "al kharid", config::swapJewelleryBox);
 
+		Arrays.asList(
+			"annakarl", "ape atoll dungeon", "ardougne", "barrows", "battlefront", "camelot", "carrallangar",
+			"catherby", "cemetery", "draynor manor", "falador", "fenkenstrain's castle", "fishing guild", "ghorrock",
+			"grand exchange", "great kourend", "harmony island", "kharyrll", "lumbridge", "lumbridge graveyard",
+			"lunar isle", "marim", "mind altar", "salve graveyard", "seers' village", "senntisten", "troll stronghold",
+			"varrock", "watchtower", "waterbirth island", "weiss", "west ardougne", "yanille"
+		).forEach(location -> swap(location, "portal nexus", "teleport menu", config::swapPortalNexus));
+
 		swap("shared", "private", config::swapPrivate);
 
 		swap("pick", "pick-lots", config::swapPick);
@@ -375,6 +383,8 @@ public class MenuEntrySwapperPlugin extends Plugin
 		swap("wield", "invoke", config::swapTeleportItem);
 
 		swap("bury", "use", config::swapBones);
+
+		swap("wield", "battlestaff", "use", config::swapBattlestaves);
 
 		swap("clean", "use", config::swapHerbs);
 
