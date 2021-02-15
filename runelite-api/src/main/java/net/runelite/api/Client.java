@@ -120,8 +120,21 @@ public interface Client extends GameEngine
 	 * @param name the name of the player that sent the message
 	 * @param message the message contents
 	 * @param sender the sender/channel name
+	 * @return the message node for the message
 	 */
-	void addChatMessage(ChatMessageType type, String name, String message, String sender);
+	MessageNode addChatMessage(ChatMessageType type, String name, String message, String sender);
+
+	/**
+	 * Adds a new chat message to the chatbox.
+	 *
+	 * @param type the type of message
+	 * @param name the name of the player that sent the message
+	 * @param message the message contents
+	 * @param sender the sender/channel name
+	 * @param postEvent whether to post the chat message event
+	 * @return the message node for the message
+	 */
+	MessageNode addChatMessage(ChatMessageType type, String name, String message, String sender, boolean postEvent);
 
 	/**
 	 * Gets the current game state.
@@ -433,7 +446,7 @@ public interface Client extends GameEngine
 	int getMouseCurrentButton();
 
 	/**
-	 * Gets the currently selected tile (ie. last right clicked tile).
+	 * Gets the currently selected tile. (ie. last right clicked tile)
 	 *
 	 * @return the selected tile
 	 */
@@ -1465,8 +1478,8 @@ public interface Client extends GameEngine
 	void setPlayersHidden(boolean state);
 
 	/**
-	 * Sets whether 2D sprites (ie. overhead prayers, PK skull) related to
-	 * the other players are hidden.
+	 * Sets whether 2D sprites related to the other players are hidden.
+	 * (ie. overhead prayers, PK skull)
 	 *
 	 * @param state the new player 2D hidden state
 	 */
@@ -1494,8 +1507,8 @@ public interface Client extends GameEngine
 	void setLocalPlayerHidden(boolean state);
 
 	/**
-	 * Sets whether 2D sprites (ie. overhead prayers, PK skull) related to
-	 * the local player are hidden.
+	 * Sets whether 2D sprites related to the local player are hidden.
+	 * (ie. overhead prayers, PK skull)
 	 *
 	 * @param state new local player 2D hidden state
 	 */
@@ -1509,8 +1522,8 @@ public interface Client extends GameEngine
 	void setNPCsHidden(boolean state);
 
 	/**
-	 * Sets whether 2D sprites (ie. overhead prayers) related to
-	 * the NPCs are hidden.
+	 * Sets whether 2D sprites related to the NPCs are hidden.
+	 * (ie. overhead prayers)
 	 *
 	 * @param state new NPC 2D hidden state
 	 */
