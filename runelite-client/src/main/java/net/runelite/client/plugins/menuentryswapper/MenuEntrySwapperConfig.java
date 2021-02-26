@@ -296,6 +296,17 @@ public interface MenuEntrySwapperConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "swapBait",
+		name = "Bait",
+		description = "Swap Lure, Small Net with Bait on Fishing spot",
+		section = objectSection
+	)
+	default boolean swapBait()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "swapHelp",
 		name = "Help",
 		description = "Swap Talk-to with Help on Arceuus library customers",
@@ -913,6 +924,17 @@ public interface MenuEntrySwapperConfig extends Config
 		section = itemSection
 	)
 	default boolean swapRockCake()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapRowboatDive",
+		name = "Fossil Island Rowboat Dive",
+		description = "Swap Travel with Dive on the rowboat found on the small island north-east of Fossil Island",
+		section = objectSection
+	)
+	default boolean swapRowboatDive()
 	{
 		return false;
 	}
