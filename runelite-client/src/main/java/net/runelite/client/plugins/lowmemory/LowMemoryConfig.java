@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Seth <https://github.com/sethtroll>
+ * Copyright (c) 2021, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,18 +22,36 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.grandexchange;
+package net.runelite.client.plugins.lowmemory;
 
-import lombok.Value;
-import net.runelite.client.util.AsyncBufferedImage;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-@Value
-class GrandExchangeItems
+@ConfigGroup(LowMemoryConfig.GROUP)
+public interface LowMemoryConfig extends Config
 {
-	private final AsyncBufferedImage icon;
-	private final String name;
-	private final int itemId;
-	private final int gePrice;
-	private final int haPrice;
-	private final int geItemLimit;
+	String GROUP = "lowmemory";
+
+	@ConfigItem(
+		keyName = "lowDetail",
+		name = "Low detail",
+		description = "Hides ground detail and simplifies textures.",
+		position = 0
+	)
+	default boolean lowDetail()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "hideLowerPlanes",
+		name = "Hide lower planes",
+		description = "Only renders the current plane you are on.",
+		position = 1
+	)
+	default boolean hideLowerPlanes()
+	{
+		return false;
+	}
 }
