@@ -37,6 +37,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import static net.runelite.api.AnimationID.CONSTRUCTION;
+import static net.runelite.api.AnimationID.CONSTRUCTION_IMCANDO;
 import static net.runelite.api.AnimationID.FIREMAKING;
 import static net.runelite.api.AnimationID.FLETCHING_BOW_CUTTING;
 import static net.runelite.api.AnimationID.IDLE;
@@ -487,6 +488,7 @@ public class WintertodtPlugin extends Plugin
 				break;
 
 			case CONSTRUCTION:
+			case CONSTRUCTION_IMCANDO:
 				setActivity(WintertodtActivity.FIXING_BRAZIER);
 				break;
 		}

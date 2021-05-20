@@ -251,10 +251,8 @@ public class WidgetID
 
 	static class FriendsChat
 	{
-		static final int TITLE = 1;
-		static final int NAME = 4;
-		static final int OWNER = 6;
-		static final int LIST = 16;
+		static final int OWNER = 2;
+		static final int LIST = 12;
 	}
 
 	static class Bank
@@ -409,36 +407,36 @@ public class WidgetID
 	static class ResizableViewport
 	{
 		static final int MULTICOMBAT_INDICATOR = 18;
-		static final int FRIENDS_CHAT_TAB = 38;
-		static final int FRIENDS_TAB = 40;
-		static final int IGNORES_TAB = 39;
-		static final int LOGOUT_TAB = 41;
-		static final int OPTIONS_TAB = 42;
-		static final int EMOTES_TAB = 43;
-		static final int MUSIC_TAB = 44;
-		static final int FRIENDS_CHAT_ICON = 45;
-		static final int FRIENDS_ICON = 47;
-		static final int IGNORES_ICON = 46;
-		static final int LOGOUT_ICON = 48;
-		static final int OPTIONS_ICON = 49;
-		static final int EMOTES_ICON = 50;
-		static final int MUSIC_ICON = 51;
-		static final int COMBAT_TAB = 54;
-		static final int STATS_TAB = 55;
-		static final int QUESTS_TAB = 56;
-		static final int INVENTORY_TAB = 57;
-		static final int EQUIPMENT_TAB = 58;
-		static final int PRAYER_TAB = 59;
-		static final int MAGIC_TAB = 60;
-		static final int COMBAT_ICON = 61;
-		static final int STATS_ICON = 62;
-		static final int QUESTS_ICON = 63;
-		static final int INVENTORY_ICON = 64;
-		static final int EQUIPMENT_ICON = 65;
-		static final int PRAYER_ICON = 66;
-		static final int MAGIC_ICON = 67;
-		static final int INTERFACE_CONTAINER = 68;
-		static final int INVENTORY_CONTAINER = 74;
+		static final int FRIENDS_CHAT_TAB = 39;
+		static final int FRIENDS_TAB = 41;
+		static final int IGNORES_TAB = 40;
+		static final int LOGOUT_TAB = 42;
+		static final int OPTIONS_TAB = 43;
+		static final int EMOTES_TAB = 44;
+		static final int MUSIC_TAB = 45;
+		static final int FRIENDS_CHAT_ICON = 46;
+		static final int FRIENDS_ICON = 48;
+		static final int IGNORES_ICON = 47;
+		static final int LOGOUT_ICON = 49;
+		static final int OPTIONS_ICON = 50;
+		static final int EMOTES_ICON = 51;
+		static final int MUSIC_ICON = 52;
+		static final int COMBAT_TAB = 55;
+		static final int STATS_TAB = 56;
+		static final int QUESTS_TAB = 57;
+		static final int INVENTORY_TAB = 58;
+		static final int EQUIPMENT_TAB = 59;
+		static final int PRAYER_TAB = 60;
+		static final int MAGIC_TAB = 61;
+		static final int COMBAT_ICON = 62;
+		static final int STATS_ICON = 63;
+		static final int QUESTS_ICON = 64;
+		static final int INVENTORY_ICON = 65;
+		static final int EQUIPMENT_ICON = 66;
+		static final int PRAYER_ICON = 67;
+		static final int MAGIC_ICON = 68;
+		static final int INTERFACE_CONTAINER = 69;
+		static final int INVENTORY_CONTAINER = 75;
 	}
 
 	static class ResizableViewportBottomLine
@@ -471,6 +469,7 @@ public class WidgetID
 		static final int MUSIC_TAB = 40;
 		static final int MUSIC_ICON = 49;
 		static final int MAGIC_ICON = 66;
+		static final int INTERFACE_CONTAINER = 68;
 		static final int INVENTORY_CONTAINER = 74;
 	}
 
@@ -479,23 +478,23 @@ public class WidgetID
 		static final int PARENT = 0;
 		static final int BUTTONS = 1;
 		static final int TAB_ALL = 4;
-		static final int TAB_GAME = 8;
-		static final int TAB_PUBLIC = 13;
-		static final int TAB_PRIVATE = 18;
+		static final int TAB_GAME = 7;
+		static final int TAB_PUBLIC = 11;
+		static final int TAB_PRIVATE = 19;
 		static final int TAB_CLAN = 23;
-		static final int TAB_TRADE = 28;
-		static final int REPORT_TEXT = 36;
-		static final int FRAME = 37;
-		static final int TRANSPARENT_BACKGROUND = 38;
-		static final int CONTAINER = 40;
-		static final int TITLE = 44;
-		static final int FULL_INPUT = 45;
-		static final int GE_SEARCH_RESULTS = 53;
-		static final int MESSAGES = 56;
-		static final int TRANSPARENT_BACKGROUND_LINES = 57;
-		static final int INPUT = 58;
-		static final int MESSAGE_LINES = 59;
-		static final int FIRST_MESSAGE = 60;
+		static final int TAB_TRADE = 27;
+		static final int REPORT_TEXT = 33;
+		static final int FRAME = 34;
+		static final int TRANSPARENT_BACKGROUND = 35;
+		static final int CONTAINER = 37;
+		static final int TITLE = 41;
+		static final int FULL_INPUT = 42;
+		static final int GE_SEARCH_RESULTS = 50;
+		static final int MESSAGES = 53;
+		static final int TRANSPARENT_BACKGROUND_LINES = 54;
+		static final int INPUT = 55;
+		static final int MESSAGE_LINES = 56;
+		static final int FIRST_MESSAGE = 57;
 	}
 
 	static class Prayer

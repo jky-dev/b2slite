@@ -134,6 +134,13 @@ public class MenuEntrySwapperPlugin extends Plugin
 		"brimstail"
 	);
 
+	private static final Set<String> TEMPOROSS_NPCS = ImmutableSet.of(
+		"captain dudi",
+		"captain pudi",
+		"first mate deri",
+		"first mate peri"
+	);
+
 	@Inject
 	private Client client;
 
@@ -264,6 +271,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		swap("talk-to", ESSENCE_MINE_NPCS::contains, "teleport", config::swapEssenceMineTeleport);
 		swap("talk-to", "collect", config::swapCollectMiscellania);
 		swap("talk-to", "deposit-items", config::swapDepositItems);
+		swap("talk-to", TEMPOROSS_NPCS::contains, "leave", config::swapTemporossLeave);
 
 		swap("leave tomb", "quick-leave", config::swapQuickLeave);
 		swap("tomb door", "quick-leave", config::swapQuickLeave);
@@ -353,7 +361,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		Arrays.asList(
 			"annakarl", "ape atoll dungeon", "ardougne", "barrows", "battlefront", "camelot", "carrallangar",
 			"catherby", "cemetery", "draynor manor", "falador", "fenkenstrain's castle", "fishing guild", "ghorrock",
-			"grand exchange", "great kourend", "harmony island", "kharyrll", "lumbridge", "lumbridge graveyard",
+			"grand exchange", "great kourend", "harmony island", "kharyrll", "lumbridge", "arceuus library",
 			"lunar isle", "marim", "mind altar", "salve graveyard", "seers' village", "senntisten", "troll stronghold",
 			"varrock", "watchtower", "waterbirth island", "weiss", "west ardougne", "yanille"
 		).forEach(location -> swap(location, "portal nexus", "teleport menu", config::swapPortalNexus));

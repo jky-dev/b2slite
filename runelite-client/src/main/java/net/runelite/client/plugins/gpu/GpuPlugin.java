@@ -218,7 +218,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 	private int textureArrayId;
 
 	private final GLBuffer uniformBuffer = new GLBuffer();
-	private final float[] textureOffsets = new float[128];
+	private final float[] textureOffsets = new float[256];
 
 	private GpuIntBuffer vertexBuffer;
 	private GpuFloatBuffer uvBuffer;
@@ -1078,8 +1078,14 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 			{
 				shutdownAAFbo();
 
+				// Bind default FBO to check whether anti-aliasing is forced
+				gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0);
+				final int forcedAASamples = glGetInteger(gl, gl.GL_SAMPLES);
 				final int maxSamples = glGetInteger(gl, gl.GL_MAX_SAMPLES);
-				final int samples = Math.min(antiAliasingMode.getSamples(), maxSamples);
+				final int samples = forcedAASamples != 0 ? forcedAASamples :
+					Math.min(antiAliasingMode.getSamples(), maxSamples);
+
+				log.debug("AA samples: {}, max samples: {}, forced samples: {}", samples, maxSamples, forcedAASamples);
 
 				initAAFbo(stretchedCanvasWidth, stretchedCanvasHeight, samples);
 
@@ -1192,7 +1198,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 			// Bind uniforms
 			gl.glUniformBlockBinding(glProgram, uniBlockMain, 0);
 			gl.glUniform1i(uniTextures, 1); // texture sampler array is bound to texture1
-			gl.glUniform2fv(uniTextureOffsets, 128, textureOffsets, 0);
+			gl.glUniform2fv(uniTextureOffsets, textureOffsets.length, textureOffsets, 0);
 
 			// We just allow the GL to do face culling. Note this requires the priority renderer
 			// to have logic to disregard culled faces in the priority depth testing.
