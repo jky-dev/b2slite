@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Adam <Adam@sigterm.info>
+ * Copyright (c) 2021, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,15 +22,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.friendschat;
+package net.runelite.api.clan;
 
-import lombok.Value;
-import net.runelite.api.MessageNode;
+import java.util.List;
+import javax.annotation.Nullable;
 
-@Value
-class MemberJoinMessage
+/**
+ * A clan channel.
+ */
+public interface ClanChannel
 {
-	private final MessageNode messageNode;
-	private final int getMessageId;
-	private final int tick;
+	/**
+	 * The name of the channel
+	 * @return
+	 */
+	String getName();
+
+	/**
+	 * The members currently online in the channel.
+	 * @return
+	 */
+	List<ClanChannelMember> getMembers();
+
+	/**
+	 * Find a clan member by name
+	 * @param name
+	 * @return
+	 */
+	@Nullable
+	ClanChannelMember findMember(String name);
 }
