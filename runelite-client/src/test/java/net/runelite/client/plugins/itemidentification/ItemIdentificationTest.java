@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019, Adam <Adam@sigterm.info>
+ * Copyright (c) 2021, Jordan Atwood <nightfirecat@protonmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,43 +22,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.rs;
+package net.runelite.client.plugins.itemidentification;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import okhttp3.OkHttpClient;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
+import net.runelite.api.ItemID;
 import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
-public class ClientConfigLoaderTest
+public class ItemIdentificationTest
 {
-	@Rule
-	public final MockWebServer server = new MockWebServer();
-
-	@Before
-	public void before() throws IOException
-	{
-		String response;
-		try (InputStream in = getClass().getResourceAsStream("jav_config.ws"))
-		{
-			response = CharStreams.toString(new InputStreamReader(
-				in, Charsets.UTF_8));
-		}
-		server.enqueue(new MockResponse().setBody(response));
-	}
-
 	@Test
-	public void testFetch() throws IOException
+	public void testInit()
 	{
-		final RSConfig config = new ClientConfigLoader(new OkHttpClient()).fetch(server.url("/"));
-		assertEquals("http://oldschool1.runescape.com/", config.getCodeBase());
+		assertEquals(ItemIdentification.YEW_SEED, ItemIdentification.get(ItemID.YEW_SEED));
 	}
-
 }
