@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2021, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,11 +22,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.http.service.examine;
+package net.runelite.client.plugins.cluescrolls.clues.hotcold;
 
-public enum ExamineType
+import org.junit.Test;
+
+public class HotColdLocationTest
 {
-	OBJECT,
-	NPC,
-	ITEM;
+	@Test
+	public void test()
+	{
+		HotColdLocation.values(); // test clinit
+	}
 }

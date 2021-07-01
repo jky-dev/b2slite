@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2021, Tanlines <tanlines@outlook.com.au>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,65 +23,36 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.http.service.examine;
+package net.runelite.client.plugins.itemstats.potions;
 
-import java.time.Instant;
+import net.runelite.api.Client;
+import net.runelite.api.EquipmentInventorySlot;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.ItemID;
+import net.runelite.client.plugins.itemstats.StatBoost;
+import static net.runelite.client.plugins.itemstats.stats.Stats.RUN_ENERGY;
 
-public class ExamineEntry
+public class StaminaPotion extends StatBoost
 {
-	private ExamineType type;
-	private int id;
-	private Instant time;
-	private int count;
-	private String text;
-
-	public ExamineType getType()
+	public StaminaPotion()
 	{
-		return type;
+		super(RUN_ENERGY, false);
 	}
 
-	public void setType(ExamineType type)
+	@Override
+	public int heals(Client client)
 	{
-		this.type = type;
-	}
-
-	public int getId()
-	{
-		return id;
-	}
-
-	public void setId(int id)
-	{
-		this.id = id;
-	}
-
-	public Instant getTime()
-	{
-		return time;
-	}
-
-	public void setTime(Instant time)
-	{
-		this.time = time;
-	}
-
-	public int getCount()
-	{
-		return count;
-	}
-
-	public void setCount(int count)
-	{
-		this.count = count;
-	}
-
-	public String getText()
-	{
-		return text;
-	}
-
-	public void setText(String text)
-	{
-		this.text = text;
+		ItemContainer equipContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+		if (equipContainer != null)
+		{
+			Item ring = equipContainer.getItem(EquipmentInventorySlot.RING.getSlotIdx());
+			if (ring != null && ring.getId() == ItemID.RING_OF_ENDURANCE)
+			{
+				return 40;
+			}
+		}
+		return 20;
 	}
 }
