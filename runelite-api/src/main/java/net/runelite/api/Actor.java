@@ -108,12 +108,20 @@ public interface Actor extends Renderable
 	LocalPoint getLocalLocation();
 
 	/**
-	 * Gets the orientation of the actor.
+	 * Gets the target orientation of the actor.
 	 *
 	 * @return the orientation
 	 * @see net.runelite.api.coords.Angle
 	 */
 	int getOrientation();
+
+	/**
+	 * Gets the current orientation of the actor.
+	 *
+	 * @return the orientation
+	 * @see net.runelite.api.coords.Angle
+	 */
+	int getCurrentOrientation();
 
 	/**
 	 * Gets the current animation the actor is performing.
@@ -350,6 +358,20 @@ public interface Actor extends Renderable
 	 * @param overheadText the overhead text
 	 */
 	void setOverheadText(String overheadText);
+
+	/**
+	 * Get the number of cycles/client ticks remaining before the overhead text is timed out
+	 *
+	 * @return
+	 */
+	int getOverheadCycle();
+
+	/**
+	 * Set the number of cycles/client ticks before the overhead text is timed out
+	 *
+	 * @param cycles
+	 */
+	void setOverheadCycle(int cycles);
 
 	/**
 	 * Returns true if this actor has died
