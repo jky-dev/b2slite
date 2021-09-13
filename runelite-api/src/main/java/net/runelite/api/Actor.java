@@ -162,6 +162,8 @@ public interface Actor extends Renderable
 	 */
 	int getIdleRotateLeft();
 
+	void setIdleRotateLeft(int animationID);
+
 	/**
 	 * Animation used for rotating right if the actor is also not walking
 	 *
@@ -169,6 +171,8 @@ public interface Actor extends Renderable
 	 * @see AnimationID
 	 */
 	int getIdleRotateRight();
+
+	void setIdleRotateRight(int animationID);
 
 	/**
 	 * Animation used for walking
@@ -178,6 +182,8 @@ public interface Actor extends Renderable
 	 */
 	int getWalkAnimation();
 
+	void setWalkAnimation(int animationID);
+
 	/**
 	 * Animation used for rotating left while walking
 	 *
@@ -185,6 +191,8 @@ public interface Actor extends Renderable
 	 * @see AnimationID
 	 */
 	int getWalkRotateLeft();
+
+	void setWalkRotateLeft(int animationID);
 
 	/**
 	 * Animation used for rotating right while walking
@@ -194,6 +202,8 @@ public interface Actor extends Renderable
 	 */
 	int getWalkRotateRight();
 
+	void setWalkRotateRight(int animationID);
+
 	/**
 	 * Animation used for an about-face while walking
 	 *
@@ -202,6 +212,8 @@ public interface Actor extends Renderable
 	 */
 	int getWalkRotate180();
 
+	void setWalkRotate180(int animationID);
+
 	/**
 	 * Animation used for running
 	 *
@@ -209,6 +221,8 @@ public interface Actor extends Renderable
 	 * @see AnimationID
 	 */
 	int getRunAnimation();
+
+	void setRunAnimation(int animationID);
 
 	/**
 	 * Sets an animation for the actor to perform.
@@ -273,7 +287,7 @@ public interface Actor extends Renderable
 	void setSpotAnimFrame(int spotAnimFrame);
 
 	/**
-	 * Gets the canvas area of the current tile the actor is standing on.
+	 * Gets the canvas area of the current tiles the actor is standing on.
 	 *
 	 * @return the current tile canvas area
 	 */

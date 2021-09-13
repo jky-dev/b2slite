@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2018, James Swindle <wilingua@gmail.com>
  * Copyright (c) 2018, Adam <Adam@sigterm.info>
- * Copyright (c) 2018, Shaun Dreclin <shaundreclin@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,62 +23,70 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.slayer;
+package net.runelite.client.game.npcoverlay;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.util.List;
-import javax.inject.Inject;
+import java.util.Map;
+import java.util.function.Predicate;
 import net.runelite.api.NPC;
+import net.runelite.api.NPCComposition;
+import net.runelite.api.Point;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.util.ColorUtil;
+import net.runelite.client.ui.overlay.OverlayUtil;
+import net.runelite.client.util.Text;
 
-public class TargetClickboxOverlay extends Overlay
+class NpcMinimapOverlay extends Overlay
 {
-	private final SlayerConfig config;
-	private final SlayerPlugin plugin;
+	private final Map<NPC, HighlightedNpc> highlightedNpcs;
 
-	@Inject
-	TargetClickboxOverlay(SlayerConfig config, SlayerPlugin plugin)
+	NpcMinimapOverlay(Map<NPC, HighlightedNpc> highlightedNpcs)
 	{
-		this.config = config;
-		this.plugin = plugin;
+		this.highlightedNpcs = highlightedNpcs;
 		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_SCENE);
+		setLayer(OverlayLayer.ABOVE_WIDGETS);
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!config.highlightTargets())
+		for (HighlightedNpc highlightedNpc : highlightedNpcs.values())
 		{
-			return null;
-		}
-
-		List<NPC> targets = plugin.getHighlightedTargets();
-		for (NPC target : targets)
-		{
-			renderTargetOverlay(graphics, target, config.getTargetColor());
+			renderNpcOverlay(graphics, highlightedNpc);
 		}
 
 		return null;
 	}
 
-	private void renderTargetOverlay(Graphics2D graphics, NPC actor, Color color)
+	private void renderNpcOverlay(Graphics2D graphics, HighlightedNpc highlightedNpc)
 	{
-		Shape objectClickbox = actor.getConvexHull();
-		if (objectClickbox != null)
+		NPC actor = highlightedNpc.getNpc();
+		NPCComposition npcComposition = actor.getTransformedComposition();
+		if (npcComposition == null || !npcComposition.isInteractible())
 		{
-			graphics.setColor(color);
-			graphics.setStroke(new BasicStroke(2));
-			graphics.draw(objectClickbox);
-			graphics.setColor(ColorUtil.colorWithAlpha(color, color.getAlpha() / 12));
-			graphics.fill(objectClickbox);
+			return;
+		}
+
+		Predicate<NPC> render = highlightedNpc.getRender();
+		if (render != null && !render.test(actor))
+		{
+			return;
+		}
+
+		Point minimapLocation = actor.getMinimapLocation();
+		if (minimapLocation != null)
+		{
+			Color color = highlightedNpc.getHighlightColor();
+			OverlayUtil.renderMinimapLocation(graphics, minimapLocation, color);
+
+			if (highlightedNpc.isNameOnMinimap() && actor.getName() != null)
+			{
+				String name = Text.removeTags(actor.getName());
+				OverlayUtil.renderTextLocation(graphics, minimapLocation, name, color);
+			}
 		}
 	}
 }

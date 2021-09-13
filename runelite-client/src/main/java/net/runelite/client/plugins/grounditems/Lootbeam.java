@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2021, Trevor <https://github.com/Trevor159>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,46 +22,58 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.corp;
+package net.runelite.client.plugins.grounditems;
 
+import net.runelite.api.AnimationID;
+import net.runelite.api.Client;
+import net.runelite.api.JagexColor;
+import net.runelite.api.RuneLiteObject;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Polygon;
-import javax.inject.Inject;
-import net.runelite.api.NPC;
-import net.runelite.client.ui.overlay.Overlay;
-import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayUtil;
 
-class CoreOverlay extends Overlay
+class Lootbeam
 {
-	private final CorpPlugin corpPlugin;
-	private final CorpConfig config;
+	private static final int RAID_LIGHT_MODEL = 5809;
+	private static final short RAID_LIGHT_FIND_COLOR = 6371;
 
-	@Inject
-	private CoreOverlay(CorpPlugin corpPlugin, CorpConfig corpConfig)
+	private final RuneLiteObject runeLiteObject;
+	private final Client client;
+	private Color color;
+
+	public Lootbeam(Client client, WorldPoint worldPoint, Color color)
 	{
-		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_SCENE);
-		this.corpPlugin = corpPlugin;
-		this.config = corpConfig;
+		this.client = client;
+		runeLiteObject = client.createRuneLiteObject();
+
+		setColor(color);
+		runeLiteObject.setAnimation(client.loadAnimation(AnimationID.RAID_LIGHT_ANIMATION));
+		runeLiteObject.setShouldLoop(true);
+
+		LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
+		runeLiteObject.setLocation(lp, client.getPlane());
+
+		runeLiteObject.setActive(true);
 	}
 
-	@Override
-	public Dimension render(Graphics2D graphics)
+	public void setColor(Color color)
 	{
-		NPC core = corpPlugin.getCore();
-		if (core != null && config.markDarkCore())
+		if (this.color != null && this.color.equals(color))
 		{
-			Polygon canvasTilePoly = core.getCanvasTilePoly();
-			if (canvasTilePoly != null)
-			{
-				OverlayUtil.renderPolygon(graphics, canvasTilePoly, Color.RED.brighter());
-			}
+			return;
 		}
 
-		return null;
+		this.color = color;
+		runeLiteObject.setModel(client.loadModel(
+			RAID_LIGHT_MODEL,
+			new short[]{RAID_LIGHT_FIND_COLOR},
+			new short[]{JagexColor.rgbToHSL(color.getRGB(), 1.0d)}
+		));
 	}
+
+	public void remove()
+	{
+		runeLiteObject.setActive(false);
+	}
+
 }

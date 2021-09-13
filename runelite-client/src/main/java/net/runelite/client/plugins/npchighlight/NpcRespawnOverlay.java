@@ -38,8 +38,6 @@ import java.util.Locale;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
-import net.runelite.api.NPC;
-import net.runelite.api.NPCComposition;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
@@ -48,11 +46,8 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
-import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
-import net.runelite.client.util.ColorUtil;
-import net.runelite.client.util.Text;
 
-public class NpcSceneOverlay extends Overlay
+class NpcRespawnOverlay extends Overlay
 {
 	// Anything but white text is quite hard to see since it is drawn on
 	// a dark background
@@ -68,16 +63,13 @@ public class NpcSceneOverlay extends Overlay
 	private final Client client;
 	private final NpcIndicatorsConfig config;
 	private final NpcIndicatorsPlugin plugin;
-	private final ModelOutlineRenderer modelOutlineRenderer;
 
 	@Inject
-	NpcSceneOverlay(Client client, NpcIndicatorsConfig config, NpcIndicatorsPlugin plugin,
-		ModelOutlineRenderer modelOutlineRenderer)
+	NpcRespawnOverlay(Client client, NpcIndicatorsConfig config, NpcIndicatorsPlugin plugin)
 	{
 		this.client = client;
 		this.config = config;
 		this.plugin = plugin;
-		this.modelOutlineRenderer = modelOutlineRenderer;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
@@ -88,11 +80,6 @@ public class NpcSceneOverlay extends Overlay
 		if (config.showRespawnTimer())
 		{
 			plugin.getDeadNpcsToDisplay().forEach((id, npc) -> renderNpcRespawn(npc, graphics));
-		}
-
-		for (NPC npc : plugin.getHighlightedNpcs())
-		{
-			renderNpcOverlay(graphics, npc, config.getHighlightColor());
 		}
 
 		return null;
@@ -113,18 +100,12 @@ public class NpcSceneOverlay extends Overlay
 			return;
 		}
 
-		final Color color = config.getHighlightColor();
-
 		final LocalPoint centerLp = new LocalPoint(
 			lp.getX() + Perspective.LOCAL_TILE_SIZE * (npc.getNpcSize() - 1) / 2,
 			lp.getY() + Perspective.LOCAL_TILE_SIZE * (npc.getNpcSize() - 1) / 2);
 
 		final Polygon poly = Perspective.getCanvasTileAreaPoly(client, centerLp, npc.getNpcSize());
-
-		if (poly != null)
-		{
-			OverlayUtil.renderPolygon(graphics, poly, color);
-		}
+		renderPoly(graphics, config.highlightColor(), config.fillColor(), poly);
 
 		final Instant now = Instant.now();
 		final double baseTick = ((npc.getDiedOnTick() + npc.getRespawnTime()) - client.getTickCount()) * (Constants.GAME_TICK_LENGTH / 1000.0);
@@ -148,68 +129,14 @@ public class NpcSceneOverlay extends Overlay
 		}
 	}
 
-	private void renderNpcOverlay(Graphics2D graphics, NPC actor, Color color)
-	{
-		NPCComposition npcComposition = actor.getTransformedComposition();
-		if (npcComposition == null || !npcComposition.isInteractible()
-			|| (actor.isDead() && config.ignoreDeadNpcs()))
-		{
-			return;
-		}
-
-		if (config.highlightHull())
-		{
-			Shape objectClickbox = actor.getConvexHull();
-			renderPoly(graphics, color, objectClickbox);
-		}
-
-		if (config.highlightTile())
-		{
-			int size = npcComposition.getSize();
-			LocalPoint lp = actor.getLocalLocation();
-			Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
-
-			renderPoly(graphics, color, tilePoly);
-		}
-
-		if (config.highlightSouthWestTile())
-		{
-			int size = npcComposition.getSize();
-			LocalPoint lp = actor.getLocalLocation();
-
-			int x = lp.getX() - ((size - 1) * Perspective.LOCAL_TILE_SIZE / 2);
-			int y = lp.getY() - ((size - 1) * Perspective.LOCAL_TILE_SIZE / 2);
-
-			Polygon southWestTilePoly = Perspective.getCanvasTilePoly(client, new LocalPoint(x, y));
-
-			renderPoly(graphics, color, southWestTilePoly);
-		}
-
-		if (config.highlightOutline())
-		{
-			modelOutlineRenderer.drawOutline(actor, (int)config.borderWidth(), color, config.outlineFeather());
-		}
-
-		if (config.drawNames() && actor.getName() != null)
-		{
-			String npcName = Text.removeTags(actor.getName());
-			Point textLocation = actor.getCanvasTextLocation(graphics, npcName, actor.getLogicalHeight() + 40);
-
-			if (textLocation != null)
-			{
-				OverlayUtil.renderTextLocation(graphics, textLocation, npcName, color);
-			}
-		}
-	}
-
-	private void renderPoly(Graphics2D graphics, Color color, Shape polygon)
+	private void renderPoly(Graphics2D graphics, Color borderColor, Color fillColor, Shape polygon)
 	{
 		if (polygon != null)
 		{
-			graphics.setColor(color);
+			graphics.setColor(borderColor);
 			graphics.setStroke(new BasicStroke((float) config.borderWidth()));
 			graphics.draw(polygon);
-			graphics.setColor(ColorUtil.colorWithAlpha(color, 20));
+			graphics.setColor(fillColor);
 			graphics.fill(polygon);
 		}
 	}

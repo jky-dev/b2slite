@@ -33,7 +33,8 @@ public enum TimeStyle
 	JAGEX("Jagex HQ Time"),
 	LOCAL_TIME("Local Time"),
 	GAMING_TIME("Gaming Session"),
-	GAME_TICKS("Game Ticks");
+	GAME_TICKS("Game Ticks"),
+	IDLE_TIME("Idle Time");
 
 	private final String name;
 
